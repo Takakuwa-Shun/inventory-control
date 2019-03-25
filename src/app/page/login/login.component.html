@@ -1,0 +1,64 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="ログイン"
+  [showPrint]=false
+  [showCsv]=false
+  ></app-sub-header>
+  <form #loginForm="ngForm">
+    <div class="form-group row">
+      <label for="email" class="col-sm-2 col-form-label">メールアドレス</label>
+      <div class="col-sm-10">
+        <input 
+        type="text" 
+        class="form-control"
+        id="email"
+        [(ngModel)]="login.email" 
+        name="email"
+        placeholder="メールアドレスを入力してください"
+        #email="ngModel"
+        required>
+        <div class="alert alert-danger" *ngIf="email.errors && (email.dirty || email.touched)">
+          <div [hidden]="!email.errors.required">※ 項目が未入力です</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="password" class="col-sm-2 col-form-label">パスワード</label>
+      <div class="col-sm-10">
+        <input 
+        type="password" 
+        class="form-control"
+        id="password"
+        [(ngModel)]="login.password" 
+        name="password"
+        placeholder="パスワードを入力してください"
+        #password="ngModel"
+        required>
+        <div class="alert alert-danger" *ngIf="password.errors && (password.dirty || password.touched)">
+          <div [hidden]="!password.errors.required">※ 項目が未入力です</div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mx-auto">
+        <button
+        type="button"
+        class="btn btn-primary"
+        (click)="submit()"
+        [disabled]="!loginForm.form.valid">ログイン</button>
+      </div>
+      <div class="mx-auto">
+        <a
+        class="btn btn-primary"
+        role="button"
+        routerLink="/password/reset"
+        >パスワード変更</a>
+      </div>
+    </div>
+  </form>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

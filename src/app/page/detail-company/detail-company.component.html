@@ -1,0 +1,109 @@
+<div class="container-fluid">
+  <app-sub-header
+  [title]="company.name"
+  [showPrint]=true
+  [showCsv]=false
+  ></app-sub-header>
+  <div class="table-responsive">
+    <form #companyForm="ngForm">
+      <table class="table table-sm table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">項目</th>
+            <th scope="col">値</th>
+            <th scope="col">編集欄</th>
+          </tr>
+        </thead>
+        <tbody>  
+          <tr>
+            <th scope="col">得意先コード</th>
+            <td>{{company.id}}</td>
+            <td>{{company.id}}</td>
+          </tr>
+          <tr>
+            <th scope="col">得意先名</th>
+            <td>{{company.name}}</td>
+            <td>
+              <div class="form-group">
+                <input
+                type="text"
+                class="form-control"
+                id="name"
+                [(ngModel)]="registerCompany.name"
+                name="name"
+                #name="ngModel"
+                required>
+                <div class="alert alert-danger" *ngIf="name.errors && (name.dirty || name.touched)">
+                  <div [hidden]="!name.errors.required">※ 項目が未入力です</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th scope="col">得意先名かな</th>
+            <td>{{company.nameKana}}</td>
+            <td>
+              <div class="form-group">
+                <input
+                type="text"
+                class="form-control"
+                id="nameKana"
+                [(ngModel)]="registerCompany.nameKana"
+                name="nameKana"
+                #nameKana="ngModel"
+                required
+                pattern="{{nameKanaPattern}}">
+                <div class="alert alert-danger" *ngIf="nameKana.errors && (nameKana.dirty || nameKana.touched)">
+                  <div [hidden]="!nameKana.errors.required">※ 項目が未入力です</div>
+                  <div [hidden]="!nameKana.errors.pattern">※ 全角かな・半角英数字・半角記号・半角スペース以外は入力しないでください</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row">
+        <div class="mx-auto">
+          <button class="btn btn-outline-dark" (click)="goBack()">得意先一覧へ</button>
+        </div>
+        <div class="mx-auto">
+          <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#Modal"
+          (click)="createBody()"
+          [disabled]="!companyForm.form.valid">修正</button>
+        </div>
+        <div class="mx-auto">
+          <button
+          type="button"
+          class="btn btn-danger"
+          data-toggle="modal"
+          data-target="#DeleteModal"
+          disabled>削除</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-confirm-modal
+[title]="confirmTitle"
+[bodyHtml]="confirmBody"
+[btnCancel]="confirmCancelBtn"
+[btnAction]="confirmActionBtn"
+(action)="submit()"
+></app-confirm-modal>
+<app-simple-modal
+[body]="deleteBody"
+[btn]="deleteBtn"
+[btnType]="deleteBtnType"
+[modalId]="deleteModal"
+(action)="delete()">
+</app-simple-modal>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+(action)="backToList()"
+></app-complete-modal>

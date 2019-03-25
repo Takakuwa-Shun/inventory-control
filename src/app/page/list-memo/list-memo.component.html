@@ -1,0 +1,113 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="備考一覧"
+  [showPrint]=true
+  [showCsv]=true
+  [csvData]="csvListMemo"
+  ></app-sub-header>
+  <form #memoForm="ngForm">
+      <div class="form-group row">
+        <label for="content" class="col-sm-1 col-form-label">備考追加</label>
+        <div class="col-sm-10">
+          <input
+          type="text"
+          class="form-control"
+          id="content"
+          [(ngModel)]="registerMemoContent"
+          name="content"
+          placeholder="備考内容を入力してください"
+          #content="ngModel"
+          required>
+          <div class="alert alert-danger" *ngIf="content.errors && (content.dirty || content.touched)">
+            <div [hidden]="!content.errors.required">※ 項目が未入力です</div>
+          </div>
+        </div>
+        <div class="col-sm-1">
+          <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#Modal"
+          (click)="createBody()"
+          [disabled]="!(memoForm.form.valid) || editNow">登録</button>
+        </div>
+      </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">{{csvTitleMemo[0].id}}</th>
+          <th scope="col" class="word-break">{{csvTitleMemo[0].content}}</th>
+          <th scope="col">編集</th>
+          <th scope="col">削除</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of listMemo; let i = index">
+          <th scope="row">{{i+1}}</th>
+          <td>{{m.id}}</td>
+          <td>
+            <span *ngIf="m.doEdit; else noEdit">
+              <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="editMemo.content"
+              name="editContent"
+              placeholder="備考内容を入力してください">
+              <div class="alert alert-danger" *ngIf="editMemo.content.length === 0">※ 項目が未入力です</div>
+            </span>
+            <ng-template #noEdit>{{m.content}}</ng-template>
+          </td>
+          <td>
+            <span *ngIf="m.doEdit; else noEditBtn">
+              <button
+              type="button"
+              class="btn btn-outline-warning"
+              (click)="m.doEdit = false; editNow = false;">中止</button>
+              <button
+              type="button"
+              class="btn btn-outline-info"
+              (click)="edit()"
+              [disabled]="editMemo.content.length === 0">更新</button>
+            </span>
+            <ng-template #noEditBtn>
+              <button
+              type="button"
+              class="btn btn-outline-info"
+              (click)="startEdit(m)"
+              [disabled]="editNow">修正</button>
+            </ng-template>
+          </td>
+          <td>
+            <button
+            type="button"
+            class="btn btn-outline-danger"
+            (click)="openDeleteteModal(m.id)"
+            [disabled]="editNow">削除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-confirm-modal
+[title]="confirmTitle"
+[bodyHtml]="confirmBody"
+[btnCancel]="confirmCancelBtn"
+[btnAction]="confirmActionBtn"
+(action)="register(); memoForm.reset()"
+></app-confirm-modal>
+<app-simple-modal
+[body]="deleteBody"
+[btn]="deleteBtn"
+[btnType]="deleteBtnType"
+[modalId]="deleteModal"
+(action)="delete()">
+</app-simple-modal>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

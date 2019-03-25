@@ -1,0 +1,52 @@
+<div class="form-group row">
+  <label for="imageUrl" class="col-sm-2 col-form-label">{{inputTitle}}</label>
+  <div class="col-sm-10">
+    <div class="row">
+      <div class="col-sm-5">
+        <div class="row">
+          <div class="col">
+            <input
+              type="file"
+              accept="image/*"
+              id="imageUrl"
+              name="imageUrl"
+              capture="camera"
+              #imageUrl
+              (change)="fileChangeEvent($event)"
+              aria-describedby="imageUrlHelp">
+            <small *ngIf="!showCropper" id="imageUrlHelp" class="form-text text-muted">画像がなければ、未選択で構いません。</small>
+          </div>
+        </div>
+        <div class="row" *ngIf="showCropper" style="margin-top: 190px;">
+          <div class="mx-auto">
+            <button (click)="rotateLeft()" class="btn btn-outline-info">左に回転</button>
+          </div>
+          <div class="mx-auto">
+            <button (click)="rotateRight()" class="btn btn-outline-info">右に回転</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-7">
+        <img class="show-image img-thumbnail rounded mx-auto d-block img-fluid" [src]="croppedImage" alt="読み込みエラー">
+      </div>
+    </div>
+    <div class="row" [style.display]="showCropper ? null : 'none'">
+      <div>
+        <image-cropper
+          [imageChangedEvent]="imageChangedEvent"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="1 / 1"
+          [resizeToWidth]="256"
+          [cropperMinWidth]="256"
+          [onlyScaleDown]="false"
+          [roundCropper]="false"
+          format="png"
+          outputType="both"
+          (imageCropped)="imageCropped($event)"
+          (imageLoaded)="imageLoaded()"
+          (loadImageFailed)="loadImageFailed()"
+        ></image-cropper>
+      </div>
+    </div>
+  </div>
+</div>

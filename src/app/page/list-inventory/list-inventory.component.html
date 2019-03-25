@@ -1,0 +1,162 @@
+<div class="container-fluid">
+  <div class="print-hidden">
+    <app-sub-header
+      title="在庫一覧"
+      [showPrint]=true
+      [showCsv]=true
+      [csvData]="csvListInventory"
+    ></app-sub-header>
+    <div class="row">
+      <label for="target-kind" class="col-sm-2 col-form-label">対象種類</label>
+      <ng-container *ngFor="let t of listTarget; index as i">
+        <div class="form-check form-check-inline">
+          <input
+            type="radio"
+            name="target-kind"
+            id="targets{{i}}"
+            class="form-check-input"
+            [(ngModel)]="selectedTargetType"
+            [value]="t.value"
+            [checked]="selectedTargetType === t.value"
+            (change)="changeTargetType()">
+          <label class="form-check-label pointer" for="targets{{i}}">{{t.name}}</label>
+        </div>
+      </ng-container>
+    </div>
+    <div class="row">
+      <label for="search-target" class="col-sm-2 col-form-label">対象名</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="search-target"
+        class="form-control"
+        [source]="searchList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        [no-match-found-text]="targetNoMatchFoundText"
+        [placeholder]="targetSearchPlaceholder"
+        display-property-name="name"
+        min-chars=0
+        auto-select-first-item="true"
+        (valueChanged)="changeTarget($event)"
+        autocomplete="off"
+        >
+        <div class="alert alert-danger" *ngIf="showTargetAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="isTargetSelected" class="badge badge-success">選択中</span>
+        <span *ngIf="!isTargetSelected" class="badge badge-danger">未選択</span>
+        <span *ngIf="isTargetSelected" class="auto-selected ml-2">{{selectedTarget.name}}</span>
+      </div>
+    </div>
+    <div class="row">
+      <label for="target" class="col-sm-2 col-form-label">開始月日</label>
+      <div class="col-sm-10">
+        <input
+        type="date"
+        id="start-date"
+        class="start-date"
+        min="2019-03-01"
+        max="2050-12-31"
+        [(ngModel)]="startDateStr"
+        (change)="changeDate()"
+        >
+      </div>
+    </div>
+    <div class="row">
+      <label for="target" class="col-sm-2 col-form-label">終了月日</label>
+      <div class="col-sm-10">
+        <input
+        type="date"
+        id="end-date"
+        class="end-date"
+        [min]="startDate"
+        max="2050-12-31"
+        [(ngModel)]="endDateStr"
+        (change)="changeDate()"
+        >
+      </div>
+    </div>
+    <div class="alert alert-danger" *ngIf="showDateAlert">
+      ※ 終了月日が開始月日よりも後になるように設定して下さい
+    </div>
+    <div class="row">
+      <label for="target-kind" class="col-sm-2 col-form-label">倉庫表示</label>
+      <ng-container *ngFor="let l of listLocationForFilter; index as i">
+        <div class="form-check form-check-inline">
+          <input
+            type="radio"
+            name="location"
+            id="locations{{i}}"
+            class="form-check-input"
+            [(ngModel)]="selectedLocation"
+            [value]="l"
+            [checked]="l.id === selectedLocation.id">
+          <label class="form-check-label pointer" for="locations{{i}}">{{l.name}}</label>
+        </div>
+      </ng-container>
+    </div>
+    <div class="row">
+      <div class="mx-auto">
+        <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="showDateAlert || showTargetAlert || !isTargetSelected"
+        (click)="search()">検索</button>
+      </div>
+    </div>
+    <hr class="horizontal-border">
+  </div>
+  <div class="row">
+    <div class="col-7 offset-md-1">
+      <h2 class="align-middle"><a routerLink="/material/detail/{{selectedTargetType}}/{{showTarget.id}}">{{showTarget.name}}</a></h2>
+    </div>
+    <div class="col-3">
+      <img class="show-image img-thumbnail rounded mx-auto d-block img-fluid" [src]="imageSrc" alt="読み込みエラー">
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-striped">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">月日</th>
+          <th scope="col">入力者</th>
+          <th scope="col">{{csvListInventory[0].actionType}}</th>
+          <th scope="col">{{csvListInventory[0].actionDetail}}</th>
+          <ng-container *ngFor="let lo of listSelectedLocation">
+            <th scope="col">{{lo.name}}</th>
+          </ng-container>
+          <th scope="col">在庫計</th>
+          <th scope="col">{{csvListInventory[0].memo}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let l of listInventory; let i = index">
+          <th scope="row">{{i+1}}</th>
+          <td>{{ l.date.seconds * 1000 | date:'yy年MM月dd日' }}</td>
+          <td>{{userObj[l.userId]}}</td>
+          <td>{{l.actionType}}</td>
+          <td>{{l.actionDetail}}</td>
+          <ng-container *ngFor="let lo of listSelectedLocation">
+            <td>
+              <ng-container *ngIf="l.locationId === lo.id">{{l.addCount}}</ng-container>
+            </td>
+          </ng-container>
+          <ng-container *ngIf="showLocationSumCount; else elseTd">
+            <td>{{l.locationCount[l.locationId]}}</td>
+          </ng-container>
+          <ng-template #elseTd>
+            <td>{{l.sumCount}}</td>
+          </ng-template>
+          <td>{{l.memo}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

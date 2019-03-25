@@ -1,0 +1,33 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="得意先一覧"
+  [showPrint]=true
+  [showCsv]=true
+  [csvData]="csvListCompany"
+  ></app-sub-header>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">{{csvListCompany[0].id}}</th>
+          <th scope="col">{{csvListCompany[0].name}}</th>
+          <th scope="col">{{csvListCompany[0].nameKana}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of listCompany; let i = index" (click)="goDetail(c.id)">
+          <th class="pointer" scope="row">{{i+1}}</th>
+          <td class="pointer">{{c.id}}</td>
+          <td class="pointer">{{c.name}}</td>
+          <td class="pointer">{{c.nameKana}} </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

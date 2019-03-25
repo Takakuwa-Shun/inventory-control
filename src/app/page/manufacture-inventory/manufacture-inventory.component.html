@@ -1,0 +1,406 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="商品製造・出荷"
+  [showPrint]=false
+  [showCsv]=false
+  ></app-sub-header>
+  <div class="mb-3">
+    <img class="show-image img-thumbnail rounded mx-auto d-block img-fluid" [src]="imageSrc" alt="読み込みエラー">
+  </div>
+  <form #manufactureInventoryForm="ngForm">
+    <div class="form-group row">
+      <label for="product" class="col-sm-2 col-form-label">商品</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="product"
+        class="form-control"
+        [source]="productList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="検索ワードを含む商品はありません"
+        placeholder="商品を検索してください"
+        display-property-name="name"
+        min-chars=0
+        auto-select-first-item="true"
+        (valueChanged)="selectProduct($event)"
+        autocomplete="off"
+        >
+        <div class="alert alert-danger" *ngIf="showProductAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isProductSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isProductSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{detailProduct.name}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="count" class="col-sm-2 col-form-label">製造・出荷個数</label>
+      <div class="col-sm-10">
+        <input
+        type="text"
+        class="form-control"
+        id="count"
+        [(ngModel)]="inputCount"
+        name="count"
+        placeholder="製造・出荷した数量を入力してください"
+        #count="ngModel"
+        required
+        [pattern]="countPattern">
+        <div class="alert alert-danger" *ngIf="count.errors && (count.dirty || count.touched)">
+          <div [hidden]="!count.errors.required">※ 項目が未入力です</div>
+          <div [hidden]="!count.errors.pattern">※ １以上の半角数字で入力してください</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="memo" class="col-sm-2 col-form-label">備考</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="memo"
+        name="memo"
+        class="form-control"
+        [source]="memoList"
+        loading-text="検索中"
+        no-match-found-text="該当する備考はありません。"
+        placeholder="備考を入力してください"
+        auto-select-first-item="true"
+        [(ngModel)]="inputMemo"
+        min-chars=0
+        autocomplete="off"
+        aria-describedby="memoHelp"
+        >
+        <small id="memoHelp" class="form-text text-muted">備考は空欄でも構いません。</small>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bottle" class="col-sm-2 col-form-label">ボトル</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="bottle"
+        class="form-control"
+        [source]="bottleLists"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当するボトルはありません。"
+        placeholder="ボトル名を検索してください"
+        display-property-name="name"
+        min-chars=0
+        auto-select-first-item="true"
+        (valueChanged)="selectMaterial($event, 'bottle')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showBottleAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isBottleSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isBottleSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{detailProduct.bottleData.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="carton" class="col-sm-2 col-form-label">カートン</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="carton"
+        class="form-control"
+        [source]="cartonLists"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当するカートンはありません。"
+        placeholder="カートン名を検索してください"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectMaterial($event, 'carton')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showCartonAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isCartonSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isCartonSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{detailProduct.cartonData.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="label" class="col-sm-2 col-form-label">ラベル</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="label"
+        class="form-control"
+        [source]="labelLists"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当するラベルはありません。"
+        placeholder="ラベル名を検索してください"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectMaterial($event, 'label')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showLabelAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isLabelSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isLabelSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{detailProduct.labelData.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="trigger" class="col-sm-2 col-form-label">トリガー</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="trigger"
+        class="form-control"
+        [source]="triggerLists"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当するトリガーはありません。"
+        placeholder="トリガー名を検索してください"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectMaterial($event, 'trigger')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showTriggerAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isTriggerSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isTriggerSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{detailProduct.triggerData.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bag" class="col-sm-2 col-form-label">詰め替え袋</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="bag"
+        class="form-control"
+        [source]="bagLists"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する詰め替え袋はありません。"
+        placeholder="詰め替え袋名を検索してください"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectMaterial($event, 'bag')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showBagAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isBagSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isBagSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{detailProduct.bagData.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bottle-location" class="col-sm-2 col-form-label">用いたボトルの倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="bottle-location"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        placeholder="倉庫名を検索して下さい"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocation($event, 'bottle')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showBottleLocationAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isBottleLocationSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isBottleLocationSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedBottleLocation.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">{{detailProduct.bottleData.name}}の現在庫量</span>
+          <span class="auto-selected ml-2">{{latestBottleInventory.locationCount[selectedBottleLocation.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="location-location" class="col-sm-2 col-form-label">用いたカートンの倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="carton-location"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        placeholder="倉庫名を検索して下さい"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocation($event, 'carton')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showCartonLocationAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isCartonLocationSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isCartonLocationSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedCartonLocation.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">{{detailProduct.cartonData.name}}の現在庫量</span>
+          <span class="auto-selected ml-2">{{latestCartonInventory.locationCount[selectedCartonLocation.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="label-location" class="col-sm-2 col-form-label">用いたラベルの倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="label-location"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        placeholder="倉庫名を検索して下さい"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocation($event, 'label')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showLabelLocationAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isLabelLocationSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isLabelLocationSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedLabelLocation.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">{{detailProduct.labelData.name}}の現在庫量</span>
+          <span class="auto-selected ml-2">{{latestLabelInventory.locationCount[selectedLabelLocation.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="trigger-location" class="col-sm-2 col-form-label">用いたトリガーの倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="trigger-location"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        placeholder="倉庫名を検索して下さい"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocation($event, 'trigger')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showTriggerLocationAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isTriggerLocationSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isTriggerLocationSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedTriggerLocation.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">{{detailProduct.triggerData.name}}の現在庫量</span>
+          <span class="auto-selected ml-2">{{latestTriggerInventory.locationCount[selectedTriggerLocation.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bag-location" class="col-sm-2 col-form-label">用いた詰め替え袋の倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="bag-location"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        placeholder="倉庫名を検索して下さい"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocation($event, 'bag')"
+        autocomplete="off"
+        [disabled]="!isProductSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showBagLocationAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isBagLocationSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isBagLocationSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedBagLocation.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">{{detailProduct.bagData.name}}の現在庫量</span>
+          <span class="auto-selected ml-2">{{latestBagInventory.locationCount[selectedBagLocation.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mx-auto">
+        <button
+        type="button"
+        class="btn btn-primary"
+        (click)="confirmRegister()"
+        [disabled]="!(manufactureInventoryForm.form.valid && isProductSelected)">製造・出荷登録</button>
+      </div>
+    </div>
+  </form>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px'}"></ngx-loading>
+<app-confirm-modal
+[title]="confirmTitle"
+[bodyHtml]="confirmBody"
+[btnCancel]="confirmCancelBtn"
+[btnAction]="confirmActionBtn"
+(action)="submit(); manufactureInventoryForm.reset(); formInit()"
+></app-confirm-modal>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

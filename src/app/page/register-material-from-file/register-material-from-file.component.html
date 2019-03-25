@@ -1,0 +1,76 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="資材一括登録(.csvから)"
+  [showPrint]=false
+  [showCsv]=false
+  ></app-sub-header>
+  <p>csvファイルから、資材の一括登録が可能です。</p>
+  <p>登録の際には、データフォーマットに従い、2行目以降から、<br>
+  <b>資材名, 資材名かな, 種別[ボトル, カートン, ラベル, トリガー, 詰め替え袋のいずれか], フラグ</b><br>
+  の順に記入して下さい。</p>
+  <p>また、csvの文字コードとしてはUTF-8を使用して下さい。（ExcelではShift-jsで保存されることがあります。）</p>
+  <p><i>※ 画像に関しては、一括で登録できないので、画像に関しては個別で後に更新して下さい。</i></p>
+  <hr>
+  <form #materialCsvForm="ngForm">
+    <div class="form-group row">
+      <label for="readCsv" class="col-sm-3 col-form-label">データフォーマット</label>
+      <div class="col-sm-9">
+        <span class="pointer" style="color: #999">
+          <a  id="csvFormat" [href]="csvDataSrc" [download]="csvFileName">フォーマットダウンロード</a>
+        </span>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="readCsv" class="col-sm-3 col-form-label">csvの選択</label>
+      <div class="col-sm-9">
+        <input
+        type="file"
+        id="readCsv"
+        name="readCsv"
+        accept=".csv"
+        #readCsv
+        (change)="selectCsv(readCsv.files)"
+        aria-describedby="readCsvHelp"
+        >
+        <small id="readCsvHelp" class="form-text text-muted">フォーマットに従ったcsv形式で選択して下さい。</small>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mx-auto">
+        <button
+        type="button"
+        class="btn btn-primary"
+        (click)="confirm(true)"
+        [disabled]="!showConfirm">登録</button>
+      </div>
+    </div>
+  </form>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+
+<!-- confirm modal -->
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="ModalTitle">登録確認</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" [innerHTML]="confirmBodyHtml"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+        <button
+        type="button"
+        class="btn btn-primary"
+        (click)="confirm(false)">{{ confirmActionBtn }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end confirm modal -->
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

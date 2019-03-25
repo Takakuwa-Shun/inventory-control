@@ -1,0 +1,109 @@
+<div class="container-fluid">
+  <app-sub-header
+  [title]="user.displayName"
+  [showPrint]=true
+  [showCsv]=false
+  ></app-sub-header>
+  <div class="table-responsive">
+    <form #userForm="ngForm">
+      <table class="table table-sm table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">項目</th>
+            <th scope="col">値</th>
+            <th scope="col">編集欄</th>
+          </tr>
+        </thead>
+        <tbody>  
+          <tr>
+            <th scope="col">担当者ID</th>
+            <td>{{user.uid}}</td>
+            <td>{{user.uid}}</td>
+          </tr>
+          <tr>
+            <th scope="col">担当者名</th>
+            <td>{{user.displayName}}</td>
+            <td>
+              <div class="form-group">
+                <input
+                type="text"
+                class="form-control"
+                id="name"
+                [(ngModel)]="registerUser.displayName"
+                name="name"
+                #name="ngModel"
+                required>
+                <div class="alert alert-danger" *ngIf="name.errors && (name.dirty || name.touched)">
+                  <div [hidden]="!name.errors.required">※ 項目が未入力です</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th scope="col">メールアドレス</th>
+            <td>{{user.email}}</td>
+            <td>
+              <div class="form-group">
+                <input
+                type="text"
+                class="form-control"
+                id="email"
+                [(ngModel)]="registerUser.email"
+                name="email"
+                #email="ngModel"
+                required
+                pattern="{{emailPattern}}">
+                <div class="alert alert-danger" *ngIf="email.errors && (email.dirty || email.touched)">
+                  <div [hidden]="!email.errors.required">※ 項目が未入力です</div>
+                  <div [hidden]="!email.errors.pattern">※ メールアドレスの形式で入力してください</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row">
+        <div class="mx-auto">
+          <button class="btn btn-outline-dark" (click)="goBack()">担当者一覧へ</button>
+        </div>
+        <div class="mx-auto">
+          <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#Modal"
+          (click)="createBody()"
+          [disabled]="!userForm.form.valid">修正</button>
+        </div>
+        <div class="mx-auto">
+          <button
+          type="button"
+          class="btn btn-danger"
+          data-toggle="modal"
+          data-target="#DeleteModal"
+          disabled>削除</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-confirm-modal
+[title]="confirmTitle"
+[bodyHtml]="confirmBody"
+[btnCancel]="confirmCancelBtn"
+[btnAction]="confirmActionBtn"
+(action)="submit()"
+></app-confirm-modal>
+<app-simple-modal
+[body]="deleteBody"
+[btn]="deleteBtn"
+[btnType]="deleteBtnType"
+[modalId]="deleteModal"
+(action)="delete()">
+</app-simple-modal>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+(action)="backToList()"
+></app-complete-modal>

@@ -1,0 +1,187 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="資材移動"
+  [showPrint]=false
+  [showCsv]=false
+  ></app-sub-header>
+  <div class="mb-3">
+    <img class="show-image img-thumbnail rounded mx-auto d-block img-fluid" [src]="imageSrc" alt="読み込みエラー">
+  </div>
+  <form #moveInventoryForm="ngForm">
+    <div class="form-group row">
+      <label for="type" class="col-sm-2 col-form-label">資材タイプ</label>
+      <div class="col-sm-10">
+        <select
+          class="form-control"
+          id="type"
+          name="type"
+          [(ngModel)]="selectType"
+          #type="ngModel"
+          (change)="changeType()"
+          [pattern]="typePattern">
+          <option *ngFor="let type of materialType" [value]="type">{{type}}</option>
+        </select>
+        <div class="alert alert-danger" *ngIf="type.errors && (type.dirty || type.touched)">
+          <div [hidden]="!type.errors.pattern">※ タイプを選択してください。</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="material" class="col-sm-2 col-form-label">資材</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="material"
+        class="form-control"
+        [source]="searchList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        [no-match-found-text]="targetNoMatchFoundText"
+        [placeholder]="targetSearchPlaceholder"
+        display-property-name="name"
+        min-chars=0
+        auto-select-first-item="true"
+        (valueChanged)="selectMaterial($event)"
+        autocomplete="off"
+        [disabled]="!isSelectedType"
+        >
+        <div class="alert alert-danger" *ngIf="showMaterialAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isMaterialSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isMaterialSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{registerInventory.targetName}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">現在総在庫量</span>
+          <span class="auto-selected ml-2">{{registerInventory.sumCount}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="addCount" class="col-sm-2 col-form-label">移動個数</label>
+      <div class="col-sm-10">
+        <input
+        type="text"
+        class="form-control"
+        id="addCount"
+        [(ngModel)]="registerInventory.addCount"
+        name="addCount"
+        placeholder="移動する数量を入力してください"
+        #addCount="ngModel"
+        required
+        [pattern]="countPattern">
+        <div class="alert alert-danger" *ngIf="addCount.errors && (addCount.dirty || addCount.touched)">
+          <div [hidden]="!addCount.errors.required">※ 項目が未入力です</div>
+          <div [hidden]="!addCount.errors.pattern">※ １以上の半角数字で入力してください</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="location-before" class="col-sm-2 col-form-label">移動前倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="location-before"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        [placeholder]="locationPlaceholder"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocationBefore($event)"
+        autocomplete="off"
+        [disabled]="!isMaterialSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showLocationBeforeAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isLocationBeforeSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isLocationBeforeSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedLocationBefore.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">該当倉庫の現在在庫量</span>
+          <span class="auto-selected ml-2">{{registerInventory.locationCount[selectedLocationBefore.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="location-after" class="col-sm-2 col-form-label">移動後倉庫</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="location-after"
+        class="form-control"
+        [source]="locationList"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する倉庫はありません。"
+        [placeholder]="locationPlaceholder"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectLocationAfter($event)"
+        autocomplete="off"
+        [disabled]="!isMaterialSelected"
+        >
+        <div class="alert alert-danger" *ngIf="showLocationAfterAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <span *ngIf="!isLocationAfterSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isLocationAfterSelected">
+          <span class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{selectedLocationAfter.name}}</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span class="badge badge-success">該当倉庫の現在在庫量</span>
+          <span class="auto-selected ml-2">{{registerInventory.locationCount[selectedLocationAfter.id]}}個</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="memo" class="col-sm-2 col-form-label">備考</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="memo"
+        name="memo"
+        class="form-control"
+        [source]="memoList"
+        loading-text="検索中"
+        no-match-found-text="該当する備考はありません。"
+        placeholder="備考を入力してください"
+        auto-select-first-item="true"
+        [(ngModel)]="registerInventory.memo"
+        min-chars=0
+        autocomplete="off"
+        aria-describedby="memoHelp"
+        >
+        <small id="memoHelp" class="form-text text-muted">備考は空欄でも構いません。</small>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mx-auto">
+        <button
+        type="button"
+        class="btn btn-primary"
+        (click)="confirmRegister()"
+        [disabled]="!(moveInventoryForm.form.valid && isLocationBeforeSelected && isLocationAfterSelected && isMaterialSelected)">移動登録</button>
+      </div>
+    </div>
+  </form>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-confirm-modal
+[title]="confirmTitle"
+[bodyHtml]="confirmBody"
+[btnCancel]="confirmCancelBtn"
+[btnAction]="confirmActionBtn"
+(action)="submit(); moveInventoryForm.reset(); formInit()"
+></app-confirm-modal>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-2">
+    <div class="pointer print-hidden p-3" style="color: #999" (click)="goBack()">
+      <fa-icon [icon]="['fas', 'caret-left']" size="2x" [border]="true" pull="left"></fa-icon>
+    </div>
+  </div>
+  <ng-container *ngIf="showImage; else elseTitle">
+    <div class="col-2">
+      <img class="show-icon img-thumbnail rounded mx-auto d-block img-fluid" [src]="iconImageUrl" alt="読み込みエラー">
+    </div>
+    <div class="col-6 pt-4">
+      <h1 class="display-4" style="color: #555" >{{title}}</h1>
+    </div>
+  </ng-container>
+  <ng-template #elseTitle>
+    <div class="col-8 p-2">
+      <h1 class="display-4" style="color: #555" >{{title}}</h1>
+    </div>
+  </ng-template>
+  <div class="col-2 p-3">
+    <span *ngIf="showPrint" class="pointer print-hidden" style="color: #999" (click)="print()">
+      <fa-icon [icon]="['fas', 'print']" size="2x" [border]="true" pull="right"></fa-icon>
+    </span>
+    <span *ngIf="showCsv" class="pointer print-hidden" style="color: #999" (click)="convertToCsv()">
+      <a  id="download" [href]="csvDataSrc" [download]="csvFileName">
+        <fa-icon [icon]="['fas', 'file-csv']" size="2x" [border]="true" pull="right"></fa-icon>
+      </a>
+    </span>
+  </div>
+</div>

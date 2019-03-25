@@ -1,0 +1,45 @@
+<div class="container-fluid">
+  <app-sub-header
+  title="商品一覧"
+  [showPrint]=true
+  [showCsv]=true
+  [csvData]="csvListProduct"
+  ></app-sub-header>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">{{csvListProduct[0].id}}</th>
+          <th scope="col">{{csvListProduct[0].name}}</th>
+          <th scope="col">{{csvListProduct[0].lot}}</th>
+          <th scope="col">{{csvListProduct[0].companyName}}</th>
+          <th scope="col">{{csvListProduct[0].bottleName}}</th>
+          <th scope="col">{{csvListProduct[0].cartonName}}</th>
+          <th scope="col">{{csvListProduct[0].labelName}}</th>
+          <th scope="col">{{csvListProduct[0].triggerName}}</th>
+          <th scope="col">{{csvListProduct[0].bagName}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of listProduct; let i = index" (click)="goDetail(p.id)">
+          <th class="pointer" scope="row">{{i+1}}</th>
+          <td class="pointer">{{p.id}}</td>
+          <td class="pointer">{{p.name}}</td>
+          <td class="pointer">{{p.lot}} </td>
+          <td class="pointer">{{p.companyName}} </td>
+          <td class="pointer">{{p.bottleName}} </td>
+          <td class="pointer">{{p.cartonName}} </td>
+          <td class="pointer">{{p.labelName}} </td>
+          <td class="pointer">{{p.triggerName}} </td>
+          <td class="pointer">{{p.bagName}} </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<app-complete-modal
+[body]="completeBody"
+[btnType]="completeBtnType"
+></app-complete-modal>

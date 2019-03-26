@@ -5,12 +5,12 @@
   [showCsv]=true
   [csvData]="csvListCompany"
   ></app-sub-header>
+  <p class="print-hidden">列をクリックすると、そのデータの修正・削除を行う画面に遷移します。</p>
   <div class="table-responsive">
     <table class="table table-sm table-hover">
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">{{csvListCompany[0].id}}</th>
           <th scope="col">{{csvListCompany[0].name}}</th>
           <th scope="col">{{csvListCompany[0].nameKana}}</th>
         </tr>
@@ -18,7 +18,6 @@
       <tbody>
         <tr *ngFor="let c of listCompany; let i = index" (click)="goDetail(c.id)">
           <th class="pointer" scope="row">{{i+1}}</th>
-          <td class="pointer">{{c.id}}</td>
           <td class="pointer">{{c.name}}</td>
           <td class="pointer">{{c.nameKana}} </td>
         </tr>

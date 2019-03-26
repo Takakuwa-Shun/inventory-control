@@ -18,7 +18,7 @@ export class ListUserComponent implements OnInit {
   public completeBtnType: string;
 
   public listUser: User[];
-  public csvListUser: object[] = [{
+  public csvListUser: User[] = [{
     uid: '担当者コード',
     displayName: '担当者名',
     email: 'メールアドレス',

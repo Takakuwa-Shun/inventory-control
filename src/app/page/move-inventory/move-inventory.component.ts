@@ -177,7 +177,6 @@ export class MoveInventoryComponent implements OnInit {
 
   public submit(): void {
     this.loading = true;
-    console.log(this.registerInventory);
     this.registerInventory.userId = this._loginUserData.uid;
     this.registerInventory.actionType = ActionType.move;
     this.registerInventory.actionDetail = `${this.selectedLocationBefore.name} → ${this.selectedLocationAfter.name}`;
@@ -188,7 +187,6 @@ export class MoveInventoryComponent implements OnInit {
     inventoryBefore.id = this._afStore.createId();
     inventoryBefore.locationId = this.selectedLocationBefore.id;
     inventoryBefore.addCount *= -1;
-    inventoryBefore.sumCount += inventoryBefore.addCount;
     inventoryBefore.locationCount = Object.assign({}, this.registerInventory.locationCount);
     inventoryBefore.locationCount[this.selectedLocationBefore.id] += inventoryBefore.addCount;
 
@@ -196,6 +194,9 @@ export class MoveInventoryComponent implements OnInit {
     inventoryAfter.locationId = this.selectedLocationAfter.id;
     inventoryAfter.locationCount = Object.assign({}, inventoryBefore.locationCount);
     inventoryAfter.locationCount[this.selectedLocationAfter.id] += inventoryAfter.addCount;
+
+    console.log(inventoryBefore);
+    console.log(inventoryAfter);
 
 
     this._inventoryService.moveInventory(inventoryBefore, inventoryAfter, this.selectType).subscribe(() => {

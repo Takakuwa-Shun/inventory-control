@@ -96,13 +96,13 @@ export class ListInventoryComponent implements OnInit {
       id: '在庫コード',
       targetId: '対象コード',
       targetName: '対象の名前',
-      locationId: '倉庫コード',
+      locationId: '倉庫名',
       actionType: '作業項目',
       actionDetail: '作業詳細',
       addCount: '数量',
-      sumCount: '数量合計',
+      sumCount: '全倉庫合計',
       date: '日付',
-      userId: '担当者コード',
+      userId: '担当者名',
       memo: '備考'
     }];
 
@@ -364,6 +364,14 @@ export class ListInventoryComponent implements OnInit {
       this._listLocation = res;
       this.listLocationForFilter = this.listLocationForFilter.concat(res);
       this._setListSelectedLocation();
+
+      // csvのため
+      const locationCountCsv = {};
+      for (const l of this._listLocation) {
+        locationCountCsv[l.id] = l.name;
+      }
+      this.csvListInventory[0]['locationCount'] = locationCountCsv;
+
       this._locationLoaded = true; 
       this._checkLoaded();
     }, (err) => {

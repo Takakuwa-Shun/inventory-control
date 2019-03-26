@@ -88,7 +88,7 @@
           </tr>
           <tr>
             <th scope="col">ボトル名</th>
-            <td>{{product.bottleName}}</td>
+            <td><a routerLink="/material/detail/bottle/{{product.bottleId}}">{{product.bottleName}}</a></td>
             <td>
               <div class="form-group">
                 <input
@@ -109,14 +109,20 @@
                 <div class="alert alert-danger" *ngIf="showBottleAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span class="badge badge-success">選択中</span>
-                <span class="auto-selected ml-2">{{registerProduct.bottleData.name }}</span>
+                <span *ngIf="!isBottleSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isBottleSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.bottleData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('bottle')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
               </div>
             </td>
           </tr>
           <tr>
             <th scope="col">カートン名</th>
-            <td>{{product.cartonName}}</td>
+            <td><a routerLink="/material/detail/carton/{{product.cartonId}}">{{product.cartonName}}</a></td>
             <td>
               <div class="form-group">
                 <input
@@ -137,14 +143,20 @@
                 <div class="alert alert-danger" *ngIf="showCartonAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span class="badge badge-success">選択中</span>
-                <span class="auto-selected ml-2">{{registerProduct.cartonData.name }}</span>
+                <span *ngIf="!isCartonSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isCartonSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.cartonData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('carton')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
               </div>
             </td>
           </tr>
           <tr>
             <th scope="col">ラベル名</th>
-            <td>{{product.labelName}}</td>
+            <td><a routerLink="/material/detail/label/{{product.labelId}}">{{product.labelName}}</a></td>
             <td>
               <div class="form-group">
                 <input
@@ -165,14 +177,20 @@
                 <div class="alert alert-danger" *ngIf="showLabelAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span class="badge badge-success">選択中</span>
-                <span class="auto-selected ml-2">{{registerProduct.labelData.name }}</span>
+                <span *ngIf="!isLabelSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isLabelSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.labelData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('label')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
               </div>
             </td>
           </tr>
           <tr>
             <th scope="col">トリガー名</th>
-            <td>{{product.triggerName}}</td>
+            <td><a routerLink="/material/detail/trigger/{{product.triggerId}}">{{product.triggerName}}</a></td>
             <td>
               <div class="form-group">
                 <input
@@ -193,14 +211,20 @@
                 <div class="alert alert-danger" *ngIf="showTriggerAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span class="badge badge-success">選択中</span>
-                <span class="auto-selected ml-2">{{registerProduct.triggerData.name }}</span>
+                <span *ngIf="!isTriggerSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isTriggerSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.triggerData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('trigger')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
               </div>
             </td>
           </tr>
           <tr>
             <th scope="col">詰め替え袋名</th>
-            <td>{{product.bagName}}</td>
+            <td><a routerLink="/material/detail/bag/{{product.bagId}}">{{product.bagName}}</a></td>
             <td>
               <div class="form-group">
                 <input
@@ -221,14 +245,20 @@
                 <div class="alert alert-danger" *ngIf="showBagAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span class="badge badge-success">選択中</span>
-                <span class="auto-selected ml-2">{{registerProduct.bagData.name }}</span>
+                <span *ngIf="!isBagSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isBagSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.bagData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('bag')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
               </div>
             </td>
           </tr>
           <tr>
             <th scope="col">得意先名</th>
-            <td>{{product.companyName}}</td>
+            <td><a routerLink="/company/detail/{{product.companyId}}">{{product.companyName}}</a></td>
             <td>
               <div class="form-group">
                 <input
@@ -249,8 +279,14 @@
                 <div class="alert alert-danger" *ngIf="showCompanyAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span class="badge badge-success">選択中</span>
-                <span class="auto-selected ml-2">{{registerProduct.companyData.name }}</span>
+                <span *ngIf="!isCompanySelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isCompanySelected">
+                  <span *ngIf="isCompanySelected" class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.companyData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('company')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
               </div>
             </td>
           </tr>

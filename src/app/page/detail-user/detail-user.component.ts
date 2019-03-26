@@ -123,7 +123,7 @@ export class DetailUserComponent implements OnInit {
       this.registerUser = Object.assign({}, this.user);
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 修正に失敗しました。';
+      this.completeBody = '※ 修正に失敗しました。一度ログアウトしてから再度お試し下さい';
       this.completeBtnType = 'btn-danger';
       this.openCompleteModal();
     });
@@ -164,7 +164,7 @@ export class DetailUserComponent implements OnInit {
 
     setTimeout(() =>{
       this.closeCompleteModal();
-    },3000);
+    },10000);
   };
 
   private closeCompleteModal(): void {

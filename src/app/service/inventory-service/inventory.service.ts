@@ -53,50 +53,62 @@ export class InventoryService {
       bottleLimitCount: Number, cartonLimitCount: Number, labelLimitCount: Number, triggerLimitCount: Number, bagLimitCount: Number, 
       ): Observable<void> {
 
-      // ボトルの在庫量チェック 
-      if (bottleInventory.sumCount < bottleLimitCount) {
-        this._emailService.alertFewMaterialInventory(bottleInventory.targetName, bottleInventory.sumCount);
-      }
-
-      // カートンの在庫量チェック 
-      if (cartonInventory.sumCount < cartonLimitCount) {
-        this._emailService.alertFewMaterialInventory(cartonInventory.targetName, cartonInventory.sumCount);
-      }
-
-      // ラベルの在庫量チェック 
-      if (labelInventory.sumCount < labelLimitCount) {
-        this._emailService.alertFewMaterialInventory(labelInventory.targetName, labelInventory.sumCount);
-      }
-
-      // トリガーの在庫量チェック 
-      if (triggerInventory.sumCount < triggerLimitCount) {
-        this._emailService.alertFewMaterialInventory(triggerInventory.targetName, triggerInventory.sumCount);
-      }
-
-      // 詰め替え袋の在庫量チェック 
-      if (bagInventory.sumCount < bagLimitCount) {
-        this._emailService.alertFewMaterialInventory(bagInventory.targetName, bagInventory.sumCount);
-      }
-
       const batch = this._afStore.firestore.batch();
 
-      const bottlePath = this._getCollectionPath(MaterialTypeEn.bo);
-      const cartonPath = this._getCollectionPath(MaterialTypeEn.ca);
-      const labelPath = this._getCollectionPath(MaterialTypeEn.la);
-      const triggerPath = this._getCollectionPath(MaterialTypeEn.tr);
-      const bagPath = this._getCollectionPath(MaterialTypeEn.ba);
+      if (bottleInventory !== null) {
+        const bottlePath = this._getCollectionPath(MaterialTypeEn.bo);
+        const refBottleInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(bottlePath).doc(bottleInventory.id);
+        batch.set(refBottleInventory, bottleInventory);
 
-      const refBottleInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(bottlePath).doc(bottleInventory.id);
-      const refCartonInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(cartonPath).doc(cartonInventory.id);
-      const refLabelInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(labelPath).doc(labelInventory.id);
-      const refTriggerInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(triggerPath).doc(triggerInventory.id);
-      const refBagInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(bagPath).doc(bagInventory.id);
+        // ボトルの在庫量チェック 
+        if (bottleInventory.sumCount < bottleLimitCount) {
+          this._emailService.alertFewMaterialInventory(bottleInventory.targetName, bottleInventory.sumCount);
+        }
+      }
 
-      batch.set(refBottleInventory, bottleInventory);
-      batch.set(refCartonInventory, cartonInventory);
-      batch.set(refLabelInventory, labelInventory);
-      batch.set(refTriggerInventory, triggerInventory);
-      batch.set(refBagInventory, bagInventory);
+      if (cartonInventory !== null) {
+        const cartonPath = this._getCollectionPath(MaterialTypeEn.ca);
+        const refCartonInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(cartonPath).doc(cartonInventory.id);
+        batch.set(refCartonInventory, cartonInventory);
+
+        // カートンの在庫量チェック 
+        if (cartonInventory.sumCount < cartonLimitCount) {
+          this._emailService.alertFewMaterialInventory(cartonInventory.targetName, cartonInventory.sumCount);
+        }
+      }
+
+      if (labelInventory !== null) {
+        const labelPath = this._getCollectionPath(MaterialTypeEn.la);
+        const refLabelInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(labelPath).doc(labelInventory.id);
+        batch.set(refLabelInventory, labelInventory);
+
+        // ラベルの在庫量チェック 
+        if (labelInventory.sumCount < labelLimitCount) {
+          this._emailService.alertFewMaterialInventory(labelInventory.targetName, labelInventory.sumCount);
+        }
+      }
+
+      if (triggerInventory !== null) {
+        const triggerPath = this._getCollectionPath(MaterialTypeEn.tr);
+        const refTriggerInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(triggerPath).doc(triggerInventory.id);
+        batch.set(refTriggerInventory, triggerInventory);
+
+        // トリガーの在庫量チェック 
+        if (triggerInventory.sumCount < triggerLimitCount) {
+          this._emailService.alertFewMaterialInventory(triggerInventory.targetName, triggerInventory.sumCount);
+        }
+      }
+
+      if (bagInventory !== null) {
+        const bagPath = this._getCollectionPath(MaterialTypeEn.ba);
+        const refBagInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(bagPath).doc(bagInventory.id);
+        batch.set(refBagInventory, bagInventory);
+
+        // 詰め替え袋の在庫量チェック 
+        if (bagInventory.sumCount < bagLimitCount) {
+          this._emailService.alertFewMaterialInventory(bagInventory.targetName, bagInventory.sumCount);
+        }
+      }
 
       return from(batch.commit());
     }

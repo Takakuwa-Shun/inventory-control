@@ -49,8 +49,6 @@ import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { faEye, faEyeSlash, faCaretSquareLeft, } from '@fortawesome/free-regular-svg-icons';
-import { faPrint, faFileCsv, faCaretLeft, } from '@fortawesome/free-solid-svg-icons';
 import { ResetPasswordComponent } from './page/reset-password/reset-password.component';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { PurchaseInventoryComponent } from './page/purchase-inventory/purchase-inventory.component';
@@ -62,6 +60,7 @@ import { RegisterMaterialFromFileComponent } from './page/register-material-from
 import { NotFoundComponent } from './page/not-found/not-found.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ImageCropperWrapperComponent } from './component/image-cropper-wrapper/image-cropper-wrapper.component';
+import { faPrint, faFileCsv, faCaretLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
   declarations: [
@@ -136,11 +135,9 @@ import { ImageCropperWrapperComponent } from './component/image-cropper-wrapper/
 export class AppModule { 
 
   constructor() {
-    library.add(faEye);
-    library.add(faEyeSlash);
     library.add(faPrint);
     library.add(faFileCsv);
-    library.add(faCaretSquareLeft);
     library.add(faCaretLeft);
+    library.add(faTimes);
   }
 }

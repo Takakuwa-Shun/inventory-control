@@ -4,6 +4,9 @@
   [showPrint]=false
   [showCsv]=false
   ></app-sub-header>
+  <div class="mb-3">
+    <img class="show-image img-thumbnail rounded mx-auto d-block img-fluid" [src]="imageSrc" alt="読み込みエラー">
+  </div>
   <form #purchaseInventoryForm="ngForm">
     <div class="form-group row">
       <label for="type" class="col-sm-2 col-form-label">資材タイプ</label>
@@ -54,9 +57,6 @@
           <span class="auto-selected ml-2">{{registerInventory.sumCount}}個</span>
         </div>
       </div>
-    </div>
-    <div class="mb-3">
-      <img class="show-image img-thumbnail rounded mx-auto d-block img-fluid" [src]="imageSrc" alt="読み込みエラー">
     </div>
     <div class="form-group row">
       <label for="addCount" class="col-sm-2 col-form-label">仕入れ個数</label>

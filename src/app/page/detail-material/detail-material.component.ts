@@ -85,6 +85,8 @@ export class DetailMaterialComponent implements OnInit {
   }
 
   createBody(){
+    const fileName = this._selectedImage ? this._selectedImage.name : '未選択';
+
     this.confirmBody = `
     <div class="container-fluid">
       <p>以下の内容で登録を修正しますか？</p>
@@ -110,7 +112,7 @@ export class DetailMaterialComponent implements OnInit {
       </div>
       <div class="row">
         <div class="col-4">画像</div>
-        <div class="col-8 pull-left">${this._selectedImage.name}</div>
+        <div class="col-8 pull-left">${fileName}</div>
       </div>
     </div>`;
   }

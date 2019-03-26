@@ -68,7 +68,7 @@ export function initDetailProduct(): DetailProduct {
         id: '',
         name: '',
         nameKana: '',
-        lot: null,
+        lot: 1,
         imageUrl: '',
         bottleData: bo,
         cartonData: ca,

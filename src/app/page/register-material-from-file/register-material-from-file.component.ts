@@ -150,8 +150,8 @@ export class RegisterMaterialFromFileComponent implements OnInit {
 
       const material: Material = {
         id: this._afStore.createId(),
-        name: arr[0],
-        nameKana: arr[1],
+        name: arr[0].trim(),
+        nameKana: arr[1].trim(),
         type: arr[2],
         limitCount: Number(arr[3]),
         imageUrl: ''

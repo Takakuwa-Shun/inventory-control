@@ -181,7 +181,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.bo:
         if (typeof data === 'string') {
           this.showBottleAlert = true;
-          this.isBottleSelected = false;
         } else {
           this.loading = true;
           this.showBottleAlert = false;
@@ -194,7 +193,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.ca:
         if (typeof data === 'string') {
           this.showCartonAlert = true;
-          this.isCartonSelected = false;
         } else {
           this.loading = true;
           this.showCartonAlert = false;
@@ -207,7 +205,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.la:
         if (typeof data === 'string') {
           this.showLabelAlert = true;
-          this.isLabelSelected = false;
         } else {
           this.loading = true;
           this.showLabelAlert = false;
@@ -220,7 +217,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.tr:
         if (typeof data === 'string') {
           this.showTriggerAlert = true;
-          this.isTriggerSelected = false;
         } else {
           this.loading = true;
           this.showTriggerAlert = false;
@@ -233,7 +229,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.ba:
         if (typeof data === 'string') {
           this.showBagAlert = true;
-          this.isBagSelected = false;
         } else {
           this.loading = true;
           this.showBagAlert = false;
@@ -253,7 +248,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.bo:
         if (typeof data === 'string') {
           this.showBottleLocationAlert = true;
-          this.isBottleLocationSelected = false;
         } else {
           this.selectedBottleLocation = data;
           this.showBottleLocationAlert = false;
@@ -264,7 +258,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.ca:
         if (typeof data === 'string') {
           this.showCartonLocationAlert = true;
-          this.isCartonLocationSelected = false;
         } else {
           this.selectedCartonLocation = data;
           this.showCartonLocationAlert = false;
@@ -275,7 +268,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.la:
         if (typeof data === 'string') {
           this.showLabelLocationAlert = true;
-          this.isLabelLocationSelected = false;
         } else {
           this.selectedLabelLocation = data;
           this.showLabelLocationAlert = false;
@@ -286,7 +278,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.tr:
         if (typeof data === 'string') {
           this.showTriggerLocationAlert = true;
-          this.isTriggerLocationSelected = false;
         } else {
           this.selectedTriggerLocation = data;
           this.showTriggerLocationAlert = false;
@@ -297,7 +288,6 @@ export class ManufactureInventoryComponent implements OnInit {
       case MaterialTypeJa.ba:
         if (typeof data === 'string') {
           this.showBagLocationAlert = true;
-          this.isBagLocationSelected = false;
         } else {
           this.selectedBagLocation = data;
           this.showBagLocationAlert = false;
@@ -310,6 +300,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   public confirmRegister() {
+    console.log(this.detailProduct);
     this.inputCount = Number(this.inputCount);
     if (this._isTimeoutError) {
       this.completeBody = '各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。';
@@ -346,46 +337,6 @@ export class ManufactureInventoryComponent implements OnInit {
           <div class="col-8 pull-left">${this.detailProduct.name}</div>
         </div>
         <div class="row">
-          <div class="col-4">使用ボトル名</div>
-          <div class="col-8 pull-left">${this.detailProduct.bottleData.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">使用カートン名</div>
-          <div class="col-8 pull-left">${this.detailProduct.cartonData.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">使用ラベル名</div>
-          <div class="col-8 pull-left">${this.detailProduct.labelData.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">使用トリガー名</div>
-          <div class="col-8 pull-left">${this.detailProduct.triggerData.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">使用詰め替え袋名</div>
-          <div class="col-8 pull-left">${this.detailProduct.bagData.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">ボトル倉庫</div>
-          <div class="col-8 pull-left">${this.selectedBottleLocation.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">カートン倉庫</div>
-          <div class="col-8 pull-left">${this.selectedCartonLocation.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">ラベル倉庫</div>
-          <div class="col-8 pull-left">${this.selectedLabelLocation.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">トリガー倉庫</div>
-          <div class="col-8 pull-left">${this.selectedTriggerLocation.name}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">詰め替え袋倉庫</div>
-          <div class="col-8 pull-left">${this.selectedBagLocation.name}</div>
-        </div>
-        <div class="row">
           <div class="col-4">製造・出荷個数</div>
           <div class="col-8 pull-left">${this.inputCount}</div>
         </div>
@@ -409,6 +360,51 @@ export class ManufactureInventoryComponent implements OnInit {
           <div class="col-4">日時</div>
           <div class="col-8 pull-left">${showDate}</div>
         </div>
+        <hr>
+        <div class="row">
+          <div class="col-4">使用ボトル名</div>
+          <div class="col-8 pull-left">${this.detailProduct.bottleData.name}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">ボトル倉庫</div>
+          <div class="col-8 pull-left">${this.selectedBottleLocation.name}</div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-4">使用カートン名</div>
+          <div class="col-8 pull-left">${this.detailProduct.cartonData.name}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">カートン倉庫</div>
+          <div class="col-8 pull-left">${this.selectedCartonLocation.name}</div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-4">使用ラベル名</div>
+          <div class="col-8 pull-left">${this.detailProduct.labelData.name}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">ラベル倉庫</div>
+          <div class="col-8 pull-left">${this.selectedLabelLocation.name}</div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-4">使用トリガー名</div>
+          <div class="col-8 pull-left">${this.detailProduct.triggerData.name}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">トリガー倉庫</div>
+          <div class="col-8 pull-left">${this.selectedTriggerLocation.name}</div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-4">使用詰め替え袋名</div>
+          <div class="col-8 pull-left">${this.detailProduct.bagData.name}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">詰め替え袋倉庫</div>
+          <div class="col-8 pull-left">${this.selectedBagLocation.name}</div>
+        </div>
       </div>`;
 
       this._openConfirmModal();
@@ -425,50 +421,65 @@ export class ManufactureInventoryComponent implements OnInit {
     inventory.actionType = ActionType.manufacture;
     inventory.actionDetail = `${this.detailProduct.name}の製造`;
 
-    const bottleInventory: Inventory = Object.assign({}, inventory);
-    bottleInventory.id = this._afStore.createId();
-    bottleInventory.targetId = this.detailProduct.bottleData.id;
-    bottleInventory.targetName = this.detailProduct.bottleData.name;
-    bottleInventory.locationId = this.selectedBottleLocation.id;
-    bottleInventory.sumCount = this.latestBottleInventory.sumCount + inventory.addCount;
-    bottleInventory.locationCount = Object.assign({}, this.latestBottleInventory.locationCount);
-    bottleInventory.locationCount[bottleInventory.locationId] += inventory.addCount;
+    let bottleInventory: Inventory = null;
+    if (this.isBottleSelected) {
+      bottleInventory = Object.assign({}, inventory);
+      bottleInventory.id = this._afStore.createId();
+      bottleInventory.targetId = this.detailProduct.bottleData.id;
+      bottleInventory.targetName = this.detailProduct.bottleData.name;
+      bottleInventory.locationId = this.selectedBottleLocation.id;
+      bottleInventory.sumCount = this.latestBottleInventory.sumCount + inventory.addCount;
+      bottleInventory.locationCount = Object.assign({}, this.latestBottleInventory.locationCount);
+      bottleInventory.locationCount[bottleInventory.locationId] += inventory.addCount;
+    }
 
-    const cartonInventory: Inventory = Object.assign({}, inventory);
-    cartonInventory.id = this._afStore.createId();
-    cartonInventory.targetId = this.detailProduct.cartonData.id;
-    cartonInventory.targetName = this.detailProduct.cartonData.name;
-    cartonInventory.locationId = this.selectedCartonLocation.id;
-    cartonInventory.sumCount = this.latestCartonInventory.sumCount + inventory.addCount;
-    cartonInventory.locationCount = Object.assign({}, this.latestCartonInventory.locationCount);
-    cartonInventory.locationCount[cartonInventory.locationId] += inventory.addCount;
+    let cartonInventory: Inventory = null;
+    if (this.isCartonSelected) {
+      cartonInventory = Object.assign({}, inventory);
+      cartonInventory.id = this._afStore.createId();
+      cartonInventory.targetId = this.detailProduct.cartonData.id;
+      cartonInventory.targetName = this.detailProduct.cartonData.name;
+      cartonInventory.locationId = this.selectedCartonLocation.id;
+      cartonInventory.sumCount = this.latestCartonInventory.sumCount + inventory.addCount;
+      cartonInventory.locationCount = Object.assign({}, this.latestCartonInventory.locationCount);
+      cartonInventory.locationCount[cartonInventory.locationId] += inventory.addCount;
+    }
 
-    const labelInventory: Inventory = Object.assign({}, inventory);
-    labelInventory.id = this._afStore.createId();
-    labelInventory.targetId = this.detailProduct.labelData.id;
-    labelInventory.targetName = this.detailProduct.labelData.name;
-    labelInventory.locationId = this.selectedLabelLocation.id;
-    labelInventory.sumCount = this.latestLabelInventory.sumCount + inventory.addCount;
-    labelInventory.locationCount = Object.assign({}, this.latestLabelInventory.locationCount);
-    labelInventory.locationCount[labelInventory.locationId] += inventory.addCount;
+    let labelInventory: Inventory = null;
+    if (this.isLabelSelected) {
+      labelInventory = Object.assign({}, inventory);
+      labelInventory.id = this._afStore.createId();
+      labelInventory.targetId = this.detailProduct.labelData.id;
+      labelInventory.targetName = this.detailProduct.labelData.name;
+      labelInventory.locationId = this.selectedLabelLocation.id;
+      labelInventory.sumCount = this.latestLabelInventory.sumCount + inventory.addCount;
+      labelInventory.locationCount = Object.assign({}, this.latestLabelInventory.locationCount);
+      labelInventory.locationCount[labelInventory.locationId] += inventory.addCount;
+    }
 
-    const triggerInventory: Inventory = Object.assign({}, inventory);
-    triggerInventory.id = this._afStore.createId();
-    triggerInventory.targetId = this.detailProduct.triggerData.id;
-    triggerInventory.targetName = this.detailProduct.triggerData.name;
-    triggerInventory.locationId = this.selectedTriggerLocation.id;
-    triggerInventory.sumCount = this.latestTriggerInventory.sumCount + inventory.addCount;
-    triggerInventory.locationCount = Object.assign({}, this.latestTriggerInventory.locationCount);
-    triggerInventory.locationCount[triggerInventory.locationId] += inventory.addCount;
+    let triggerInventory: Inventory = null;
+    if (this.isTriggerSelected) {
+      triggerInventory = Object.assign({}, inventory);
+      triggerInventory.id = this._afStore.createId();
+      triggerInventory.targetId = this.detailProduct.triggerData.id;
+      triggerInventory.targetName = this.detailProduct.triggerData.name;
+      triggerInventory.locationId = this.selectedTriggerLocation.id;
+      triggerInventory.sumCount = this.latestTriggerInventory.sumCount + inventory.addCount;
+      triggerInventory.locationCount = Object.assign({}, this.latestTriggerInventory.locationCount);
+      triggerInventory.locationCount[triggerInventory.locationId] += inventory.addCount;
+    }
     
-    const bagInventory: Inventory = Object.assign({}, inventory);
-    bagInventory.id = this._afStore.createId();
-    bagInventory.targetId = this.detailProduct.bagData.id;
-    bagInventory.targetName = this.detailProduct.bagData.name;
-    bagInventory.locationId = this.selectedBagLocation.id;
-    bagInventory.sumCount = this.latestBagInventory.sumCount + inventory.addCount;
-    bagInventory.locationCount = Object.assign({}, this.latestBagInventory.locationCount);
-    bagInventory.locationCount[bagInventory.locationId] += inventory.addCount;
+    let bagInventory: Inventory = null;
+    if (this.isBagSelected) {
+      bagInventory = Object.assign({}, inventory);
+      bagInventory.id = this._afStore.createId();
+      bagInventory.targetId = this.detailProduct.bagData.id;
+      bagInventory.targetName = this.detailProduct.bagData.name;
+      bagInventory.locationId = this.selectedBagLocation.id;
+      bagInventory.sumCount = this.latestBagInventory.sumCount + inventory.addCount;
+      bagInventory.locationCount = Object.assign({}, this.latestBagInventory.locationCount);
+      bagInventory.locationCount[bagInventory.locationId] += inventory.addCount;
+    }
 
     const boLimit = Number(this.detailProduct.bottleData.limitCount);
     const caLimit = Number(this.detailProduct.cartonData.limitCount);
@@ -528,23 +539,75 @@ export class ManufactureInventoryComponent implements OnInit {
       this.detailProduct.companyData.id = data.companyId;
       this.detailProduct.companyData.name = data.companyName;
 
-      this.isBottleSelected = true;
-      this.isCartonSelected = true;
-      this.isLabelSelected = true;
-      this.isTriggerSelected = true;
-      this.isBagSelected = true;
+      if (this.detailProduct.bottleData.id === null) {
+        this._bottleLoaded = true;
 
-      $('#bottle').val(data.bottleName);
-      $('#carton').val(data.cartonName);
-      $('#label').val(data.labelName);
-      $('#trigger').val(data.triggerName);
-      $('#bag').val(data.bagName);
+        this.isBottleSelected = false;
+        $('#bottle').val("");
+        this.selectedBottleLocation = initLocation();
+        this.isBottleLocationSelected = false;
+        $('#bottle-location').val("");
+      } else {
+        this.isBottleSelected = true;
+        $('#bottle').val(data.bottleName);
+        this._fetchLatestBottleInventory(true);
+      }
 
-      this._fetchLatestBottleInventory(true);
-      this._fetchLatestCartonInventory(true);
-      this._fetchLatestLabelInventory(true);
-      this._fetchLatestTriggerInventory(true);
-      this._fetchLatestBagInventory(true);
+      if (this.detailProduct.cartonData.id === null) {
+        this._cartonLoaded = true;
+
+        this.isCartonSelected = false;
+        $('#carton').val("");
+        this.selectedCartonLocation = initLocation();
+        this.isCartonLocationSelected = false;
+        $('#carton-location').val("");
+      } else {
+        this.isCartonSelected = true;
+        $('#carton').val(data.cartonName);
+        this._fetchLatestCartonInventory(true);
+      }
+
+      if (this.detailProduct.labelData.id === null) {
+        this._labelLoaded = true;
+
+        this.isLabelSelected = false;
+        $('#label').val("");
+        this.selectedLabelLocation = initLocation();
+        this.isLabelLocationSelected = false;
+        $('#label-location').val("");
+      } else {
+        this.isLabelSelected = true;
+        $('#label').val(data.labelName);
+        this._fetchLatestLabelInventory(true);
+      }
+
+      if (this.detailProduct.triggerData.id === null) {
+        this._triggerLoaded = true;
+
+        this.isTriggerSelected = false;
+        $('#trigger').val("");
+        this.selectedTriggerLocation = initLocation();
+        this.isTriggerLocationSelected = false;
+        $('#trigger-location').val("");
+      } else {
+        this.isTriggerSelected = true;
+        $('#trigger').val(data.triggerName);
+        this._fetchLatestTriggerInventory(true);
+      }
+
+      if (this.detailProduct.bagData.id === null) {
+        this._bagLoaded = true;
+
+        this.isBagSelected = false;
+        $('#bag').val("");
+        this.selectedBagLocation = initLocation();
+        this.isBagLocationSelected = false;
+        $('#bag-location').val("");
+      } else {
+        this.isBagSelected = true;
+        $('#bag').val(data.bagName);
+        this._fetchLatestBagInventory(true);
+      }
 
       if (data.imageUrl) {
         this._firebaseStorageService.fecthDownloadUrl(data.imageUrl).subscribe((res: string) => {
@@ -576,12 +639,16 @@ export class ManufactureInventoryComponent implements OnInit {
           this.latestBottleInventory.locationCount[location.id] = 0
         }
       }
+
+      this.selectLocation(this.locationList[0], MaterialTypeEn.bo);
+      $('#bottle-location').val(this.selectedBottleLocation.name);
+
       if (isFirst) {
-        this.selectLocation(this.locationList[0], MaterialTypeEn.bo);
-        $('#bottle-location').val(this.selectedBottleLocation.name);
         this._bottleLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
+        this.loading = false;
+      }
 
       //  timerをセットする
       clearTimeout(this._timer);
@@ -590,8 +657,6 @@ export class ManufactureInventoryComponent implements OnInit {
         this._isTimeoutError = true;
       }, 3 * 60 * 1000);
 
-        this.loading = false;
-      }
     }, (err) => {
       console.error(err);
       this.completeBody = '※ ロードに失敗しました。';
@@ -610,12 +675,16 @@ export class ManufactureInventoryComponent implements OnInit {
           this.latestCartonInventory.locationCount[location.id] = 0
         }
       }
+
+      this.selectLocation(this.locationList[0], MaterialTypeEn.ca);
+      $('#carton-location').val(this.selectedCartonLocation.name);
+
       if (isFirst) {
-        this.selectLocation(this.locationList[0], MaterialTypeEn.ca);
-        $('#carton-location').val(this.selectedCartonLocation.name);
         this._cartonLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
+        this.loading = false;
+      }
 
        //  timerをセットする
        clearTimeout(this._timer);
@@ -624,8 +693,6 @@ export class ManufactureInventoryComponent implements OnInit {
          this._isTimeoutError = true;
        }, 3 * 60 * 1000);
 
-        this.loading = false;
-      }
     }, (err) => {
       console.error(err);
       this.completeBody = '※ ロードに失敗しました。';
@@ -644,12 +711,16 @@ export class ManufactureInventoryComponent implements OnInit {
           this.latestLabelInventory.locationCount[location.id] = 0
         }
       }
+
+      this.selectLocation(this.locationList[0], MaterialTypeEn.la);
+      $('#label-location').val(this.selectedLabelLocation.name);
+
       if (isFirst) {
-        this.selectLocation(this.locationList[0], MaterialTypeEn.la);
-        $('#label-location').val(this.selectedLabelLocation.name);
         this._labelLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
+        this.loading = false;
+      }
 
       //  timerをセットする
       clearTimeout(this._timer);
@@ -658,8 +729,6 @@ export class ManufactureInventoryComponent implements OnInit {
         this._isTimeoutError = true;
       }, 3 * 60 * 1000);
 
-        this.loading = false;
-      }
     }, (err) => {
       console.error(err);
       this.completeBody = '※ ロードに失敗しました。';
@@ -678,12 +747,16 @@ export class ManufactureInventoryComponent implements OnInit {
           this.latestTriggerInventory.locationCount[location.id] = 0
         }
       }
+
+      this.selectLocation(this.locationList[0], MaterialTypeEn.tr);
+      $('#trigger-location').val(this.selectedTriggerLocation.name);
+
       if (isFirst) {
-        this.selectLocation(this.locationList[0], MaterialTypeEn.tr);
-        $('#trigger-location').val(this.selectedTriggerLocation.name);
         this._triggerLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
+        this.loading = false;
+      }
 
       //  timerをセットする
       clearTimeout(this._timer);
@@ -692,8 +765,6 @@ export class ManufactureInventoryComponent implements OnInit {
         this._isTimeoutError = true;
       }, 3 * 60 * 1000);
 
-        this.loading = false;
-      }
     }, (err) => {
       console.error(err);
       this.completeBody = '※ ロードに失敗しました。';
@@ -712,12 +783,16 @@ export class ManufactureInventoryComponent implements OnInit {
           this.latestBagInventory.locationCount[location.id] = 0
         }
       }
+
+      this.selectLocation(this.locationList[0], MaterialTypeEn.ba);
+      $('#bag-location').val(this.selectedBagLocation.name);
+
       if (isFirst) {
-        this.selectLocation(this.locationList[0], MaterialTypeEn.ba);
-        $('#bag-location').val(this.selectedBagLocation.name);
         this._bagLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
+        this.loading = false;
+      }
 
       //  timerをセットする
       clearTimeout(this._timer);
@@ -726,8 +801,6 @@ export class ManufactureInventoryComponent implements OnInit {
         this._isTimeoutError = true;
       }, 3 * 60 * 1000);
 
-        this.loading = false;
-      }
     }, (err) => {
       console.error(err);
       this.completeBody = '※ ロードに失敗しました。';
@@ -893,7 +966,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
     setTimeout(() =>{
       this._closeCompleteModal();
-    },10000);
+    },20000);
   };
 
   private _closeCompleteModal(): void {

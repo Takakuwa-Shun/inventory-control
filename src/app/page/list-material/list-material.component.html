@@ -6,27 +6,29 @@
   [csvData]="csvListMaterial"
   [csvFileName]="selectedMaterilalNameJa"
   ></app-sub-header>
-  <ng-container *ngFor="let m of materials; index as i">
-    <div class="form-check form-check-inline">
-      <input
-        type="radio"
-        name="material"
-        id="materials{{i}}"
-        class="form-check-input"
-        [(ngModel)]="selectedMaterilal"
-        [value]="m.value"
-        [checked]="selectedMaterilal == m.value"
-        (change)="changeMaterial(m.value)">
-      <label class="form-check-label pointer" for="materials{{i}}">{{m.name}}</label>
-    </div>
-  </ng-container>
-
+  <div class="print-hidden">
+    <ng-container *ngFor="let m of materials; index as i">
+      <div class="form-check form-check-inline">
+        <input
+          type="radio"
+          name="material"
+          id="materials{{i}}"
+          class="form-check-input"
+          [(ngModel)]="selectedMaterilal"
+          [value]="m.value"
+          [checked]="selectedMaterilal == m.value"
+          (change)="changeMaterial(m.value)">
+        <label class="form-check-label pointer" for="materials{{i}}">{{m.name}}</label>
+      </div>
+    </ng-container>
+    <hr>
+    <p>列をクリックすると、そのデータの修正・削除を行う画面に遷移します。</p>
+  </div>
   <div class="table-responsive">
     <table class="table table-sm table-hover">
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">{{titleListMaterial[0].id}}</th>
           <th scope="col">{{titleListMaterial[0].name}}</th>
           <th scope="col">{{titleListMaterial[0].nameKana}}</th>
           <th scope="col">{{titleListMaterial[0].type}}</th>
@@ -36,7 +38,6 @@
       <tbody>
         <tr *ngFor="let m of listMaterial; let i = index" (click)="goDetail(m.id)">
           <th class="pointer" scope="row">{{i+1}}</th>
-          <td class="pointer">{{m.id}}</td>
           <td class="pointer">{{m.name}}</td>
           <td class="pointer">{{m.nameKana}}</td>
           <td class="pointer">{{m.type}}</td>

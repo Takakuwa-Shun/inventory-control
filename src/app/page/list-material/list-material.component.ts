@@ -49,31 +49,33 @@ export class ListMaterialComponent implements OnInit {
     this.fetchMaterialLists(this.selectedMaterilal);
   }
 
+  private _setMaterialNameJa(): void {
+    switch (this.selectedMaterilal) {
+      case this.materials[0].value:
+        this.selectedMaterilalNameJa = this.materials[0].name;
+        break;
+      case this.materials[1].value:
+        this.selectedMaterilalNameJa = this.materials[1].name;
+        break;
+      case this.materials[2].value:
+        this.selectedMaterilalNameJa = this.materials[2].name;
+        break;
+      case this.materials[3].value:
+        this.selectedMaterilalNameJa = this.materials[3].name;
+        break;
+      case this.materials[4].value:
+        this.selectedMaterilalNameJa = this.materials[4].name;
+        break;
+      default:
+        this.selectedMaterilalNameJa = '資材一覧';
+        break;
+    }
+  }
+
   private filterInit(): void {
     if (this.localStorage.getItem('selectedMaterilal')) {
       this.selectedMaterilal = this.localStorage.getItem('selectedMaterilal');
-
-      switch (this.selectedMaterilal) {
-        case this.materials[0].value:
-          this.selectedMaterilalNameJa = this.materials[0].name;
-          break;
-        case this.materials[1].value:
-          this.selectedMaterilalNameJa = this.materials[1].name;
-          break;
-        case this.materials[2].value:
-          this.selectedMaterilalNameJa = this.materials[2].name;
-          break;
-        case this.materials[3].value:
-          this.selectedMaterilalNameJa = this.materials[3].name;
-          break;
-        case this.materials[4].value:
-          this.selectedMaterilalNameJa = this.materials[4].name;
-          break;
-        default:
-          this.selectedMaterilalNameJa = '資材一覧';
-          break;
-      }
-
+      this._setMaterialNameJa();
     } else {
       this.selectedMaterilal = this.materials[0].value;
       this.selectedMaterilalNameJa = this.materials[0].name;
@@ -97,6 +99,7 @@ export class ListMaterialComponent implements OnInit {
   changeMaterial(type: string){
     this.loading = true;
     this.selectedMaterilal = type;
+    this._setMaterialNameJa();
     this.listMaterial = [];
     this.fetchMaterialLists(this.selectedMaterilal);
   }

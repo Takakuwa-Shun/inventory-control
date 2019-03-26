@@ -33,7 +33,6 @@ export class RegisterProductComponent implements OnInit {
   public bagLists: Material[];
   public companyLists: Company[];
 
-  public isValidAutoInput: boolean;
   public isBagSelected: boolean;
   public isBottleSelected: boolean;
   public isCartonSelected: boolean;
@@ -76,6 +75,40 @@ export class RegisterProductComponent implements OnInit {
   }
 
   createBody(){
+    const fileName = this._selectedImage ? this._selectedImage.name : '未選択';
+
+    if (this.registerProduct.bottleData.id === '') {
+      this.registerProduct.bottleData.id = null;
+      this.registerProduct.bottleData.name = '-';
+    }
+
+    if (this.registerProduct.cartonData.id === '') {
+      this.registerProduct.cartonData.id = null;
+      this.registerProduct.cartonData.name = '-';
+    }
+
+    if (this.registerProduct.labelData.id === '') {
+      this.registerProduct.labelData.id = null;
+      this.registerProduct.labelData.name = '-';
+    }
+
+    if (this.registerProduct.triggerData.id === '') {
+      this.registerProduct.triggerData.id = null;
+      this.registerProduct.triggerData.name = '-';
+    }
+
+    if (this.registerProduct.bagData.id === '') {
+      this.registerProduct.bagData.id = null;
+      this.registerProduct.bagData.name = '-';
+    }
+
+    if (this.registerProduct.companyData.id === '') {
+      this.registerProduct.companyData.id = null;
+      this.registerProduct.companyData.name = '-';
+    }
+
+    console.log(this.registerProduct);
+
     this.confirmBody = `
     <div class="container-fluid">
       <p>以下の内容で登録してもよろしいでしょうか？</p>
@@ -117,7 +150,7 @@ export class RegisterProductComponent implements OnInit {
       </div>
       <div class="row">
         <div class="col-4">画像</div>
-        <div class="col-8 pull-left">>${this._selectedImage.name}</div>
+        <div class="col-8 pull-left">${fileName}</div>
       </div>
     </div>`;
   }
@@ -191,8 +224,6 @@ export class RegisterProductComponent implements OnInit {
     this.showBagAlert = false;
     this.showCompanyAlert = false;
 
-    this.checkError();
-
     $('#bottle').val("");
     $('#carton').val("");
     $('#label').val("");
@@ -218,7 +249,6 @@ export class RegisterProductComponent implements OnInit {
           this.showBottleAlert = false;
           this.registerProduct.bottleData = data; 
           this.isBottleSelected = true;
-          this.checkError();
         }
         break;
       case MaterialTypeEn.ca:
@@ -229,7 +259,6 @@ export class RegisterProductComponent implements OnInit {
           this.showCartonAlert = false;
           this.registerProduct.cartonData = data; 
           this.isCartonSelected = true;
-          this.checkError();
           break;
         }
       case MaterialTypeEn.la:
@@ -240,7 +269,6 @@ export class RegisterProductComponent implements OnInit {
           this.showLabelAlert = false;
           this.registerProduct.labelData = data; 
           this.isLabelSelected = true;
-          this.checkError();
         }
         break;
       case MaterialTypeEn.tr:
@@ -251,7 +279,6 @@ export class RegisterProductComponent implements OnInit {
           this.showTriggerAlert = false;
           this.registerProduct.triggerData = data; 
           this.isTriggerSelected = true;
-          this.checkError();
         }
         break;
       case MaterialTypeEn.ba:
@@ -262,7 +289,6 @@ export class RegisterProductComponent implements OnInit {
           this.showBagAlert = false;
           this.registerProduct.bagData = data; 
           this.isBagSelected = true;
-          this.checkError();
         }
         break;
       case 'company':
@@ -273,7 +299,6 @@ export class RegisterProductComponent implements OnInit {
           this.showCompanyAlert = false;
           this.registerProduct.companyData = data; 
           this.isCompanySelected = true;
-          this.checkError();
         }
         break;
       default:
@@ -365,15 +390,6 @@ export class RegisterProductComponent implements OnInit {
     if (this._bottleLoaded && this._cartonLoaded && this._labelLoaded && this._triggerLoaded && this._bagLoaded && this._companyLoaded) {
       this.loading = false;
     }
-  }
-
-  private checkError(): void {
-    this.isValidAutoInput = this.isBottleSelected &&
-                    this.isCartonSelected && 
-                    this.isLabelSelected &&
-                    this.isTriggerSelected &&
-                    this.isBagSelected &&
-                    this.isCompanySelected;
   }
 
   private openCompleteModal(): void {

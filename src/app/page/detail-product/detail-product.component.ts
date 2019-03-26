@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
-import { Company } from './../../model/company';
+import { Company, initCompany } from './../../model/company';
 import { Product, DetailProduct, convertDetailProductToProduct, initDetailProduct } from './../../model/product';
-import { Material } from './../../model/material';
+import { Material, initMaterial } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from './../../service/material-service/material.service';
 import { CompanyService } from './../../service/company-service/company.service';
@@ -40,6 +40,13 @@ export class DetailProductComponent implements OnInit {
   public showTriggerAlert: boolean = false;
   public showBagAlert: boolean = false;
   public showCompanyAlert: boolean = false;
+
+  public isBagSelected: boolean = false;
+  public isBottleSelected: boolean = false;
+  public isCartonSelected: boolean = false;
+  public isLabelSelected: boolean = false;
+  public isTriggerSelected: boolean = false;
+  public isCompanySelected: boolean = false;
 
   public product: Product;
   public registerProduct: DetailProduct;
@@ -160,18 +167,55 @@ export class DetailProductComponent implements OnInit {
     const productId = this.route.snapshot.paramMap.get('id');
     this.productService.fetchProductById(productId).subscribe((res: Product) => {
       this.product = res;
+
+      let bottleData: Material = initMaterial();
+      if (this.product.bottleId !== null) {
+        bottleData = this.bottleLists.filter(val => val.id === this.product.bottleId)[0];
+        this.isBottleSelected = true;
+      }
+
+      let cartonData: Material = initMaterial();
+      if (this.product.cartonId !== null) {
+        cartonData = this.cartonLists.filter(val => val.id === this.product.cartonId)[0];
+        this.isCartonSelected = true;
+      }
+
+      let labelData: Material = initMaterial();
+      if (this.product.labelId !== null) {
+        labelData = this.labelLists.filter(val => val.id === this.product.labelId)[0];
+        this.isLabelSelected = true;
+      }
+
+      let triggerData: Material = initMaterial();
+      if (this.product.triggerId !== null) {
+        triggerData = this.triggerLists.filter(val => val.id === this.product.triggerId)[0];
+        this.isTriggerSelected = true;
+      }
+
+      let bagData: Material = initMaterial();
+      if (this.product.bagId !== null) {
+        bagData = this.bagLists.filter(val => val.id === this.product.bagId)[0];
+        this.isBagSelected = true;
+      }
+
+      let companyData: Company = initCompany();
+      if (this.product.companyId !== null) {
+        companyData = this.companyLists.filter(val => val.id === this.product.companyId)[0];
+        this.isCompanySelected = true;
+      }
+
       this.registerProduct = {
         id: this.product.id,
         name: this.product.name,
         nameKana: this.product.nameKana,
         lot: this.product.lot,
         imageUrl: this.product.imageUrl,
-        bottleData: this.bottleLists.filter(val => val.id === this.product.bottleId)[0],
-        cartonData: this.cartonLists.filter(val => val.id === this.product.cartonId)[0],
-        labelData: this.labelLists.filter(val => val.id === this.product.labelId)[0],
-        triggerData: this.triggerLists.filter(val => val.id === this.product.triggerId)[0],
-        bagData: this.bagLists.filter(val => val.id === this.product.bagId)[0],
-        companyData: this.companyLists.filter(val => val.id === this.product.companyId)[0],
+        bottleData: bottleData,
+        cartonData: cartonData,
+        labelData: labelData,
+        triggerData: triggerData,
+        bagData: bagData,
+        companyData: companyData,
       }
 
       if (this.product.imageUrl !== '') {
@@ -189,6 +233,38 @@ export class DetailProductComponent implements OnInit {
   }
 
   createBody(){
+    const fileName = this._selectedImage ? this._selectedImage.name : '未選択';
+
+    if (this.registerProduct.bottleData.id === '') {
+      this.registerProduct.bottleData.id = null;
+      this.registerProduct.bottleData.name = '-';
+    }
+
+    if (this.registerProduct.cartonData.id === '') {
+      this.registerProduct.cartonData.id = null;
+      this.registerProduct.cartonData.name = '-';
+    }
+
+    if (this.registerProduct.labelData.id === '') {
+      this.registerProduct.labelData.id = null;
+      this.registerProduct.labelData.name = '-';
+    }
+
+    if (this.registerProduct.triggerData.id === '') {
+      this.registerProduct.triggerData.id = null;
+      this.registerProduct.triggerData.name = '-';
+    }
+
+    if (this.registerProduct.bagData.id === '') {
+      this.registerProduct.bagData.id = null;
+      this.registerProduct.bagData.name = '-';
+    }
+
+    if (this.registerProduct.companyData.id === '') {
+      this.registerProduct.companyData.id = null;
+      this.registerProduct.companyData.name = '-';
+    }
+
     this.confirmBody = `
     <div class="container-fluid">
       <p>以下の内容で登録を修正しますか？</p>
@@ -234,7 +310,7 @@ export class DetailProductComponent implements OnInit {
       </div>
       <div class="row">
         <div class="col-4">画像</div>
-        <div class="col-8 pull-left">>${this._selectedImage.name}</div>
+        <div class="col-8 pull-left">>${fileName}</div>
       </div>
     </div>`;
   }
@@ -353,6 +429,49 @@ export class DetailProductComponent implements OnInit {
     }
   }
 
+  public cancelMaterialSelected(type: string) {
+    switch(type){
+      case MaterialTypeEn.bo:
+      case MaterialTypeJa.bo:
+        this.registerProduct.bottleData = initMaterial();
+        this.isBottleSelected = false;
+        $('#bottle').val("");
+        break;
+      case MaterialTypeEn.ca:
+      case MaterialTypeJa.ca:
+        this.registerProduct.cartonData = initMaterial();
+        this.isCartonSelected = false;
+        $('#carton').val("");
+        break;
+      case MaterialTypeEn.la:
+      case MaterialTypeJa.la:
+        this.registerProduct.labelData = initMaterial();
+        this.isLabelSelected = false;
+        $('#label').val("");
+        break;
+      case MaterialTypeEn.tr:
+      case MaterialTypeJa.tr:
+        this.registerProduct.triggerData = initMaterial();
+        this.isTriggerSelected = false;
+        $('#trigger').val("");
+        break;
+      case MaterialTypeEn.ba:
+      case MaterialTypeJa.ba:
+        this.registerProduct.bagData = initMaterial();
+        this.isBagSelected = false;
+        $('#bag').val("");
+        break;
+      case 'company':
+      case '得意先':
+        this.registerProduct.companyData = initCompany();
+        this.isCompanySelected = false;
+        $('company').val("");
+        break;
+      default:
+        console.error('typeおかしいよ？ : ' + type);
+    }
+  }
+
   autocompleListFormatter = (data: any) => {
     return `<span>${data.name}</span>`;
   }
@@ -366,6 +485,7 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.showBottleAlert = false;
           this.registerProduct.bottleData = data;
+          this.isBottleSelected = true;
         }
         break;
       case MaterialTypeEn.ca:
@@ -375,6 +495,7 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.showCartonAlert = false;
           this.registerProduct.cartonData = data;
+          this.isCartonSelected = true;
           break;
         }
       case MaterialTypeEn.la:
@@ -384,6 +505,7 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.showLabelAlert = false;
           this.registerProduct.labelData = data;
+          this.isLabelSelected = true;
         }
         break;
       case MaterialTypeEn.tr:
@@ -393,6 +515,7 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.showTriggerAlert = false;
           this.registerProduct.triggerData = data;
+          this.isTriggerSelected = true;
         }
         break;
       case MaterialTypeEn.ba:
@@ -402,6 +525,7 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.showBagAlert = false;
           this.registerProduct.bagData = data;
+          this.isBagSelected = true;
         }
         break;
       case 'company':
@@ -411,6 +535,7 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.showCompanyAlert = false;
           this.registerProduct.companyData = data; 
+          this.isCompanySelected = true;
         }
         break;
       default:

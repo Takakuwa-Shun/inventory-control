@@ -3,6 +3,7 @@ import { AuthService } from './../../service/auth-service/auth.service';
 import { UserService } from 'src/app/service/user-service/user.service';
 import { User } from './../../model/user';
 import { Router } from '@angular/router';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 interface Login {
@@ -17,17 +18,13 @@ interface Login {
 })
 export class LoginComponent implements OnInit {
 
-  public loading = false;
-
   public login: Login;
-  
-  public completeBody: string; 
-  public completeBtnType: string;
 
   constructor(
     private _router: Router,
     private _authService: AuthService,
     private _userService:  UserService,
+    private _valueShareService: ValueShareService,
     ) { }
 
   ngOnInit() {
@@ -38,7 +35,7 @@ export class LoginComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this._authService.login(this.login.email, this.login.password)
       .subscribe((credential: firebase.auth.UserCredential) => {
         this._userService.fetchDetailUser(credential.user.uid).subscribe((res: User) => {
@@ -46,45 +43,25 @@ export class LoginComponent implements OnInit {
             if (res.email !== credential.user.email) {
               res.email = credential.user.email;
               this._userService.saveUser(res).subscribe(() =>{
-                this.loading = false;
+                this._valueShareService.setLoading(false);;
                 this._router.navigate(['/inventory/list']);
               },(err) => {
                 console.error(err);
-                this.completeBody = '※ ログインには成功しましたが、担当者の登録データに誤りがあります。自分の担当者データを更新して下さい';
-                this.completeBtnType = 'btn-danger';
-                this.openCompleteModal();
+                this._valueShareService.setCompleteModal('※ ログインには成功しましたが、担当者の登録データに誤りがあります。自分の担当者データを更新して下さい', 20000);
 
                 setTimeout(() => {
                   this._router.navigate(['/inventory/list']);
                 }, 4000);
               });
             } else {
-              this.loading = false;
+              this._valueShareService.setLoading(false);;
               this._router.navigate(['/inventory/list']);
             }
           }
         });
       },(err) => {
         console.log(err);
-        this.completeBody = '※ ログインに失敗しました。';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ ログインに失敗しました。', 5000);
       });
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

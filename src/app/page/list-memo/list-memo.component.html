@@ -5,7 +5,8 @@
   [showCsv]=true
   [csvData]="csvListMemo"
   ></app-sub-header>
-  <form #memoForm="ngForm">
+  <div class="print-hidden">
+    <form #memoForm="ngForm">
       <div class="form-group row">
         <label for="content" class="col-sm-1 col-form-label">備考追加</label>
         <div class="col-sm-10">
@@ -32,22 +33,21 @@
           [disabled]="!(memoForm.form.valid) || editNow">登録</button>
         </div>
       </div>
-  </form>
+    </form>
+  </div>
   <div class="table-responsive">
     <table class="table table-sm">
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">{{csvTitleMemo[0].id}}</th>
           <th scope="col" class="word-break">{{csvTitleMemo[0].content}}</th>
-          <th scope="col">編集</th>
-          <th scope="col">削除</th>
+          <th class="print-hidden" scope="col">編集</th>
+          <th class="print-hidden" scope="col">削除</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let m of listMemo; let i = index">
           <th scope="row">{{i+1}}</th>
-          <td>{{m.id}}</td>
           <td>
             <span *ngIf="m.doEdit; else noEdit">
               <input
@@ -60,7 +60,7 @@
             </span>
             <ng-template #noEdit>{{m.content}}</ng-template>
           </td>
-          <td>
+          <td class="print-hidden" >
             <span *ngIf="m.doEdit; else noEditBtn">
               <button
               type="button"
@@ -80,7 +80,7 @@
               [disabled]="editNow">修正</button>
             </ng-template>
           </td>
-          <td>
+          <td class="print-hidden" >
             <button
             type="button"
             class="btn btn-outline-danger"
@@ -92,7 +92,6 @@
     </table>
   </div>
 </div>
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 <app-confirm-modal
 [title]="confirmTitle"
 [bodyHtml]="confirmBody"
@@ -107,7 +106,3 @@
 [modalId]="deleteModal"
 (action)="delete()">
 </app-simple-modal>
-<app-complete-modal
-[body]="completeBody"
-[btnType]="completeBtnType"
-></app-complete-modal>

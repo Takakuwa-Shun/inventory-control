@@ -138,15 +138,16 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">月日</th>
-          <th scope="col">入力者</th>
-          <th scope="col">{{csvListInventory[0].actionType}}</th>
-          <th scope="col">{{csvListInventory[0].actionDetail}}</th>
+          <th scope="col">{{titleListInventory[0].date}}</th>
+          <th scope="col">{{titleListInventory[0].userName}}</th>
+          <th scope="col">{{titleListInventory[0].addCount}}</th>
+          <th scope="col">{{titleListInventory[0].actionType}}</th>
+          <th scope="col">{{titleListInventory[0].actionDetail}}</th>
+          <th scope="col">{{titleListInventory[0].memo}}</th>
           <ng-container *ngFor="let lo of listSelectedLocation">
             <th scope="col">{{lo.name}}</th>
           </ng-container>
-          <th scope="col">在庫計</th>
-          <th scope="col">{{csvListInventory[0].memo}}</th>
+          <th scope="col">総計</th>
         </tr>
       </thead>
       <tbody>
@@ -154,20 +155,14 @@
           <th scope="row">{{i+1}}</th>
           <td>{{ l.date.seconds * 1000 | date:'yy年MM月dd日' }}</td>
           <td>{{l.userName}}</td>
+          <td>{{l.addCount}}</td>
           <td>{{l.actionType}}</td>
           <td>{{l.actionDetail}}</td>
-          <ng-container *ngFor="let lo of listSelectedLocation">
-            <td>
-              <ng-container *ngIf="l.locationId === lo.id">{{l.addCount}}</ng-container>
-            </td>
-          </ng-container>
-          <ng-container *ngIf="showLocationSumCount; else elseTd">
-            <td>{{l.locationCount[l.locationId]}}</td>
-          </ng-container>
-          <ng-template #elseTd>
-            <td>{{l.sumCount}}</td>
-          </ng-template>
           <td>{{l.memo}}</td>
+          <ng-container *ngFor="let lo of listSelectedLocation">
+            <td>{{l.locationCount[lo.id]}}</td>
+          </ng-container>
+          <td>{{l.sumCount}}</td>
         </tr>
       </tbody>
     </table>

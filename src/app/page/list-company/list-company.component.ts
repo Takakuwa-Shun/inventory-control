@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Company } from './../../model/company';
 import { CompanyService } from './../../service/company-service/company.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -11,18 +12,16 @@ declare const $;
 })
 export class ListCompanyComponent implements OnInit {
 
-  public loading = true;
-
-  public completeBody: string; 
-  public completeBtnType: string;
-
   public listCompany: Company[];
   public csvListCompany: Company[];
 
   constructor(
     private router: Router,
     private companyService: CompanyService,
-  ) { }
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this.csvListCompany = [{
@@ -38,32 +37,14 @@ export class ListCompanyComponent implements OnInit {
     this.companyService.fetchCompanies().subscribe((res: Company[]) => {
       this.listCompany = res;
       this.csvListCompany = this.csvListCompany.concat(this.listCompany);
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
   goDetail(id: string) {
     this.router.navigate(['/company/detail/' + id]);
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

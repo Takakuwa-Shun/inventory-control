@@ -3,6 +3,7 @@ import { ActivatedRoute, Router} from '@angular/router';
 import { CompanyService } from 'src/app/service/company-service/company.service';
 import { HttpResponse } from '@angular/common/http';
 import { Company } from 'src/app/model/company';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 
@@ -12,8 +13,6 @@ declare const $;
   styleUrls: ['./detail-company.component.css']
 })
 export class DetailCompanyComponent implements OnInit {
-
-  public loading = true;
 
   public company: Company;
   public registerCompany: Company;
@@ -30,15 +29,14 @@ export class DetailCompanyComponent implements OnInit {
   public readonly deleteBody = '一部商品がこの得意先を参照している可能性があります。本当に削除しますか？';
   public readonly deleteBtn = '削除';
 
-  public completeBody: string;
-  public completeBtnType: string;
-  private _deleted: boolean = false;
-
   constructor(
     private route : ActivatedRoute,
     private router: Router,
     private companyService: CompanyService,
-  ) {}
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+  }
 
   ngOnInit() {
     this.company = {
@@ -60,17 +58,13 @@ export class DetailCompanyComponent implements OnInit {
       if (res) {
         this.company = res;
         this.registerCompany = Object.assign({}, this.company);
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }  else {
-        this.completeBody = '※ ロードに失敗しました';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
       }
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -94,69 +88,37 @@ export class DetailCompanyComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.registerCompany.name = this.registerCompany.name.trim();
     this.registerCompany.nameKana = this.registerCompany.nameKana.trim();
 
     this.companyService.saveCompany(this.registerCompany).subscribe((res) => {
-      this.completeBody = '修正が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
 
       this.company = this.registerCompany;
       this.registerCompany = Object.assign({}, this.company);
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 修正に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 修正に失敗しました。');
     });
   }
 
   delete(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.companyService.deleteCompany(this.company.id).subscribe((res) => {
-      this._deleted = true;
-      this.completeBody = '削除が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('削除が完了しました。5秒後に自動的に一覧へ遷移します。', 5000, 'btn-outline-success');
 
       setTimeout(() =>{
-        this.backToList();
-      },3000);
+        this.goBack();
+      },5000);
 
     }, (err: HttpResponse<string>) => {
       console.error(err);
-      this.completeBody = '※ 削除に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 削除に失敗しました。');
     });
   }
 
   goBack(): void {
     this.router.navigate(['/company/list']);
   }
-
-  backToList(): void {
-    if (this._deleted) {
-      this._deleted = false;
-      this.goBack();
-    }
-  }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

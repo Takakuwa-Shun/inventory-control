@@ -8,6 +8,7 @@ import { MaterialService } from './../../service/material-service/material.servi
 import { CompanyService } from './../../service/company-service/company.service';
 import { ProductService } from './../../service/product-service/product.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -19,7 +20,6 @@ export class DetailProductComponent implements OnInit {
 
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
-  public loading = true;
   private _bottleLoaded = false;
   private _cartonLoaded = false;
   private _labelLoaded = false;
@@ -64,10 +64,6 @@ export class DetailProductComponent implements OnInit {
   public readonly deleteBody = '本当に削除してもよろしいですか？';;
   public readonly deleteBtn = '削除';
 
-  public completeBody: string;
-  public completeBtnType: string;
-  private _deleted: boolean = false;
-
   public imageSrc: string = DetailProductComponent.NO_IMAGE_URL;
   public isInitInputImage: boolean;
   public _selectedImage: File;
@@ -79,7 +75,10 @@ export class DetailProductComponent implements OnInit {
     private _firebaseStorageService: FirebaseStorageService,
     private router: Router,
     private productService: ProductService,
-  ) {}
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+  }
 
   ngOnInit() {
     this.registerProduct = initDetailProduct();
@@ -96,9 +95,7 @@ export class DetailProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.bo}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
@@ -107,9 +104,7 @@ export class DetailProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.ca}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
@@ -118,9 +113,7 @@ export class DetailProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.la}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
@@ -129,9 +122,7 @@ export class DetailProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.tr}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
@@ -140,9 +131,7 @@ export class DetailProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.ba}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
     });
 
     this._companyService.fetchCompanies().subscribe((res: Company[]) => {
@@ -151,9 +140,7 @@ export class DetailProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ 得意先データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 得意先データの取得に失敗しました。');
     });
   }
 
@@ -259,12 +246,10 @@ export class DetailProductComponent implements OnInit {
           this.imageSrc = url;
         });
       }
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -352,7 +337,7 @@ export class DetailProductComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     const editProduct: Product = convertDetailProductToProduct(this.registerProduct);
 
     if (this._selectedImage === undefined) {
@@ -368,9 +353,7 @@ export class DetailProductComponent implements OnInit {
 
         }, (err) => {
           console.log(err);
-          this.completeBody = '※ 変更前の画像の削除に失敗しました。';
-          this.completeBtnType = 'btn-danger';
-          this.openCompleteModal();
+          this._valueShareService.setCompleteModal('※ 変更前の画像の削除に失敗しました。');
         });
       }
 
@@ -382,9 +365,7 @@ export class DetailProductComponent implements OnInit {
         });
       }, (err) => {
         console.error(err);
-        this.completeBody = '※ 登録に失敗しました。';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
       });
     }
   }
@@ -393,60 +374,44 @@ export class DetailProductComponent implements OnInit {
     this.productService.saveProduct(product).subscribe(() =>{
       this.product = convertDetailProductToProduct(this.registerProduct);
 
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
   delete(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.productService.deleteProductById(this.product.id).subscribe(() => {
       if(this.product.imageUrl !== '') {
         this._firebaseStorageService.deleteFile(this.product.imageUrl).subscribe(() => {
-          this._deleted = true;
-          this.completeBody = '削除が完了しました。';
-          this.completeBtnType = 'btn-outline-success';
-          this.openCompleteModal();
+          this._valueShareService.setCompleteModal('削除が完了しました。', 5000, 'btn-outline-success');
     
           setTimeout(() =>{
-            this.backToList();
-          },3000);
+            this.goBack();
+          },5000);
         }, (err) => {
           console.log(err);
-          this.completeBody = '※ 画像の削除に失敗しました。';
-          this.completeBtnType = 'btn-danger';
-          this.openCompleteModal();
+          this._valueShareService.setCompleteModal('※ 画像の削除に失敗しました。', 5000);
         });
       } else {
-        this._deleted = true;
-        this.completeBody = '削除が完了しました。';
-        this.completeBtnType = 'btn-outline-success';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('削除が完了しました。5秒後に自動的に一覧へ遷移します。', 5000, 'btn-outline-success');
   
         setTimeout(() =>{
-          this.backToList();
-        },3000);
+          this.goBack();
+        },5000);
       }
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 削除に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 削除に失敗しました。');
     });
 
 
   }
 
   public imageLoadFailed() {
-    this.completeBody = '※ 画像の読み込みに失敗しました。';
-    this.completeBtnType = 'btn-danger';
-    this.openCompleteModal();
+    this._valueShareService.setCompleteModal('※ 画像の読み込みに失敗しました。', 5000);
   }
 
   public selectImage(file: File) {
@@ -456,13 +421,6 @@ export class DetailProductComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/product/list']);
-  }
-
-  backToList(): void {
-    if (this._deleted) {
-      this._deleted = false;
-      this.goBack();
-    }
   }
 
   public cancelMaterialSelected(type: string) {
@@ -577,20 +535,5 @@ export class DetailProductComponent implements OnInit {
       default:
         console.error('typeおかしいよ？ : ' + type);
     }
-  }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
   }
 }

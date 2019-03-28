@@ -21,6 +21,7 @@ import { InventoryService } from './service/inventory-service/inventory.service'
 import { GoogleDriveService } from './service/google-drive/google-drive.service';
 import { AuthService } from './service/auth-service/auth.service';
 import { EmailService } from './service/email-service/email.service';
+import { ValueShareService } from './service/value-share-service/value-share.service';
 import { FirebaseStorageService } from './service/firebase-storage-service/firebase-storage.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmModalComponent } from './component/confirm-modal/confirm-modal.component';
@@ -128,7 +129,8 @@ import { faPrint, faFileCsv, faCaretLeft, faTimes} from '@fortawesome/free-solid
     GoogleDriveService,
     AuthService,
     EmailService,
-    FirebaseStorageService
+    FirebaseStorageService,
+    ValueShareService
   ],
   bootstrap: [AppComponent]
 })

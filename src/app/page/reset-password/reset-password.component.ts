@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './../../service/auth-service/auth.service';
 import { Router } from '@angular/router';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -10,10 +11,7 @@ declare const $;
 })
 export class ResetPasswordComponent implements OnInit {
 
-  public loading = false;
   public mailAddress: string;
-  public completeBody: string; 
-  public completeBtnType: string;
   public readonly confirmTitle = 'メール送信先確認';
   public confirmBody: string;
   public readonly confirmCancelBtn = '閉じる';
@@ -21,6 +19,7 @@ export class ResetPasswordComponent implements OnInit {
 
   constructor(
     private _router: Router,
+    private _valueShareService: ValueShareService,
     private _authService: AuthService
   ) { }
 
@@ -39,35 +38,16 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   submit(): void {
+    this._valueShareService.setLoading(true);
     this._authService.sendResetPasswordEmail(this.mailAddress)
       .subscribe(() => {
-        this.completeBody = '※ メールを送信しました。';
-        this.completeBtnType = 'btn-outline-success';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ メールを送信しました。', 10000, 'btn-outline-success');
         setTimeout(() =>{
           this._router.navigate(['/login']);
-        },3000);
+        },10000);
       },(err) => {
         console.log(err);
-        this.completeBody = '※ メールの送信に失敗しました。※ 未登録の場合は送信できません。';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ メールの送信に失敗しました。※ 未登録の場合は送信できません。', 20000);
       });
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

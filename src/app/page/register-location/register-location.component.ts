@@ -3,6 +3,7 @@ import { Location, initLocation } from './../../model/location';
 import { LocationService } from './../../service/location-service/location.service';
 import { HttpResponse } from '@angular/common/http';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -11,8 +12,6 @@ declare const $;
   styleUrls: ['./register-location.component.css']
 })
 export class RegisterLocationComponent implements OnInit {
-
-  public loading = false;
 
   public registerLocation: Location;
 
@@ -23,11 +22,9 @@ export class RegisterLocationComponent implements OnInit {
   public readonly confirmCancelBtn = '閉じる';
   public readonly confirmActionBtn = '登録';
 
-  public completeBody: string; 
-  public completeBtnType: string;
-
   constructor(
     private locationService: LocationService,
+    private _valueShareService: ValueShareService,
     private _afStore: AngularFirestore
   ) { }
 
@@ -51,38 +48,19 @@ export class RegisterLocationComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);
     this.registerLocation.id = this._afStore.createId();
     this.registerLocation.name = this.registerLocation.name.trim();
     this.registerLocation.nameKana = this.registerLocation.nameKana.trim();
     this.locationService.saveLocation(this.registerLocation).subscribe((res) =>{
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err: HttpResponse<string>) => {
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      console.error(err);
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
   formInit() :void {
     this.registerLocation = initLocation();
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

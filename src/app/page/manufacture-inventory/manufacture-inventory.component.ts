@@ -15,6 +15,7 @@ import { InventoryService } from './../../service/inventory-service/inventory.se
 import { AuthService } from './../../service/auth-service/auth.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -26,7 +27,6 @@ export class ManufactureInventoryComponent implements OnInit {
 
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
-  public loading = true;
   private _bottleLoaded = false;
   private _cartonLoaded = false;
   private _labelLoaded = false;
@@ -101,9 +101,6 @@ export class ManufactureInventoryComponent implements OnInit {
   public readonly confirmCancelBtn = '閉じる';
   public readonly confirmActionBtn = '登録';
 
-  public completeBody: string; 
-  public completeBtnType: string;
-
   constructor(
     private _inventoryService: InventoryService,
     private _locationService: LocationService,
@@ -113,8 +110,11 @@ export class ManufactureInventoryComponent implements OnInit {
     private _firebaseStorageService: FirebaseStorageService,
     private _afStore: AngularFirestore,
     private _authService: AuthService,
+    private _valueShareService: ValueShareService,
     @Inject(LOCALE_ID) private _locale: string
-  ) { }
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this.formInit();
@@ -182,7 +182,7 @@ export class ManufactureInventoryComponent implements OnInit {
         if (typeof data === 'string') {
           this.showBottleAlert = true;
         } else {
-          this.loading = true;
+          this._valueShareService.setLoading(true);;
           this.showBottleAlert = false;
           this.detailProduct.bottleData = data; 
           this.isBottleSelected = true;
@@ -194,7 +194,7 @@ export class ManufactureInventoryComponent implements OnInit {
         if (typeof data === 'string') {
           this.showCartonAlert = true;
         } else {
-          this.loading = true;
+          this._valueShareService.setLoading(true);;
           this.showCartonAlert = false;
           this.detailProduct.cartonData = data; 
           this.isCartonSelected = true;
@@ -206,7 +206,7 @@ export class ManufactureInventoryComponent implements OnInit {
         if (typeof data === 'string') {
           this.showLabelAlert = true;
         } else {
-          this.loading = true;
+          this._valueShareService.setLoading(true);;
           this.showLabelAlert = false;
           this.detailProduct.labelData = data; 
           this.isLabelSelected = true;
@@ -218,7 +218,7 @@ export class ManufactureInventoryComponent implements OnInit {
         if (typeof data === 'string') {
           this.showTriggerAlert = true;
         } else {
-          this.loading = true;
+          this._valueShareService.setLoading(true);;
           this.showTriggerAlert = false;
           this.detailProduct.triggerData = data; 
           this.isTriggerSelected = true;
@@ -230,7 +230,7 @@ export class ManufactureInventoryComponent implements OnInit {
         if (typeof data === 'string') {
           this.showBagAlert = true;
         } else {
-          this.loading = true;
+          this._valueShareService.setLoading(true);;
           this.showBagAlert = false;
           this.detailProduct.bagData = data; 
           this.isBagSelected = true;
@@ -303,35 +303,31 @@ export class ManufactureInventoryComponent implements OnInit {
     console.log(this.detailProduct);
     this.inputCount = Number(this.inputCount);
     if (this._isTimeoutError) {
-      this.completeBody = '各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。', 20000);
     } else if (this.isBottleSelected && this.latestBottleInventory.locationCount[this.selectedBottleLocation.id] < this.inputCount){
-      this.completeBody = `製造・出荷個数が多く、${this.detailProduct.bottleData.name}の${this.selectedBottleLocation.name}における在庫量が足りません。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.bottleData.name}の${this.selectedBottleLocation.name}における在庫量が足りません。`, 20000);
     } else if(this.isCartonSelected && this.latestCartonInventory.locationCount[this.selectedCartonLocation.id] < this.inputCount) {
-      this.completeBody = `製造・出荷個数が多く、${this.detailProduct.cartonData.name}の${this.selectedCartonLocation.name}における在庫量が足りません。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.cartonData.name}の${this.selectedCartonLocation.name}における在庫量が足りません。`, 20000);
     } else if(this.isLabelSelected && this.latestLabelInventory.locationCount[this.selectedLabelLocation.id] < this.inputCount) {
-      this.completeBody = `製造・出荷個数が多く、${this.detailProduct.labelData.name}の${this.selectedLabelLocation.name}における在庫量が足りません。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.labelData.name}の${this.selectedLabelLocation.name}における在庫量が足りません。`, 20000);
     } else if(this.isTriggerSelected && this.latestTriggerInventory.locationCount[this.selectedTriggerLocation.id] < this.inputCount) {
-      this.completeBody = `製造・出荷個数が多く、${this.detailProduct.triggerData.name}の${this.selectedTriggerLocation.name}における在庫量が足りません。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.triggerData.name}の${this.selectedTriggerLocation.name}における在庫量が足りません。`, 20000);
     } else if(this.isBagSelected && this.latestBagInventory.locationCount[this.selectedBagLocation.id] < this.inputCount) {
-      this.completeBody = `製造・出荷個数が多く、${this.detailProduct.bagData.name}の${this.selectedBagLocation.name}における在庫量が足りません。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.bagData.name}の${this.selectedBagLocation.name}における在庫量が足りません。`, 20000);
     } else {
       this.inputDate = new Date();
       const showDate = formatDate(this.inputDate, "yyyy/MM/dd (EEE) HH:mm", this._locale);
       this.confirmBody = `
       <div class="container-fluid">
         <p>以下の内容で登録してもよろしいでしょうか？</p>
+        <div class="row">
+          <div class="col-4">日時</div>
+          <div class="col-8 pull-left">${showDate}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">作業従事者名</div>
+          <div class="col-8 pull-left">${this._loginUserData.displayName}</div>
+        </div>
         <div class="row">
           <div class="col-4">商品名</div>
           <div class="col-8 pull-left">${this.detailProduct.name}</div>
@@ -351,14 +347,6 @@ export class ManufactureInventoryComponent implements OnInit {
         <div class="row">
           <div class="col-4">備考</div>
           <div class="col-8 pull-left">${this.inputMemo}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">作業従事者名</div>
-          <div class="col-8 pull-left">${this._loginUserData.displayName}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">日時</div>
-          <div class="col-8 pull-left">${showDate}</div>
         </div>
         <hr>
         <div class="row">
@@ -412,7 +400,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   public submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     const inventory: Inventory = initInventory();
     inventory.userName = this._loginUserData.displayName;
     inventory.date = this.inputDate;
@@ -427,10 +415,10 @@ export class ManufactureInventoryComponent implements OnInit {
       bottleInventory.id = this._afStore.createId();
       bottleInventory.targetId = this.detailProduct.bottleData.id;
       bottleInventory.targetName = this.detailProduct.bottleData.name;
-      bottleInventory.locationId = this.selectedBottleLocation.id;
+      bottleInventory.arrLocationId[0] = this.selectedBottleLocation.id;
       bottleInventory.sumCount = this.latestBottleInventory.sumCount + inventory.addCount;
       bottleInventory.locationCount = Object.assign({}, this.latestBottleInventory.locationCount);
-      bottleInventory.locationCount[bottleInventory.locationId] += inventory.addCount;
+      bottleInventory.locationCount[bottleInventory.arrLocationId[0]] += inventory.addCount;
     }
 
     let cartonInventory: Inventory = null;
@@ -439,10 +427,10 @@ export class ManufactureInventoryComponent implements OnInit {
       cartonInventory.id = this._afStore.createId();
       cartonInventory.targetId = this.detailProduct.cartonData.id;
       cartonInventory.targetName = this.detailProduct.cartonData.name;
-      cartonInventory.locationId = this.selectedCartonLocation.id;
+      cartonInventory.arrLocationId[0] = this.selectedCartonLocation.id;
       cartonInventory.sumCount = this.latestCartonInventory.sumCount + inventory.addCount;
       cartonInventory.locationCount = Object.assign({}, this.latestCartonInventory.locationCount);
-      cartonInventory.locationCount[cartonInventory.locationId] += inventory.addCount;
+      cartonInventory.locationCount[cartonInventory.arrLocationId[0]] += inventory.addCount;
     }
 
     let labelInventory: Inventory = null;
@@ -451,10 +439,10 @@ export class ManufactureInventoryComponent implements OnInit {
       labelInventory.id = this._afStore.createId();
       labelInventory.targetId = this.detailProduct.labelData.id;
       labelInventory.targetName = this.detailProduct.labelData.name;
-      labelInventory.locationId = this.selectedLabelLocation.id;
+      labelInventory.arrLocationId[0] = this.selectedLabelLocation.id;
       labelInventory.sumCount = this.latestLabelInventory.sumCount + inventory.addCount;
       labelInventory.locationCount = Object.assign({}, this.latestLabelInventory.locationCount);
-      labelInventory.locationCount[labelInventory.locationId] += inventory.addCount;
+      labelInventory.locationCount[labelInventory.arrLocationId[0]] += inventory.addCount;
     }
 
     let triggerInventory: Inventory = null;
@@ -463,10 +451,10 @@ export class ManufactureInventoryComponent implements OnInit {
       triggerInventory.id = this._afStore.createId();
       triggerInventory.targetId = this.detailProduct.triggerData.id;
       triggerInventory.targetName = this.detailProduct.triggerData.name;
-      triggerInventory.locationId = this.selectedTriggerLocation.id;
+      triggerInventory.arrLocationId[0] = this.selectedTriggerLocation.id;
       triggerInventory.sumCount = this.latestTriggerInventory.sumCount + inventory.addCount;
       triggerInventory.locationCount = Object.assign({}, this.latestTriggerInventory.locationCount);
-      triggerInventory.locationCount[triggerInventory.locationId] += inventory.addCount;
+      triggerInventory.locationCount[triggerInventory.arrLocationId[0]] += inventory.addCount;
     }
     
     let bagInventory: Inventory = null;
@@ -475,10 +463,10 @@ export class ManufactureInventoryComponent implements OnInit {
       bagInventory.id = this._afStore.createId();
       bagInventory.targetId = this.detailProduct.bagData.id;
       bagInventory.targetName = this.detailProduct.bagData.name;
-      bagInventory.locationId = this.selectedBagLocation.id;
+      bagInventory.arrLocationId[0] = this.selectedBagLocation.id;
       bagInventory.sumCount = this.latestBagInventory.sumCount + inventory.addCount;
       bagInventory.locationCount = Object.assign({}, this.latestBagInventory.locationCount);
-      bagInventory.locationCount[bagInventory.locationId] += inventory.addCount;
+      bagInventory.locationCount[bagInventory.arrLocationId[0]] += inventory.addCount;
     }
 
     const boLimit = Number(this.detailProduct.bottleData.limitCount);
@@ -491,14 +479,10 @@ export class ManufactureInventoryComponent implements OnInit {
       bottleInventory, cartonInventory, labelInventory, triggerInventory, bagInventory,
       boLimit, caLimit, laLimit, trLimit, baLimit)
     .subscribe(() => {
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
@@ -518,7 +502,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this.isTriggerLocationSelected = false;
       this.isBagLocationSelected = false;
     } else {
-      this.loading = true;
+      this._valueShareService.setLoading(true);;
       this.showProductAlert = false;
       this.isProductSelected = true;
       this.detailProduct.id = data.id;
@@ -638,9 +622,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }, (err) => {
           console.error(err);
           this.imageSrc = ManufactureInventoryComponent.NO_IMAGE_URL;
-          this.completeBody = '※ 画像の取得に失敗しました。';
-          this.completeBtnType = 'btn-danger';
-          this._openCompleteModal();
+          this._valueShareService.setCompleteModal('※ 画像の取得に失敗しました。', 5000);
         });
       } else {
         this.imageSrc = ManufactureInventoryComponent.NO_IMAGE_URL;
@@ -670,7 +652,7 @@ export class ManufactureInventoryComponent implements OnInit {
         this._bottleLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }
 
       //  timerをセットする
@@ -682,9 +664,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。', 5000);
     });
   }
 
@@ -706,7 +686,7 @@ export class ManufactureInventoryComponent implements OnInit {
         this._cartonLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }
 
        //  timerをセットする
@@ -718,9 +698,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。', 5000);
     });
   }
 
@@ -742,7 +720,7 @@ export class ManufactureInventoryComponent implements OnInit {
         this._labelLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }
 
       //  timerをセットする
@@ -754,9 +732,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。', 5000);
     });
   }
 
@@ -778,7 +754,7 @@ export class ManufactureInventoryComponent implements OnInit {
         this._triggerLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }
 
       //  timerをセットする
@@ -790,9 +766,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。', 5000);
     });
   }
 
@@ -814,7 +788,7 @@ export class ManufactureInventoryComponent implements OnInit {
         this._bagLoaded = true;
         this._checkLatestInventoryLoaded();
       } else {
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }
 
       //  timerをセットする
@@ -826,9 +800,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。', 5000);
     });
   }
 
@@ -851,7 +823,7 @@ export class ManufactureInventoryComponent implements OnInit {
         this._triggerLoaded = false;
         this._bagLoaded = false;
 
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
     }
   }
 
@@ -863,9 +835,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 商品データの取得に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 商品データの取得に失敗しました。', 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.bo).subscribe((res: Material[]) => {
@@ -874,9 +844,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.bo}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
@@ -885,9 +853,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.ca}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
@@ -896,9 +862,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.la}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
@@ -907,9 +871,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.tr}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
@@ -918,9 +880,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.ba}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
     });
 
     this._memoService.fetchAllMemos().subscribe((res: Memo[]) => {
@@ -931,9 +891,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ 備考一覧のデータの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ 備考一覧のデータの取得に失敗しました。`, 10000);
     });
 
     this._authService.user.subscribe((user: User) => {
@@ -942,9 +900,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ログイン中のユーザー情報の取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ログイン中のユーザー情報の取得に失敗しました。`, 10000);
     });
 
     this._locationService.fetchLocations().subscribe((res) => {
@@ -953,9 +909,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ 倉庫のデータの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ 倉庫のデータの取得に失敗しました。`, 10000);
     });
   }
 
@@ -975,27 +929,11 @@ export class ManufactureInventoryComponent implements OnInit {
         this._triggerLoaded = false;
         this._bagLoaded = false;
 
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
     }
   }
 
   private _openConfirmModal(): void {
     $('#Modal').modal();
   };
-
-  private _openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this._closeCompleteModal();
-    },20000);
-  };
-
-  private _closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

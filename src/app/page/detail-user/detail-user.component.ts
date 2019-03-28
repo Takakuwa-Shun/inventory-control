@@ -3,6 +3,7 @@ import { ActivatedRoute, Router} from '@angular/router';
 import { User } from 'src/app/model/user';
 import { UserService } from 'src/app/service/user-service/user.service';
 import { AuthService } from './../../service/auth-service/auth.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -11,8 +12,6 @@ declare const $;
   styleUrls: ['./detail-user.component.css']
 })
 export class DetailUserComponent implements OnInit {
-
-  public loading = true;
 
   public user: User;
   public registerUser: User;
@@ -30,16 +29,15 @@ export class DetailUserComponent implements OnInit {
   public readonly deleteBtn = '削除';
   private _uid: string;
 
-  public completeBody: string;
-  public completeBtnType: string;
-  private _deleted: boolean = false;
-
   constructor(
     private _route : ActivatedRoute,
     private _router: Router,
     private _userService: UserService,
     private _authService: AuthService,
-  ) {}
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+  }
 
   ngOnInit() {
     this._uid = this._route.snapshot.paramMap.get('uid');
@@ -67,17 +65,13 @@ export class DetailUserComponent implements OnInit {
       if (res) {
         this.user = res;
         this.registerUser = Object.assign({}, this.user);
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }  else {
-        this.completeBody = '※ ロードに失敗しました';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
       }
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -107,70 +101,36 @@ export class DetailUserComponent implements OnInit {
       this.saveUser(user);
     },(err) => {
       console.error(err);
-      this.completeBody = '※ 修正に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 修正に失敗しました。一度ログアウトしてから再度お試し下さい', 20000);
     });
   }
 
   private saveUser(user: User): void {
     this._userService.saveUser(user).subscribe((res) => {
-      this.completeBody = '修正が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
 
       this.user = this.registerUser;
       this.registerUser = Object.assign({}, this.user);
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 修正に失敗しました。一度ログアウトしてから再度お試し下さい';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 修正に失敗しました。一度ログアウトしてから再度お試し下さい', 20000);
     });
   }
 
   delete(): void {
     this._userService.deleteUser(this.user.uid).subscribe((res) => {
-      this._deleted = true;
-      this.completeBody = '削除が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('削除が完了しました。5秒後に自動的に一覧へ遷移します。', 5000, 'btn-outline-success');
 
       setTimeout(() => {
-        this.backToList();
-      },3000);
+        this.goBack();
+      },5000);
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 削除に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 削除に失敗しました。');
     });
   }
 
   goBack(): void {
     this._router.navigate(['/user/list']);
   }
-
-  backToList(): void {
-    if (this._deleted) {
-      this._deleted = false;
-      this.goBack();
-    }
-  }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },10000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

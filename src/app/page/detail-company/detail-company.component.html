@@ -10,16 +10,11 @@
         <thead class="thead-light">
           <tr>
             <th scope="col">項目</th>
-            <th scope="col">値</th>
+            <th scope="col">現在値</th>
             <th scope="col">編集欄</th>
           </tr>
         </thead>
-        <tbody>  
-          <tr>
-            <th scope="col">得意先コード</th>
-            <td>{{company.id}}</td>
-            <td>{{company.id}}</td>
-          </tr>
+        <tbody>
           <tr>
             <th scope="col">得意先名</th>
             <td>{{company.name}}</td>
@@ -86,7 +81,6 @@
     </form>
   </div>
 </div>
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 <app-confirm-modal
 [title]="confirmTitle"
 [bodyHtml]="confirmBody"
@@ -101,8 +95,3 @@
 [modalId]="deleteModal"
 (action)="delete()">
 </app-simple-modal>
-<app-complete-modal
-[body]="completeBody"
-[btnType]="completeBtnType"
-(action)="backToList()"
-></app-complete-modal>

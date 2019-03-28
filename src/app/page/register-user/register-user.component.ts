@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserRegister, User } from '../../model/user';
 import { AuthService } from './../../service/auth-service/auth.service'
 import { UserService } from './../../service/user-service/user.service'
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -10,9 +11,6 @@ declare const $;
   styleUrls: ['./register-user.component.css']
 })
 export class RegisterUserComponent implements OnInit {
-
-  public loading = false;
-
   public showPassword: boolean;
 
   public registerUser: UserRegister;
@@ -24,12 +22,10 @@ export class RegisterUserComponent implements OnInit {
   public confirmBody: string;
   public readonly confirmCancelBtn = '閉じる';
   public readonly confirmActionBtn = '登録';
-  
-  public completeBody: string; 
-  public completeBtnType: string;
 
   constructor(
     private _authService: AuthService,
+    private _valueShareService: ValueShareService,
     private _userService: UserService
     ) { }
 
@@ -53,7 +49,7 @@ export class RegisterUserComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);
     const name = this.registerUser.displayName;
     this._authService.siginUp(this.registerUser).subscribe((res: firebase.auth.UserCredential) => {
       const user: User = {
@@ -62,20 +58,14 @@ export class RegisterUserComponent implements OnInit {
         displayName: name,
       }
       this._userService.saveUser(user).subscribe(() => {
-        this.completeBody = '登録が完了しました。現在、新規登録ユーザーとしてログイン中です。';
-        this.completeBtnType = 'btn-outline-success';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('登録が完了しました。現在、新規登録ユーザーとしてログイン中です。', 20000, 'btn-outline-success');
       }, (err) => {
         console.log(err);
-        this.completeBody = '※ 登録に失敗しました。';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
       });
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
@@ -88,20 +78,4 @@ export class RegisterUserComponent implements OnInit {
       password: null,
     };
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },15000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

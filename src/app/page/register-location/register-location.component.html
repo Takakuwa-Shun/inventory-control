@@ -54,7 +54,6 @@
     </div>
   </form>
 </div>
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 <app-confirm-modal
 [title]="confirmTitle"
 [bodyHtml]="confirmBody"
@@ -62,7 +61,3 @@
 [btnAction]="confirmActionBtn"
 (action)="submit(); locationForm.reset(); formInit()"
 ></app-confirm-modal>
-<app-complete-modal
-[body]="completeBody"
-[btnType]="completeBtnType"
-></app-complete-modal>

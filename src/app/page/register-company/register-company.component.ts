@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Company, initCompany } from './../../model/company';
 import { CompanyService } from './../../service/company-service/company.service';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -11,8 +12,6 @@ declare const $;
 })
 export class RegisterCompanyComponent implements OnInit {
 
-  public loading = false;
-
   public registerCompany: Company;
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
@@ -21,12 +20,10 @@ export class RegisterCompanyComponent implements OnInit {
   public confirmBody: string;
   public readonly confirmCancelBtn = '閉じる';
   public readonly confirmActionBtn = '登録';
-  
-  public completeBody: string; 
-  public completeBtnType: string;
 
   constructor(
     private companyService: CompanyService,
+    private _valueShareService: ValueShareService,
     private _afStore: AngularFirestore
   ) { }
 
@@ -50,39 +47,20 @@ export class RegisterCompanyComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);
     this.registerCompany.id = this._afStore.createId();
     this.registerCompany.name = this.registerCompany.name.trim();
     this.registerCompany.nameKana = this.registerCompany.nameKana.trim();
 
     this.companyService.saveCompany(this.registerCompany).subscribe(() =>{
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      console.error(err);
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
   formInit() :void {
     this.registerCompany = initCompany();
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

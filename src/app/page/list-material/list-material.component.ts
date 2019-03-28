@@ -4,6 +4,7 @@ import { Material } from './../../model/material';
 import { MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from './../../service/material-service/material.service';
 import { LocalStorageService } from './../../service/local-storage-service/local-storage.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -12,10 +13,6 @@ declare const $;
   styleUrls: ['./list-material.component.css']
 })
 export class ListMaterialComponent implements OnInit {
-
-  public loading = true;
-  public completeBody: string; 
-  public completeBtnType: string;
 
   public listMaterial: Material[];
   public titleListMaterial: Material[] = [{
@@ -42,7 +39,10 @@ export class ListMaterialComponent implements OnInit {
     private router: Router,
     private materialService: MaterialService,
     private localStorage: LocalStorageService,
-  ) { }
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this.filterInit();
@@ -87,17 +87,15 @@ export class ListMaterialComponent implements OnInit {
     this.materialService.fetchMaterialLists(type).subscribe((res: Material[]) => {
       this.listMaterial = res;
       this.csvListMaterial = this.titleListMaterial.concat(this.listMaterial);
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
   changeMaterial(type: string){
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.selectedMaterilal = type;
     this._setMaterialNameJa();
     this.listMaterial = [];
@@ -106,20 +104,5 @@ export class ListMaterialComponent implements OnInit {
 
   goDetail(id: string) {
     this.router.navigate(['/material/detail/' + this.selectedMaterilal + '/'+ id]);
-  }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
   }
 }

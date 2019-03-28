@@ -105,7 +105,7 @@
           <span class="auto-selected ml-2">{{selectedLocationName}}</span>
           <span>&nbsp;&nbsp;&nbsp;</span>
           <span class="badge badge-success">該当倉庫の現在在庫量</span>
-          <span class="auto-selected ml-2">{{registerInventory.locationCount[registerInventory.locationId]}}個</span>
+          <span class="auto-selected ml-2">{{registerInventory.locationCount[registerInventory.arrLocationId[0]]}}個</span>
         </div>
       </div>
     </div>
@@ -141,7 +141,6 @@
     </div>
   </form>
 </div>
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 <app-confirm-modal
 [title]="confirmTitle"
 [bodyHtml]="confirmBody"
@@ -149,7 +148,3 @@
 [btnAction]="confirmActionBtn"
 (action)="submit(); consumeInventoryForm.reset(); formInit()"
 ></app-confirm-modal>
-<app-complete-modal
-[body]="completeBody"
-[btnType]="completeBtnType"
-></app-complete-modal>

@@ -2,6 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { LocationService } from 'src/app/service/location-service/location.service';
 import { Location, initLocation } from './../../model/location';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -10,8 +11,6 @@ declare const $;
   styleUrls: ['./detail-location.component.css']
 })
 export class DetailLocationComponent implements OnInit {
-
-  public loading = true;
 
   public location: Location;
   public registerLocation: Location;
@@ -28,15 +27,14 @@ export class DetailLocationComponent implements OnInit {
   public readonly deleteBody = '本当に削除してもよろしいですか？';;
   public readonly deleteBtn = '削除';
 
-  public completeBody: string;
-  public completeBtnType: string;
-  private _deleted: boolean = false;
-
   constructor(
     private route : ActivatedRoute,
     private router: Router,
     private locationService: LocationService,
-  ) {}
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+  }
 
   ngOnInit() {
     this.location = initLocation();
@@ -50,17 +48,13 @@ export class DetailLocationComponent implements OnInit {
       if (res) {
         this.location = res;
         this.registerLocation = Object.assign({}, this.location);
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }  else {
-        this.completeBody = '※ ロードに失敗しました';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
       }
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -80,68 +74,36 @@ export class DetailLocationComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.registerLocation.name = this.registerLocation.name.trim();
     this.registerLocation.nameKana = this.registerLocation.nameKana.trim();
 
     this.locationService.saveLocation(this.registerLocation).subscribe((res) => {
-      this.completeBody = '修正が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
 
       this.location = this.registerLocation;
       this.registerLocation = Object.assign({}, this.location);
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 修正に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 修正に失敗しました。');
     });
   }
 
   delete(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.locationService.deleteLocation(this.location.id).subscribe((res) => {
-      this._deleted = true;
-      this.completeBody = '削除が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('削除が完了しました。5秒後に自動的に一覧へ遷移します。', 5000, 'btn-outline-success');
 
       setTimeout(() =>{
-        this.backToList();
-      },3000);
+        this.goBack();
+      },5000);
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 削除に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 削除に失敗しました。');
     });
   }
 
   goBack(): void {
     this.router.navigate(['/location/list']);
   }
-
-  backToList(): void {
-    if (this._deleted) {
-      this._deleted = false;
-      this.goBack();
-    }
-  }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

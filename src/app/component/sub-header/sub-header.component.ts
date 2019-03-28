@@ -64,7 +64,7 @@ export class SubHeaderComponent implements OnInit {
       this.csvFileName = `${this.title}_${date}.csv`;      
     }
 
-    const dataType = this._checkType(this.csvData[1]);
+    const dataType = this._checkType(this.csvData[0]);
     let csv: string;
 
     switch(dataType) {
@@ -102,7 +102,7 @@ export class SubHeaderComponent implements OnInit {
   private _checkType(obj: object): string{
 
     // 在庫の場合
-    if('targetId' in obj) {
+    if('targetName' in obj) {
       return type.in;
     }
 
@@ -122,17 +122,17 @@ export class SubHeaderComponent implements OnInit {
     }
 
     // ユーザーの場合
-    if('uid' in obj) {
+    if('displayName' in obj) {
       return type.user;
     }
 
     // 得意先の場合
-    if('id' in obj) {
+    if('name' in obj) {
       return type.com;
     }
 
     // 倉庫の場合
-    if('id' in obj) {
+    if('name' in obj) {
       return type.lo;
     }
 
@@ -144,7 +144,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const m = obj as Material;
-      csv += `${m.id}, ${m.name}, ${m.nameKana}, ${m.type}, ${m.limitCount}, ${m.imageUrl}\n`;
+      csv += `${m.name}, ${m.nameKana}, ${m.type}, ${m.limitCount}, ${m.imageUrl}\n`;
     });
     csv = csv.slice( 0, -2);
 
@@ -155,7 +155,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const p = obj as Product;
-      csv += `${p.id}, ${p.name}, ${p.nameKana}, ${p.lot}, ${p.imageUrl}, ${p.bottleId}, ${p.bottleName}, ${p.cartonId}, ${p.cartonName}, ${p.labelId}, ${p.labelName}, ${p.triggerId}, ${p.triggerName}, ${p.bagId}, ${p.bagName}\n`;
+      csv += `${p.name}, ${p.nameKana}, ${p.lot}, ${p.imageUrl}, ${p.bottleId}, ${p.bottleName}, ${p.cartonId}, ${p.cartonName}, ${p.labelId}, ${p.labelName}, ${p.triggerId}, ${p.triggerName}, ${p.bagId}, ${p.bagName}\n`;
     });
     csv = csv.slice( 0, -2);
 
@@ -166,7 +166,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const u = obj as User;
-      csv += `${u.uid}, ${u.displayName}, ${u.email}\n`;
+      csv += `${u.displayName}, ${u.email}\n`;
     });
     csv = csv.slice( 0, -2);
 
@@ -177,7 +177,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const m = obj as Memo;
-      csv += `${m.id}, ${m.content}\n`;
+      csv += `${m.content}\n`;
     });
     csv = csv.slice( 0, -2);
 
@@ -188,7 +188,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const c = obj as Company;
-      csv += `${c.id}, ${c.name}, ${c.nameKana}\n`;
+      csv += `${c.name}, ${c.nameKana}\n`;
     });
     csv = csv.slice( 0, -2);
 
@@ -208,19 +208,15 @@ export class SubHeaderComponent implements OnInit {
       });
       locationCountCsv = locationCountCsv.slice( 0, -1);
 
-      let locationName: string;
       let date;
       if (cnt === 0) {
-        locationName = i.locationId;
         date = i.date;
       } else {
-        locationName = locationNameObj[i.locationId];
         date = formatDate(new firestore.Timestamp(i.date['seconds'], i.date['nanoseconds']).toDate(), "yy年MM月dd日", this._locale);
       }
-      csv += `${i.id}, ${i.targetId}, ${i.targetName}, ${i.actionType}, ${i.actionDetail}, ${i.userName}, ${date}, ${i.memo}, ${i.addCount}, ${i.sumCount},  ${locationName}, ${locationCountCsv}\n`;
+      csv += `${date}, ${i.userName}, ${i.targetName}, ${i.addCount}, ${i.actionType}, ${i.actionDetail}, ${i.memo}, ${locationCountCsv}${i.sumCount}\n`;
       ++cnt;
     }
-    csv = csv.slice( 0, -2);
 
     return csv;
   }

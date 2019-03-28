@@ -4,6 +4,7 @@ import { Material } from './../../model/material';
 import { MaterialTypeJa } from './../../model/material-type';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { MaterialService } from './../../service/material-service/material.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -12,8 +13,6 @@ declare const $;
   styleUrls: ['./register-material-from-file.component.scss']
 })
 export class RegisterMaterialFromFileComponent implements OnInit {
-
-  public loading = false;
 
   private readonly _nameKanaPattern: RegExp = /^[ -~-ぁ-ん-ー]*$/;
   private readonly _materialType =  [MaterialTypeJa.bo, MaterialTypeJa.ca, MaterialTypeJa.la, MaterialTypeJa.tr, MaterialTypeJa.ba];
@@ -31,12 +30,10 @@ export class RegisterMaterialFromFileComponent implements OnInit {
   private _showError: boolean;
   private _errorMsg: string;
 
-  public completeBody: string; 
-  public completeBtnType: string;
-
   constructor(
     private _sanitizer: DomSanitizer,
     private _materialService: MaterialService,
+    private _valueShareService: ValueShareService,
     private _afStore: AngularFirestore
   ) { }
 
@@ -116,7 +113,7 @@ export class RegisterMaterialFromFileComponent implements OnInit {
     if (fileList.length === 0) {
       return;
     }
-    this.loading =true;
+    this._valueShareService.setLoading(true);
     this._showError = false;
     this._registerMaterials = [];
 
@@ -161,20 +158,16 @@ export class RegisterMaterialFromFileComponent implements OnInit {
       console.log(dataArr);
       console.log(this._registerMaterials);
       this.showConfirm = true;
-      this.loading = false;
+      this._valueShareService.setLoading(false);
     };
   }
 
   public submit(): void {
     this._materialService.saveMaterialFromArr(this._registerMaterials).subscribe(() => {
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
@@ -203,9 +196,7 @@ export class RegisterMaterialFromFileComponent implements OnInit {
 
   public confirm(isFirst: boolean): void {
     if (this._showError) {
-      this.completeBody = this._errorMsg;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal(this._errorMsg, 10000);
     } else {
       if (isFirst) {
         this._confirmCount = 0;
@@ -238,21 +229,5 @@ export class RegisterMaterialFromFileComponent implements OnInit {
   private _closeConfirmModal(): void {
     $('#Modal').modal('hide');
   };
-
-  private _openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this._closeCompleteModal();
-    },10000);
-  };
-
-  private _closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }
 

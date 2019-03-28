@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Memo } from './../../model/memo';
 import { MemoService } from './../../service/memo-service/memo.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 interface ListMemo extends Memo {
@@ -13,11 +14,6 @@ interface ListMemo extends Memo {
   styleUrls: ['./list-memo.component.scss']
 })
 export class ListMemoComponent implements OnInit {
-
-  public loading = true;
-
-  public completeBody: string; 
-  public completeBtnType: string;
 
   public listMemo: ListMemo[] = [];
   public csvListMemo: Memo[];
@@ -43,7 +39,10 @@ export class ListMemoComponent implements OnInit {
 
   constructor(
     private _memoService: MemoService,
-  ) { }
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this.fetchMemoLists();
@@ -62,12 +61,10 @@ export class ListMemoComponent implements OnInit {
         this.csvListMemo.push(m);
         this.listMemo.push(lm);
       });
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -83,17 +80,13 @@ export class ListMemoComponent implements OnInit {
   }
 
   register(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this._memoService.registerMemo(this.registerMemoContent).subscribe((res) =>{
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
       this.fetchMemoLists();
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
@@ -104,18 +97,14 @@ export class ListMemoComponent implements OnInit {
   };
 
   delete() {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this._memoService.deleteMemo(this._deleteId).subscribe((res) => {
       this.listMemo = this.listMemo.filter((memo: Memo) => memo.id.toString() !== this._deleteId.toString());
       this.csvListMemo = this.csvListMemo.filter((memo: Memo) => memo.id.toString() !== this._deleteId.toString());
-      this.completeBody = '削除が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('削除が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ 削除に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 削除に失敗しました。');
     });
   }
 
@@ -132,31 +121,11 @@ export class ListMemoComponent implements OnInit {
     this._memoService.updateMemo(this.editMemo).subscribe((res) => {
       this.fetchMemoLists();
       this.editNow = false;
-      this.completeBody = '修正が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.log(err);
       this.editNow = false;
-      this.completeBody = '※ 修正に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 修正に失敗しました。');
     });
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

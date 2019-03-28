@@ -8,6 +8,7 @@ import { CompanyService } from './../../service/company-service/company.service'
 import { ProductService } from './../../service/product-service/product.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -16,7 +17,6 @@ declare const $;
   styleUrls: ['./register-product.component.css']
 })
 export class RegisterProductComponent implements OnInit {
-  public loading = true;
   private _bottleLoaded = false;
   private _cartonLoaded = false;
   private _labelLoaded = false;
@@ -55,9 +55,6 @@ export class RegisterProductComponent implements OnInit {
   public readonly confirmCancelBtn = '閉じる';
   public readonly confirmActionBtn = '登録';
 
-  public completeBody: string; 
-  public completeBtnType: string;
-
   public isInitInputImage: boolean;
   private _selectedImage: File;
 
@@ -66,8 +63,11 @@ export class RegisterProductComponent implements OnInit {
     private _companyService: CompanyService,
     private _firebaseStorageService: FirebaseStorageService,
     private _productService: ProductService,
+    private _valueShareService: ValueShareService,
     private _afStore: AngularFirestore
-  ) { }
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this._fetchAllDatas();
@@ -156,7 +156,7 @@ export class RegisterProductComponent implements OnInit {
   }
 
   submit(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);
 
     const product: Product = {
       id: this._afStore.createId(),
@@ -187,23 +187,17 @@ export class RegisterProductComponent implements OnInit {
         this._saveProduct(product);
       }, (err) => {
         console.error(err);
-        this.completeBody = '※ 登録に失敗しました。';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
       });
     }
   }
 
   private _saveProduct(product: Product) {
     this._productService.saveProduct(product).subscribe(() =>{
-      this.completeBody = '登録が完了しました。';
-      this.completeBtnType = 'btn-outline-success';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 登録に失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
     });
   }
 
@@ -307,9 +301,7 @@ export class RegisterProductComponent implements OnInit {
   }
 
   public imageLoadFailed() {
-    this.completeBody = '※ 画像の読み込みに失敗しました。';
-    this.completeBtnType = 'btn-danger';
-    this.openCompleteModal();
+    this._valueShareService.setCompleteModal('※ 画像の読み込みに失敗しました。');
   }
 
   public selectImage(file: File) {
@@ -325,9 +317,7 @@ export class RegisterProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.bo}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
@@ -336,9 +326,7 @@ export class RegisterProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.ca}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
@@ -347,9 +335,7 @@ export class RegisterProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.la}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
@@ -358,9 +344,7 @@ export class RegisterProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.tr}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
 
     this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
@@ -369,9 +353,7 @@ export class RegisterProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ ${MaterialTypeJa.ba}データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
     });
 
     this._companyService.fetchCompanies().subscribe((res: Company[]) => {
@@ -380,31 +362,13 @@ export class RegisterProductComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ 得意先データの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal(`※ 得意先データの取得に失敗しました。`, 10000);
     });
   }
 
   private _checkLoaded() {
     if (this._bottleLoaded && this._cartonLoaded && this._labelLoaded && this._triggerLoaded && this._bagLoaded && this._companyLoaded) {
-      this.loading = false;
+      this._valueShareService.setLoading(false);
     }
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

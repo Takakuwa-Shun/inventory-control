@@ -11,6 +11,7 @@ import { UserService } from './../../service/user-service/user.service';
 import { LocalStorageService } from './../../service/local-storage-service/local-storage.service';
 import { MaterialService } from './../../service/material-service/material.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -22,14 +23,21 @@ export class ListInventoryComponent implements OnInit {
 
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
-  public loading = true;
   private _userLoaded = false;
   private _locationLoaded = false;
 
-  public completeBody: string; 
-  public completeBtnType: string;
   public listInventory: Inventory[] = [];
   public csvListInventory: object[];
+  public readonly titleListInventory: object[] = [{
+    date: '日付',
+    userName: '担当者名',
+    targetName: '対象の名前',
+    addCount: '数量',
+    actionType: '作業項目',
+    actionDetail: '作業詳細',
+    memo: '備考',
+    sumCount: '全倉庫合計',
+  }];
 
   public userObj: object = {};
   public listSelectedLocation: Location[];
@@ -91,23 +99,13 @@ export class ListInventoryComponent implements OnInit {
     private _localStorage: LocalStorageService,
     private _materialService: MaterialService,
     private _firebaseStorageService: FirebaseStorageService,
+    private _valueShareService: ValueShareService,
     @Inject(LOCALE_ID) private _locale: string
-  ) { }
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
-    this.csvListInventory = [{
-      id: '在庫コード',
-      targetId: '対象コード',
-      targetName: '対象の名前',
-      locationId: '倉庫名',
-      actionType: '作業項目',
-      actionDetail: '作業詳細',
-      addCount: '数量',
-      sumCount: '全倉庫合計',
-      date: '日付',
-      userName: '担当者名',
-      memo: '備考'
-    }];
 
     this.showTargetAlert = false;
     this.isTargetSelected = false;
@@ -121,7 +119,7 @@ export class ListInventoryComponent implements OnInit {
   }
 
   public search(): void {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.showTarget = this.selectedTarget;
     this._localStorage.setItem('selectedTargetType', this.selectedTargetType);
     this._localStorage.setItem('startDateStr', this.startDateStr);
@@ -133,9 +131,7 @@ export class ListInventoryComponent implements OnInit {
       }, (err) => {
         console.error(err);
         this.imageSrc = ListInventoryComponent.NO_IMAGE_URL;
-        this.completeBody = '※ 画像の取得に失敗しました。';
-        this.completeBtnType = 'btn-danger';
-        this._openCompleteModal();
+        this._valueShareService.setCompleteModal('※ 画像の取得に失敗しました。');
       });
     } else {
       this.imageSrc = ListInventoryComponent.NO_IMAGE_URL;
@@ -174,14 +170,14 @@ export class ListInventoryComponent implements OnInit {
   }
 
   public getFollowingList(isNext: boolean) {
-    this.loading = true;
+    this._valueShareService.setLoading(true);;
     this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this._locId)
     .subscribe((res: Inventory[]) => {
       if (res.length > 0) {
         this.noNext = false;
         this.noPrevious = false;
         this.listInventory = res;
-        this.csvListInventory = this.csvListInventory.concat(this.listInventory);
+        this.csvListInventory = this.titleListInventory.concat(this.listInventory);
       } else {
         if (isNext) {
           this.noNext = true;
@@ -189,12 +185,10 @@ export class ListInventoryComponent implements OnInit {
           this.noPrevious = true;
         }
       }
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -269,13 +263,11 @@ export class ListInventoryComponent implements OnInit {
     this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this._locId)
     .subscribe((res: Inventory[]) => {
       this.listInventory = res;
-      this.csvListInventory = this.csvListInventory.concat(this.listInventory);
-      this.loading = false;
+      this.csvListInventory = this.titleListInventory.concat(this.listInventory);
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
@@ -283,16 +275,14 @@ export class ListInventoryComponent implements OnInit {
     if(this._bottleLists) {
       this.searchList = this._bottleLists;
     } else {
-      this.loading = true;
+      this._valueShareService.setLoading(true);;
       this._materialService.fetchMaterialLists(MaterialTypeEn.bo).subscribe((res: Material[]) => {
         this._bottleLists = res;
         this.searchList = this._bottleLists;
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }, (err) => {
         console.error(err);
-        this.completeBody = `※ ${MaterialTypeJa.bo}データの取得に失敗しました。`;
-        this.completeBtnType = 'btn-danger';
-        this._openCompleteModal();
+        this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
       });
     }
   }
@@ -301,16 +291,14 @@ export class ListInventoryComponent implements OnInit {
     if (this._cartonLists) {
       this.searchList = this._cartonLists;
     } else {
-      this.loading = true;
+      this._valueShareService.setLoading(true);;
       this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
         this._cartonLists = res;
         this.searchList = this._cartonLists;
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }, (err) => {
         console.error(err);
-        this.completeBody = `※ ${MaterialTypeJa.ca}データの取得に失敗しました。`;
-        this.completeBtnType = 'btn-danger';
-        this._openCompleteModal();
+        this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
       });
     }
   }
@@ -319,16 +307,14 @@ export class ListInventoryComponent implements OnInit {
     if (this._labelLists) {
       this.searchList = this._labelLists;
     } else {
-      this.loading = true;
+      this._valueShareService.setLoading(true);;
       this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
         this._labelLists = res;
         this.searchList = this._labelLists;
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }, (err) => {
         console.error(err);
-        this.completeBody = `※ ${MaterialTypeJa.la}データの取得に失敗しました。`;
-        this.completeBtnType = 'btn-danger';
-        this._openCompleteModal();
+        this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
       });
     }
   }
@@ -337,16 +323,14 @@ export class ListInventoryComponent implements OnInit {
     if(this._triggerLists) {
       this.searchList = this._triggerLists;
     } else {
-      this.loading = true;
+      this._valueShareService.setLoading(true);;
       this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
         this._triggerLists = res;
         this.searchList = this._triggerLists;
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }, (err) => {
         console.error(err);
-        this.completeBody = `※ ${MaterialTypeJa.tr}データの取得に失敗しました。`;
-        this.completeBtnType = 'btn-danger';
-        this._openCompleteModal();
+        this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
       });
     }
   }
@@ -355,16 +339,14 @@ export class ListInventoryComponent implements OnInit {
     if(this._bagLists) {
       this.searchList = this._bagLists;
     } else {
-      this.loading = true;
+      this._valueShareService.setLoading(true);;
       this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
         this._bagLists = res;
         this.searchList = this._bagLists;
-        this.loading = false;
+        this._valueShareService.setLoading(false);;
       }, (err) => {
         console.error(err);
-        this.completeBody = `※ ${MaterialTypeJa.ba}データの取得に失敗しました。`;
-        this.completeBtnType = 'btn-danger';
-        this._openCompleteModal();
+        this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
       });
     }
   }
@@ -378,9 +360,7 @@ export class ListInventoryComponent implements OnInit {
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ 担当者情報のロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 担当者情報のロードに失敗しました。', 10000);
     });
   }
 
@@ -395,15 +375,13 @@ export class ListInventoryComponent implements OnInit {
       for (const l of this._listLocation) {
         locationCountCsv[l.id] = l.name;
       }
-      this.csvListInventory[0]['locationCount'] = locationCountCsv;
+      this.titleListInventory[0]['locationCount'] = locationCountCsv;
 
       this._locationLoaded = true; 
       this._checkLoaded();
     }, (err) => {
       console.error(err);
-      this.completeBody = `※ 倉庫のデータの取得に失敗しました。`;
-      this.completeBtnType = 'btn-danger';
-      this._openCompleteModal();
+      this._valueShareService.setCompleteModal('※ 倉庫のデータの取得に失敗しました。', 10000);
     });
   }
 
@@ -423,22 +401,7 @@ export class ListInventoryComponent implements OnInit {
 
   private _checkLoaded() {
     if (this._userLoaded && this._locationLoaded ) {
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }
-  }
-
-  private _openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this._closeCompleteModal();
-    },3000);
-  };
-
-  private _closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
   }
 }

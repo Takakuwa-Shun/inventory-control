@@ -18,11 +18,6 @@
         </thead>
         <tbody>  
           <tr>
-            <th scope="col">商品コード</th>
-            <td>{{product.id}}</td>
-            <td>{{product.id}}</td>
-          </tr>
-          <tr>
             <th scope="col">商品名</th>
             <td>{{product.name}}</td>
             <td>
@@ -329,7 +324,6 @@
     </form>
   </div>
 </div>
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 <app-confirm-modal
 [title]="confirmTitle"
 [bodyHtml]="confirmBody"
@@ -344,8 +338,3 @@
 [modalId]="deleteModal"
 (action)="delete()">
 </app-simple-modal>
-<app-complete-modal
-[body]="completeBody"
-[btnType]="completeBtnType"
-(action)="backToList()"
-></app-complete-modal>

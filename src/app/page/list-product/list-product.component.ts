@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductService } from './../../service/product-service/product.service';
 import { Product } from 'src/app/model/product';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -11,18 +12,16 @@ declare const $;
 })
 export class ListProductComponent implements OnInit {
 
-  public loading = true;
-
-  public completeBody: string; 
-  public completeBtnType: string;
-
   public listProduct: Product[];
   public csvListProduct: Product[];
 
   constructor(
     private router: Router,
     private productService: ProductService,
-  ) { }
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this.csvListProduct = [{
@@ -51,32 +50,14 @@ export class ListProductComponent implements OnInit {
     this.productService.fetchAllProducts().subscribe((res: Product[]) => {
       this.listProduct = res;
       this.csvListProduct = this.csvListProduct.concat(this.listProduct);
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
   goDetail(id: string) {
     this.router.navigate(['/product/detail/' + id]);
-  }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-  
+  }  
 }

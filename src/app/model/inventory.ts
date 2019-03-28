@@ -4,7 +4,7 @@ export interface Inventory {
 	id: string;
 	targetId: string;
 	targetName: string;
-	locationId: string;
+	arrLocationId: string[];
 	locationCount: object;
 	actionType: string;
 	actionDetail: string;
@@ -13,6 +13,7 @@ export interface Inventory {
 	date: Date;
 	userName: string;
 	memo: string;
+	latestPath: string;
 }
 
 export const ActionType = {
@@ -28,7 +29,7 @@ export function initInventory(): Inventory {
 		id: '',
 		targetId: '',
 		targetName: '',
-		locationId: '',
+		arrLocationId: [''],
 		locationCount: null,
 		actionType: '',
 		actionDetail: '',
@@ -36,7 +37,8 @@ export function initInventory(): Inventory {
 		sumCount: 0,
 		date: null,
 		userName: '',
-		memo: ''
+		memo: '',
+		latestPath: '',
 	}
 	return result;
 }

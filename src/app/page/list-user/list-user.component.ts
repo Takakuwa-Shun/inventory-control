@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { User } from './../../model/user';
 import { AuthService } from './../../service/auth-service/auth.service';
 import { UserService } from './../../service/user-service/user.service';
+import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 
 @Component({
@@ -11,11 +12,6 @@ declare const $;
   styleUrls: ['./list-user.component.css']
 })
 export class ListUserComponent implements OnInit {
-
-  public loading = true;
-
-  public completeBody: string; 
-  public completeBtnType: string;
 
   public listUser: User[];
   public csvListUser: User[] = [{
@@ -30,7 +26,10 @@ export class ListUserComponent implements OnInit {
     private _router: Router,
     private _userService: UserService,
     private _authService: AuthService,
-  ) { }
+    private _valueShareService: ValueShareService,
+  ) {
+    this._valueShareService.setLoading(true);
+   }
 
   ngOnInit() {
     this.fetchAllUsers();
@@ -45,44 +44,22 @@ export class ListUserComponent implements OnInit {
     this._userService.fetchAllUsers().subscribe((res: User[]) => {
       this.listUser = res;
       this.csvListUser = this.csvListUser.concat(this.listUser);
-      this.loading = false;
+      this._valueShareService.setLoading(false);;
     }, (err) => {
       console.error(err);
-      this.completeBody = '※ ロードに失敗しました。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
   }
 
   goDetail(id: string) {
     if (this._currentUser === undefined) {
-      this.completeBody = '※ データのロードに時間がかかっています。しばらく待ってからもう一度クリックしてください。';
-      this.completeBtnType = 'btn-danger';
-      this.openCompleteModal();
+      this._valueShareService.setCompleteModal('※ データのロードに時間がかかっています。しばらく待ってからもう一度クリックしてください。', 10000);
     } else {
       if (this._currentUser.uid.toString() === id.toString()) {
         this._router.navigate(['/user/detail/' + id]);
       } else {
-        this.completeBody = '※ 他人の詳細なので表示できません。';
-        this.completeBtnType = 'btn-danger';
-        this.openCompleteModal();
+        this._valueShareService.setCompleteModal('※ 他人の詳細なので表示できません。', 5000);
       }
     }
   }
-
-  private openCompleteModal(): void {
-    this.loading = false;
-    $('#CompleteModal').modal();
-
-    setTimeout(() =>{
-      this.closeCompleteModal();
-    },3000);
-  };
-
-  private closeCompleteModal(): void {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('#CompleteModal').modal('hide');
-  }
-
 }

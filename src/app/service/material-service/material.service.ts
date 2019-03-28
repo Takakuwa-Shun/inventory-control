@@ -1,10 +1,12 @@
 import { Injectable, Inject, LOCALE_ID } from '@angular/core';
 import { Material } from './../../model/material';
+import { Inventory } from './../../model/inventory';
 import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type'
 import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from 'angularfire2/firestore';
 import { FirebaseStorageService } from './../firebase-storage-service/firebase-storage.service';
+import { InventoryService } from './../inventory-service/inventory.service';
 import { formatDate } from '@angular/common';
 
 @Injectable({
@@ -21,6 +23,7 @@ export class MaterialService {
   }
 
   constructor(
+    private _inventoryService: InventoryService,
     private _firebaseStorageService: FirebaseStorageService,
     private _afStore: AngularFirestore,
     @Inject(LOCALE_ID) private _locale: string
@@ -87,10 +90,6 @@ export class MaterialService {
   public getFilePath(imageFile: File, date: Date): string {
     const dateImp = formatDate(date, "yyyyMMdd_HHmm", this._locale);
     return `images/material/${imageFile.name}_${dateImp}`;
-  }
-
-  public deleteMaterialImage(path: string): Observable<void> {
-    return this._firebaseStorageService.deleteFile(path);
   }
 
   public fetchMaterialLists(type: string): Observable<Material[]> {
@@ -174,7 +173,11 @@ export class MaterialService {
       return new Observable(observer => observer.error());
     }
 
-    const doc: AngularFirestoreDocument<Material> = this._afStore.doc(`${collectionPath}/${materialId}`);
-    return from(doc.delete());
+    const batch = this._afStore.firestore.batch();
+
+    const ref: firebase.firestore.DocumentReference = this._afStore.firestore.collection(collectionPath).doc(materialId);
+    batch.delete(ref);
+
+    return this._inventoryService.deleteAllInventoris(batch, materialId, type);
   }
 }

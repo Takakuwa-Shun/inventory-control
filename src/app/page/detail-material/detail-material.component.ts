@@ -32,7 +32,7 @@ export class DetailMaterialComponent implements OnInit {
 
   public readonly deleteBtnType = 'btn-danger';
   public readonly deleteModal = 'DeleteModal';
-  public readonly deleteBody = '本当に削除してもよろしいですか？';;
+  public readonly deleteBody = '削除を行うと、この資材に関する在庫ログも削除されます。本当に削除しますか？';
   public readonly deleteBtn = '削除';
 
   public completeBody: string;

@@ -31,7 +31,6 @@ export class SubHeaderComponent implements OnInit {
   @Input() showCsv: boolean;
   @Input() showPrint: boolean;
   @Input() csvData: object[];
-  @Input() userObj: object[];
   @Input() csvFileName: string;
   @Input() iconImageUrl: string;
   @Input() showImage: boolean = false;
@@ -211,17 +210,14 @@ export class SubHeaderComponent implements OnInit {
 
       let locationName: string;
       let date;
-      let user: string;
       if (cnt === 0) {
-        user = i.userId;
         locationName = i.locationId;
         date = i.date;
       } else {
-        user = this.userObj[i.userId];
         locationName = locationNameObj[i.locationId];
         date = formatDate(new firestore.Timestamp(i.date['seconds'], i.date['nanoseconds']).toDate(), "yy年MM月dd日", this._locale);
       }
-      csv += `${i.id}, ${i.targetId}, ${i.targetName}, ${i.actionType}, ${i.actionDetail}, ${user}, ${date}, ${i.memo}, ${i.addCount}, ${i.sumCount},  ${locationName}, ${locationCountCsv}\n`;
+      csv += `${i.id}, ${i.targetId}, ${i.targetName}, ${i.actionType}, ${i.actionDetail}, ${i.userName}, ${date}, ${i.memo}, ${i.addCount}, ${i.sumCount},  ${locationName}, ${locationCountCsv}\n`;
       ++cnt;
     }
     csv = csv.slice( 0, -2);

@@ -177,7 +177,7 @@ export class MoveInventoryComponent implements OnInit {
 
   public submit(): void {
     this.loading = true;
-    this.registerInventory.userId = this._loginUserData.uid;
+    this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.actionType = ActionType.move;
     this.registerInventory.actionDetail = `${this.selectedLocationBefore.name} → ${this.selectedLocationAfter.name}`;
     this.registerInventory.addCount = Number(this.registerInventory.addCount);

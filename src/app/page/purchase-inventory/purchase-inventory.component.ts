@@ -163,7 +163,7 @@ export class PurchaseInventoryComponent implements OnInit {
 
   public submit(): void {
     this.loading = true;
-    this.registerInventory.userId = this._loginUserData.uid;
+    this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.addCount = Number(this.registerInventory.addCount);
     this.registerInventory.sumCount +=  this.registerInventory.addCount;
     this.registerInventory.locationCount[this.registerInventory.locationId] += this.registerInventory.addCount;

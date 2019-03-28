@@ -170,38 +170,74 @@ export class DetailProductComponent implements OnInit {
 
       let bottleData: Material = initMaterial();
       if (this.product.bottleId !== null) {
-        bottleData = this.bottleLists.filter(val => val.id === this.product.bottleId)[0];
-        this.isBottleSelected = true;
+        const arrBottleData = this.bottleLists.filter(val => val.id === this.product.bottleId);
+        if (arrBottleData.length === 0) {
+          this.product.bottleId = null;
+          this.product.bottleName += ' (※ 削除されました)';
+        } else {
+          bottleData = arrBottleData[0];
+          this.isBottleSelected = true;
+        }
       }
 
       let cartonData: Material = initMaterial();
       if (this.product.cartonId !== null) {
-        cartonData = this.cartonLists.filter(val => val.id === this.product.cartonId)[0];
-        this.isCartonSelected = true;
+        const arrCartonData = this.cartonLists.filter(val => val.id === this.product.cartonId);
+        if (arrCartonData.length === 0) {
+          this.product.cartonId = null;
+          this.product.cartonName += ' (※ 削除されました)';
+        } else {
+          cartonData = arrCartonData[0];
+          this.isCartonSelected = true;
+        }
       }
 
       let labelData: Material = initMaterial();
       if (this.product.labelId !== null) {
-        labelData = this.labelLists.filter(val => val.id === this.product.labelId)[0];
-        this.isLabelSelected = true;
+        const arrLabelData = this.labelLists.filter(val => val.id === this.product.labelId);
+        if (arrLabelData.length === 0) {
+          this.product.labelId = null;
+          this.product.labelName += ' (※ 削除されました)';
+        } else {
+          labelData = arrLabelData[0];
+          this.isLabelSelected = true;
+        }
       }
 
       let triggerData: Material = initMaterial();
       if (this.product.triggerId !== null) {
-        triggerData = this.triggerLists.filter(val => val.id === this.product.triggerId)[0];
-        this.isTriggerSelected = true;
+        const arrTriggerData = this.triggerLists.filter(val => val.id === this.product.triggerId);
+        if (arrTriggerData.length === 0) {
+          this.product.triggerId = null;
+          this.product.triggerName += ' (※ 削除されました)';
+        } else {
+          triggerData = arrTriggerData[0];
+          this.isTriggerSelected = true;
+        }
       }
 
       let bagData: Material = initMaterial();
       if (this.product.bagId !== null) {
-        bagData = this.bagLists.filter(val => val.id === this.product.bagId)[0];
-        this.isBagSelected = true;
+        const arrBagData = this.bagLists.filter(val => val.id === this.product.bagId);
+        if (arrBagData.length === 0) {
+          this.product.bagId = null;
+          this.product.bagName += ' (※ 削除されました)';
+        } else {
+          bagData = arrBagData[0];
+          this.isBagSelected = true;
+        }
       }
 
       let companyData: Company = initCompany();
       if (this.product.companyId !== null) {
-        companyData = this.companyLists.filter(val => val.id === this.product.companyId)[0];
-        this.isCompanySelected = true;
+        const arrCompanyData = this.companyLists.filter(val => val.id === this.product.companyId);
+        if (arrCompanyData.length === 0) {
+          this.product.companyId = null;
+          this.product.companyName += ' (※ 削除されました)';
+        } else {
+          companyData = arrCompanyData[0];
+          this.isCompanySelected = true;
+        }
       }
 
       this.registerProduct = {

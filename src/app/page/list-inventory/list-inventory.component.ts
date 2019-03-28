@@ -26,7 +26,6 @@ export class ListInventoryComponent implements OnInit {
   private _userLoaded = false;
   private _locationLoaded = false;
 
-
   public completeBody: string; 
   public completeBtnType: string;
   public listInventory: Inventory[] = [];
@@ -65,6 +64,7 @@ export class ListInventoryComponent implements OnInit {
   public startDateStr: string;
   public endDateStr: string;
   public showDateAlert: boolean;
+  private _locId: string;
   public showLocationSumCount: boolean;
 
   public targetSearchPlaceholder: string = '先に資材タイプを選択してください。';
@@ -72,6 +72,9 @@ export class ListInventoryComponent implements OnInit {
 
   public showTarget: Material;
   public showTargetAlert: boolean;
+
+  public noNext: boolean = false;
+  public noPrevious: boolean = false;
 
   public readonly listTarget = [
     { value: MaterialTypeEn.bo, name: MaterialTypeJa.bo },
@@ -102,7 +105,7 @@ export class ListInventoryComponent implements OnInit {
       addCount: '数量',
       sumCount: '全倉庫合計',
       date: '日付',
-      userId: '担当者名',
+      userName: '担当者名',
       memo: '備考'
     }];
 
@@ -115,10 +118,6 @@ export class ListInventoryComponent implements OnInit {
     this.changeTargetType();
     this._fetchAllUser();
     this._fetchAllLocations();
-  }
-
-  public goMaterialDetail() {
-  
   }
 
   public search(): void {
@@ -172,6 +171,31 @@ export class ListInventoryComponent implements OnInit {
       this.changeTarget(data);
       this.search();
     }
+  }
+
+  public getFollowingList(isNext: boolean) {
+    this.loading = true;
+    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this._locId)
+    .subscribe((res: Inventory[]) => {
+      if (res.length > 0) {
+        this.noNext = false;
+        this.noPrevious = false;
+        this.listInventory = res;
+        this.csvListInventory = this.csvListInventory.concat(this.listInventory);
+      } else {
+        if (isNext) {
+          this.noNext = true;
+        } else {
+          this.noPrevious = true;
+        }
+      }
+      this.loading = false;
+    }, (err) => {
+      console.error(err);
+      this.completeBody = '※ ロードに失敗しました。';
+      this.completeBtnType = 'btn-danger';
+      this._openCompleteModal();
+    });
   }
 
   public changeDate() {
@@ -237,11 +261,12 @@ export class ListInventoryComponent implements OnInit {
   }
 
   private _fetchInventoryList(): void {
-    let locId: string = null;
-    if (this.selectedLocation.id !== null) {
-      locId = this.selectedLocation.id;
+    if (this.selectedLocation.id === null) {
+      this._locId = null;
+    } else {
+      this._locId = this.selectedLocation.id;
     }
-    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, locId)
+    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this._locId)
     .subscribe((res: Inventory[]) => {
       this.listInventory = res;
       this.csvListInventory = this.csvListInventory.concat(this.listInventory);

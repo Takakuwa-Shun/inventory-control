@@ -306,23 +306,23 @@ export class ManufactureInventoryComponent implements OnInit {
       this.completeBody = '各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。';
       this.completeBtnType = 'btn-danger';
       this._openCompleteModal();
-    } else if (this.latestBottleInventory.locationCount[this.selectedBottleLocation.id] < this.inputCount){
+    } else if (this.isBottleSelected && this.latestBottleInventory.locationCount[this.selectedBottleLocation.id] < this.inputCount){
       this.completeBody = `製造・出荷個数が多く、${this.detailProduct.bottleData.name}の${this.selectedBottleLocation.name}における在庫量が足りません。`;
       this.completeBtnType = 'btn-danger';
       this._openCompleteModal();
-    } else if(this.latestCartonInventory.locationCount[this.selectedCartonLocation.id] < this.inputCount) {
+    } else if(this.isCartonSelected && this.latestCartonInventory.locationCount[this.selectedCartonLocation.id] < this.inputCount) {
       this.completeBody = `製造・出荷個数が多く、${this.detailProduct.cartonData.name}の${this.selectedCartonLocation.name}における在庫量が足りません。`;
       this.completeBtnType = 'btn-danger';
       this._openCompleteModal();
-    } else if(this.latestLabelInventory.locationCount[this.selectedLabelLocation.id] < this.inputCount) {
+    } else if(this.isLabelSelected && this.latestLabelInventory.locationCount[this.selectedLabelLocation.id] < this.inputCount) {
       this.completeBody = `製造・出荷個数が多く、${this.detailProduct.labelData.name}の${this.selectedLabelLocation.name}における在庫量が足りません。`;
       this.completeBtnType = 'btn-danger';
       this._openCompleteModal();
-    } else if(this.latestTriggerInventory.locationCount[this.selectedTriggerLocation.id] < this.inputCount) {
+    } else if(this.isTriggerSelected && this.latestTriggerInventory.locationCount[this.selectedTriggerLocation.id] < this.inputCount) {
       this.completeBody = `製造・出荷個数が多く、${this.detailProduct.triggerData.name}の${this.selectedTriggerLocation.name}における在庫量が足りません。`;
       this.completeBtnType = 'btn-danger';
       this._openCompleteModal();
-    } else if(this.latestBagInventory.locationCount[this.selectedBagLocation.id] < this.inputCount) {
+    } else if(this.isBagSelected && this.latestBagInventory.locationCount[this.selectedBagLocation.id] < this.inputCount) {
       this.completeBody = `製造・出荷個数が多く、${this.detailProduct.bagData.name}の${this.selectedBagLocation.name}における在庫量が足りません。`;
       this.completeBtnType = 'btn-danger';
       this._openCompleteModal();
@@ -414,7 +414,7 @@ export class ManufactureInventoryComponent implements OnInit {
   public submit(): void {
     this.loading = true;
     const inventory: Inventory = initInventory();
-    inventory.userId = this._loginUserData.uid;
+    inventory.userName = this._loginUserData.displayName;
     inventory.date = this.inputDate;
     inventory.memo = this.inputMemo;
     inventory.addCount = Number(this.inputCount) * -1;
@@ -526,84 +526,107 @@ export class ManufactureInventoryComponent implements OnInit {
       this.detailProduct.nameKana = data.nameKana;
       this.detailProduct.lot = data.lot;
       this.detailProduct.imageUrl = data.imageUrl;
-      this.detailProduct.bottleData.id = data.bottleId;
-      this.detailProduct.bottleData.name = data.bottleName;
-      this.detailProduct.cartonData.id = data.cartonId;
-      this.detailProduct.cartonData.name = data.cartonName;
-      this.detailProduct.labelData.id = data.labelId;
-      this.detailProduct.labelData.name = data.labelName;
-      this.detailProduct.triggerData.id = data.triggerId;
-      this.detailProduct.triggerData.name = data.triggerName;
-      this.detailProduct.bagData.id = data.bagId;
-      this.detailProduct.bagData.name = data.bagName;
-      this.detailProduct.companyData.id = data.companyId;
-      this.detailProduct.companyData.name = data.companyName;
 
-      if (this.detailProduct.bottleData.id === null) {
+      const arrBottleData = this.bottleLists.filter(val => val.id === data.bottleId);
+      if (arrBottleData.length === 0) {
         this._bottleLoaded = true;
 
         this.isBottleSelected = false;
-        $('#bottle').val("");
+        if (data.bottleId === null) {
+          $('#bottle').val("");
+        } else {
+          $('#bottle').val(`${data.bottleName} (※削除されました)`);
+        }
         this.selectedBottleLocation = initLocation();
         this.isBottleLocationSelected = false;
         $('#bottle-location').val("");
       } else {
+        this.detailProduct.bottleData.id = data.bottleId;
+        this.detailProduct.bottleData.name = data.bottleName;
         this.isBottleSelected = true;
         $('#bottle').val(data.bottleName);
         this._fetchLatestBottleInventory(true);
       }
 
-      if (this.detailProduct.cartonData.id === null) {
+      const arrCartonData = this.cartonLists.filter(val => val.id === data.cartonId);
+      if (arrCartonData.length === 0) {
         this._cartonLoaded = true;
 
         this.isCartonSelected = false;
-        $('#carton').val("");
+        if (data.cartonId === null) {
+          $('#carton').val("");
+        } else {
+          $('#carton').val(`${data.cartonName} (※削除されました)`);
+        }
         this.selectedCartonLocation = initLocation();
         this.isCartonLocationSelected = false;
         $('#carton-location').val("");
       } else {
+        this.detailProduct.cartonData.id = data.cartonId;
+        this.detailProduct.cartonData.name = data.cartonName;
         this.isCartonSelected = true;
         $('#carton').val(data.cartonName);
         this._fetchLatestCartonInventory(true);
       }
 
-      if (this.detailProduct.labelData.id === null) {
+      const arrLabelData = this.labelLists.filter(val => val.id === data.labelId);
+      if (arrLabelData.length === 0) {
         this._labelLoaded = true;
 
         this.isLabelSelected = false;
-        $('#label').val("");
+        if (data.labelId === null) {
+          $('#label').val("");
+        } else {
+          $('#label').val(`${data.labelName} (※削除されました)`);
+        }
         this.selectedLabelLocation = initLocation();
         this.isLabelLocationSelected = false;
         $('#label-location').val("");
       } else {
+        this.detailProduct.labelData.id = data.labelId;
+        this.detailProduct.labelData.name = data.labelName;
         this.isLabelSelected = true;
         $('#label').val(data.labelName);
         this._fetchLatestLabelInventory(true);
       }
 
-      if (this.detailProduct.triggerData.id === null) {
+      const arrTriggerData = this.triggerLists.filter(val => val.id === data.triggerId);
+      if (arrTriggerData.length === 0) {
         this._triggerLoaded = true;
 
         this.isTriggerSelected = false;
-        $('#trigger').val("");
+        if (data.triggerId === null) {
+          $('#trigger').val("");
+        } else {
+          $('#trigger').val(`${data.triggerName} (※削除されました)`);
+        }
         this.selectedTriggerLocation = initLocation();
         this.isTriggerLocationSelected = false;
         $('#trigger-location').val("");
       } else {
+        this.detailProduct.triggerData.id = data.triggerId;
+        this.detailProduct.triggerData.name = data.triggerName;
         this.isTriggerSelected = true;
         $('#trigger').val(data.triggerName);
         this._fetchLatestTriggerInventory(true);
       }
 
-      if (this.detailProduct.bagData.id === null) {
+      const arrBagData = this.bagLists.filter(val => val.id === data.bagId);
+      if (arrBagData.length === 0) {
         this._bagLoaded = true;
 
         this.isBagSelected = false;
-        $('#bag').val("");
+        if (data.bagId === null) {
+          $('#bag').val("");
+        } else {
+          $('#bag').val(`${data.bagName} (※削除されました)`);
+        }
         this.selectedBagLocation = initLocation();
         this.isBagLocationSelected = false;
         $('#bag-location').val("");
       } else {
+        this.detailProduct.bagData.id = data.bagId;
+        this.detailProduct.bagData.name = data.bagName;
         this.isBagSelected = true;
         $('#bag').val(data.bagName);
         this._fetchLatestBagInventory(true);

@@ -5,11 +5,17 @@ import { MaterialTypeEn, MaterialTypeJa } from '../../model/material-type';
 import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from 'angularfire2/firestore';
+import { domRendererFactory3 } from '@angular/core/src/render3/interfaces/renderer';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
+
+  private static readonly LIMIT = 100;
+
+  private _startOfDocSnapshot: firebase.firestore.DocumentSnapshot;
+  private _endOfDocSnapshot: firebase.firestore.DocumentSnapshot;
 
   private static readonly CollectionPath = {
     bo: 'bottleInventories',
@@ -176,15 +182,37 @@ export class InventoryService {
       return from(docInventory.set(inventory));
     }
 
-    public deleteInventory(inventoryId: string, type: string): Observable<void> {
+    public deleteAllInventoris(batch: firebase.firestore.WriteBatch, targetId: string, type: string): Observable<void> {
 
       const collectionPath = this._getCollectionPath(type);
       if (collectionPath === null) {
         return new Observable(observer => observer.error());
       }
 
-      const docInventory: AngularFirestoreDocument<Inventory> = this._afStore.doc(`${collectionPath}/${inventoryId}`);
-      return from(docInventory.delete());
+      const queryFn: QueryFn = (ref: CollectionReference) => {
+        return ref.where('targetId', '==', targetId);
+      }
+
+      const collectionInventory: AngularFirestoreCollection<Inventory> = this._afStore.collection(`${collectionPath}/`, queryFn);
+
+      return new Observable(observer => {
+        collectionInventory.get().subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
+          querySnapshot.forEach((doc: firebase.firestore.DocumentSnapshot) => {
+            if (doc.exists) {
+              const ref: firebase.firestore.DocumentReference = doc.ref;
+              batch.delete(ref);
+            }
+          });
+          from(batch.commit()).subscribe(() => {
+            observer.next();
+            observer.complete();
+          },(err) =>{
+            observer.error(err);
+          })
+        })
+      });
+      
+
     }
 
     public fetchLatestInventoryByTargetId(type: string, targetId: string): Observable<Inventory> {
@@ -203,9 +231,21 @@ export class InventoryService {
       );
     }
 
+    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, filteredLocationId?: string): Observable<Inventory[]> {
+      const queryFn: QueryFn = (ref: CollectionReference) => {
+        if (isNext) {
+          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).startAfter(this._endOfDocSnapshot).limit(InventoryService.LIMIT);
+        } else {
+          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).endBefore(this._startOfDocSnapshot).limit(InventoryService.LIMIT);
+        }
+      }
+
+      return this._fetchInventories(type, queryFn, filteredLocationId);
+    }
+
     public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, filteredLocationId?: string): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
-        return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate);
+        return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).limit(InventoryService.LIMIT);
       }
 
       return this._fetchInventories(type, queryFn, filteredLocationId);
@@ -233,6 +273,11 @@ export class InventoryService {
               if (filteredLocationId === null || data.locationId === filteredLocationId) {
                 list.push(data);
               }
+            }
+            const arrDoc = querySnapshot.docs;
+            if (arrDoc.length > 0) {
+              this._startOfDocSnapshot = arrDoc[0];
+              this._endOfDocSnapshot = arrDoc[arrDoc.length - 1];
             }
           });
           return list;

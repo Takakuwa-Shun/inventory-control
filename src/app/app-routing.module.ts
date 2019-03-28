@@ -20,7 +20,6 @@ import { LoginComponent } from './page/login/login.component';
 import { RegisterUserComponent } from './page/register-user/register-user.component';
 import { ListMemoComponent } from './page/list-memo/list-memo.component';
 import { AuthGuard } from './guard/auth-guard/auth.guard';
-import { LoginedGuard } from './guard/logined-guard/logined.guard';
 import { ResetPasswordComponent } from './page/reset-password/reset-password.component';
 import { PurchaseInventoryComponent } from './page/purchase-inventory/purchase-inventory.component';
 import { ConsumeInventoryComponent } from './page/consume-inventory/consume-inventory.component';

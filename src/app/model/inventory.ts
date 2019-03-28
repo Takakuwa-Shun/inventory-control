@@ -11,7 +11,7 @@ export interface Inventory {
 	addCount: number;
 	sumCount: number;
 	date: Date;
-	userId: string;
+	userName: string;
 	memo: string;
 }
 
@@ -35,7 +35,7 @@ export function initInventory(): Inventory {
 		addCount: 0,
 		sumCount: 0,
 		date: null,
-		userId: '',
+		userName: '',
 		memo: ''
 	}
 	return result;

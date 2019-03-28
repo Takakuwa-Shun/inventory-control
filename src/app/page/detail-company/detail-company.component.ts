@@ -27,7 +27,7 @@ export class DetailCompanyComponent implements OnInit {
 
   public readonly deleteBtnType = 'btn-danger';
   public readonly deleteModal = 'DeleteModal';
-  public readonly deleteBody = '本当に削除してもよろしいですか？';;
+  public readonly deleteBody = '一部商品がこの得意先を参照している可能性があります。本当に削除しますか？';
   public readonly deleteBtn = '削除';
 
   public completeBody: string;
@@ -126,6 +126,7 @@ export class DetailCompanyComponent implements OnInit {
       },3000);
 
     }, (err: HttpResponse<string>) => {
+      console.error(err);
       this.completeBody = '※ 削除に失敗しました。';
       this.completeBtnType = 'btn-danger';
       this.openCompleteModal();

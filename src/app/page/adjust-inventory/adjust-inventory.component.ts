@@ -179,7 +179,7 @@ export class AdjustInventoryComponent implements OnInit {
     if (!this.isPositive) {
       this.registerInventory.addCount *= -1;
     }
-    this.registerInventory.userId = this._loginUserData.uid;
+    this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.sumCount +=  this.registerInventory.addCount;
     this.registerInventory.locationCount[this.registerInventory.locationId] += this.registerInventory.addCount;
     this._inventoryService.checkAndSaveInventory(this.registerInventory, this.selectType, this._limitCount).subscribe(() => {

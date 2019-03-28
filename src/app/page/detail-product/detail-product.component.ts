@@ -35,7 +35,8 @@ export class DetailProductComponent implements OnInit {
   public companyLists: Company[];
 
   public showBottleAlert: boolean = false;
-  public showCartonAlert: boolean = false;
+  public showInCartonAlert: boolean = false;
+  public showOutCartonAlert: boolean = false;
   public showLabelAlert: boolean = false;
   public showTriggerAlert: boolean = false;
   public showBagAlert: boolean = false;
@@ -43,7 +44,8 @@ export class DetailProductComponent implements OnInit {
 
   public isBagSelected: boolean = false;
   public isBottleSelected: boolean = false;
-  public isCartonSelected: boolean = false;
+  public isInCartonSelected: boolean = false;
+  public isOutCartonSelected: boolean = false;
   public isLabelSelected: boolean = false;
   public isTriggerSelected: boolean = false;
   public isCompanySelected: boolean = false;
@@ -167,15 +169,27 @@ export class DetailProductComponent implements OnInit {
         }
       }
 
-      let cartonData: Material = initMaterial();
-      if (this.product.cartonId !== null) {
-        const arrCartonData = this.cartonLists.filter(val => val.id === this.product.cartonId);
+      let inCartonData: Material = initMaterial();
+      if (this.product.inCartonId !== null) {
+        const arrCartonData = this.cartonLists.filter(val => val.id === this.product.inCartonId);
         if (arrCartonData.length === 0) {
-          this.product.cartonId = null;
-          this.product.cartonName += ' (※ 削除されました)';
+          this.product.inCartonId = null;
+          this.product.inCartonName += ' (※ 削除されました)';
         } else {
-          cartonData = arrCartonData[0];
-          this.isCartonSelected = true;
+          inCartonData = arrCartonData[0];
+          this.isInCartonSelected = true;
+        }
+      }
+
+      let outCartonData: Material = initMaterial();
+      if (this.product.outCartonId !== null) {
+        const arrCartonData = this.cartonLists.filter(val => val.id === this.product.outCartonId);
+        if (arrCartonData.length === 0) {
+          this.product.outCartonId = null;
+          this.product.outCartonName += ' (※ 削除されました)';
+        } else {
+          outCartonData = arrCartonData[0];
+          this.isOutCartonSelected = true;
         }
       }
 
@@ -231,10 +245,10 @@ export class DetailProductComponent implements OnInit {
         id: this.product.id,
         name: this.product.name,
         nameKana: this.product.nameKana,
-        lot: this.product.lot,
         imageUrl: this.product.imageUrl,
         bottleData: bottleData,
-        cartonData: cartonData,
+        inCartonData: inCartonData,
+        outCartonData: outCartonData,
         labelData: labelData,
         triggerData: triggerData,
         bagData: bagData,
@@ -261,9 +275,14 @@ export class DetailProductComponent implements OnInit {
       this.registerProduct.bottleData.name = '-';
     }
 
-    if (this.registerProduct.cartonData.id === '') {
-      this.registerProduct.cartonData.id = null;
-      this.registerProduct.cartonData.name = '-';
+    if (this.registerProduct.inCartonData.id === '') {
+      this.registerProduct.inCartonData.id = null;
+      this.registerProduct.inCartonData.name = '-';
+    }
+
+    if (this.registerProduct.outCartonData.id === '') {
+      this.registerProduct.outCartonData.id = null;
+      this.registerProduct.outCartonData.name = '-';
     }
 
     if (this.registerProduct.labelData.id === '') {
@@ -290,8 +309,8 @@ export class DetailProductComponent implements OnInit {
     <div class="container-fluid">
       <p>以下の内容で登録を修正しますか？</p>
       <div class="row">
-        <div class="col-4">コード</div>
-        <div class="col-8 pull-left">${this.product.id}</div>
+        <div class="col-4">得意先名</div>
+        <div class="col-8 pull-left">${this.registerProduct.companyData.name}</div>
       </div>
       <div class="row">
         <div class="col-4">名前</div>
@@ -306,28 +325,24 @@ export class DetailProductComponent implements OnInit {
         <div class="col-8 pull-left">${this.registerProduct.bottleData.name}</div>
       </div>
       <div class="row">
-        <div class="col-4">カートン名</div>
-        <div class="col-8 pull-left">${this.registerProduct.cartonData.name}</div>
+        <div class="col-4">トリガー名</div>
+        <div class="col-8 pull-left">${this.registerProduct.triggerData.name}</div>
       </div>
       <div class="row">
         <div class="col-4">ラベル名</div>
         <div class="col-8 pull-left">${this.registerProduct.labelData.name}</div>
       </div>
       <div class="row">
-        <div class="col-4">トリガー名</div>
-        <div class="col-8 pull-left">${this.registerProduct.triggerData.name}</div>
-      </div>
-      <div class="row">
         <div class="col-4">詰め替え袋名</div>
         <div class="col-8 pull-left">${this.registerProduct.bagData.name}</div>
       </div>
       <div class="row">
-        <div class="col-4">得意先名</div>
-        <div class="col-8 pull-left">${this.registerProduct.companyData.name}</div>
+        <div class="col-4">内側カートン名</div>
+        <div class="col-8 pull-left">${this.registerProduct.inCartonData.name}</div>
       </div>
       <div class="row">
-        <div class="col-4">ロット数</div>
-        <div class="col-8 pull-left">${this.registerProduct.lot}</div>
+        <div class="col-4">外側カートン名</div>
+        <div class="col-8 pull-left">${this.registerProduct.outCartonData.name}</div>
       </div>
       <div class="row">
         <div class="col-4">画像</div>
@@ -406,8 +421,6 @@ export class DetailProductComponent implements OnInit {
       console.error(err);
       this._valueShareService.setCompleteModal('※ 削除に失敗しました。');
     });
-
-
   }
 
   public imageLoadFailed() {
@@ -431,11 +444,17 @@ export class DetailProductComponent implements OnInit {
         this.isBottleSelected = false;
         $('#bottle').val("");
         break;
-      case MaterialTypeEn.ca:
-      case MaterialTypeJa.ca:
-        this.registerProduct.cartonData = initMaterial();
-        this.isCartonSelected = false;
-        $('#carton').val("");
+      case MaterialTypeEn.inCa:
+      case MaterialTypeJa.inCa:
+        this.registerProduct.inCartonData = initMaterial();
+        this.isInCartonSelected = false;
+        $('#inCarton').val("");
+        break;
+      case MaterialTypeEn.outCa:
+      case MaterialTypeJa.outCa:
+        this.registerProduct.outCartonData = initMaterial();
+        this.isOutCartonSelected = false;
+        $('#outCarton').val("");
         break;
       case MaterialTypeEn.la:
       case MaterialTypeJa.la:
@@ -482,16 +501,26 @@ export class DetailProductComponent implements OnInit {
           this.isBottleSelected = true;
         }
         break;
-      case MaterialTypeEn.ca:
-      case MaterialTypeJa.ca:
+      case MaterialTypeEn.inCa:
+      case MaterialTypeJa.inCa:
         if (typeof data === 'string') {
-          this.showCartonAlert = true;
+          this.showInCartonAlert = true;
         } else {
-          this.showCartonAlert = false;
-          this.registerProduct.cartonData = data;
-          this.isCartonSelected = true;
-          break;
+          this.showInCartonAlert = false;
+          this.registerProduct.inCartonData = data;
+          this.isInCartonSelected = true;
         }
+        break;
+      case MaterialTypeEn.outCa:
+      case MaterialTypeJa.outCa:
+        if (typeof data === 'string') {
+          this.showOutCartonAlert = true;
+        } else {
+          this.showOutCartonAlert = false;
+          this.registerProduct.outCartonData = data;
+          this.isOutCartonSelected = true;
+        }
+        break;
       case MaterialTypeEn.la:
       case MaterialTypeJa.la:
         if (typeof data === 'string') {

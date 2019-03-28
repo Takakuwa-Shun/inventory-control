@@ -6,6 +6,36 @@
   ></app-sub-header>
   <form #productForm="ngForm">
     <div class="form-group row">
+      <label for="company" class="col-sm-2 col-form-label">得意先</label>
+      <div class="col-sm-10">
+        <input
+        ngui-auto-complete
+        id="company"
+        class="form-control"
+        [source]="companyLists"
+        [list-formatter]="autocompleListFormatter.bind(this)"
+        loading-text="検索中"
+        no-match-found-text="該当する得意先はありません。"
+        placeholder="得意先名を検索してください"
+        auto-select-first-item="true"
+        display-property-name="name"
+        min-chars=0
+        (valueChanged)="selectMaterial($event, 'company')"
+        autocomplete="off"
+        aria-describedby="companyHelp"
+        >
+        <div class="alert alert-danger" *ngIf="showCompanyAlert">
+          ※ 検索結果候補から選択してください
+        </div>
+        <small id="companyHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
+        <span *ngIf="!isCompanySelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isCompanySelected">
+          <span *ngIf="isCompanySelected" class="badge badge-success">選択中</span>
+          <span class="auto-selected ml-2">{{registerProduct.companyData.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
       <label for="name" class="col-sm-2 col-form-label">商品名</label>
       <div class="col-sm-10">
         <input
@@ -42,116 +72,126 @@
       </div>
     </div>
     <div class="form-group row">
-      <label for="lot" class="col-sm-2 col-form-label">商品入り数</label>
-      <div class="col-sm-10">
-        <input
-        type="text"
-        class="form-control"
-        id="lot"
-        [(ngModel)]="registerProduct.lot"
-        name="lot"
-        placeholder="商品入り数を入力してください"
-        aria-describedby="lotHelp"
-        #lot="ngModel"
-        required
-        pattern="{{countPattern}}">
-        <div class="alert alert-danger" *ngIf="lot.errors && (lot.dirty || lot.touched)">
-          <div [hidden]="!lot.errors.required">※ 項目が未入力です</div>
-          <div [hidden]="!lot.errors.pattern">※ １以上の半角数字で入力してください</div>
-        </div>
-        <small id="lotHelp" class="form-text text-muted">指定がない場合、1を設定して下さい</small>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="company" class="col-sm-2 col-form-label">得意先</label>
-      <div class="col-sm-10">
-        <input
-        ngui-auto-complete
-        id="company"
-        class="form-control"
-        [source]="companyLists"
-        [list-formatter]="autocompleListFormatter.bind(this)"
-        loading-text="検索中"
-        no-match-found-text="該当する得意先はありません。"
-        placeholder="得意先名を検索してください"
-        auto-select-first-item="true"
-        display-property-name="name"
-        min-chars=0
-        (valueChanged)="selectMaterial($event, 'company')"
-        autocomplete="off"
-        aria-describedby="companyHelp"
-        >
-        <div class="alert alert-danger" *ngIf="showCompanyAlert">
-          ※ 検索結果候補から選択してください
-        </div>
-        <small id="companyHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
-        <span *ngIf="!isCompanySelected" class="badge badge-danger">未選択</span>
-        <div *ngIf="isCompanySelected">
-          <span *ngIf="isCompanySelected" class="badge badge-success">選択中</span>
-          <span class="auto-selected ml-2">{{registerProduct.companyData.name }}</span>
+      <label class="col-sm-2 col-form-label">本体 or 詰め替え</label>
+      <div class="col-sm-5">
+        <div class="form-check form-check-inline">
+          <input
+            type="radio"
+            name="body"
+            id="body"
+            class="form-check-input"
+            [(ngModel)]="isBody"
+            (change)="changeIsBody()"
+            [value]="true"
+            [checked]="isBody">
+          <label class="form-check-label pointer" for="body">本体</label>
+          <input
+            type="radio"
+            name="refill"
+            id="refill"
+            class="form-check-input"
+            (change)="changeIsBody()"
+            [(ngModel)]="isBody"
+            [value]="false"
+            [checked]="!isBody">
+          <label class="form-check-label pointer" for="refill">詰め替え</label>
         </div>
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bottle" class="col-sm-2 col-form-label">ボトル</label>
-      <div class="col-sm-10">
-        <input
-        ngui-auto-complete
-        id="bottle"
-        class="form-control"
-        [source]="bottleLists"
-        [list-formatter]="autocompleListFormatter.bind(this)"
-        loading-text="検索中"
-        no-match-found-text="該当するボトルはありません。"
-        placeholder="ボトル名を検索してください"
-        display-property-name="name"
-        min-chars=0
-        auto-select-first-item="true"
-        (valueChanged)="selectMaterial($event, 'bottle')"
-        autocomplete="off"
-        aria-describedby="bottleHelp"
-        >
-        <div class="alert alert-danger" *ngIf="showBottleAlert">
-          ※ 検索結果候補から選択してください
-        </div>
-        <small id="bottleHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
-        <span *ngIf="!isBottleSelected" class="badge badge-danger">未選択</span>
-        <div *ngIf="isBottleSelected">
-          <span class="badge badge-success">選択中</span>
-          <span class="auto-selected ml-2">{{registerProduct.bottleData.name }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="carton" class="col-sm-2 col-form-label">カートン</label>
-      <div class="col-sm-10">
-        <input
-        ngui-auto-complete
-        id="carton"
-        class="form-control"
-        [source]="cartonLists"
-        [list-formatter]="autocompleListFormatter.bind(this)"
-        loading-text="検索中"
-        no-match-found-text="該当するカートンはありません。"
-        placeholder="カートン名を検索してください"
-        auto-select-first-item="true"
-        display-property-name="name"
-        min-chars=0
-        (valueChanged)="selectMaterial($event, 'carton')"
-        autocomplete="off"
-        aria-describedby="cartonHelp"
-        >
-        <div class="alert alert-danger" *ngIf="showCartonAlert">
-          ※ 検索結果候補から選択してください
-        </div>
-        <small id="cartonHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
-        <span *ngIf="!isCartonSelected" class="badge badge-danger">未選択</span>
-        <div *ngIf="isCartonSelected">
-          <span class="badge badge-success">選択中</span>
-          <span class="auto-selected ml-2">{{registerProduct.cartonData.name }}</span>
+    <ng-container *ngIf="isBody; else isRefill">
+      <div class="form-group row">
+        <label for="bottle" class="col-sm-2 col-form-label">ボトル</label>
+        <div class="col-sm-10">
+          <input
+          ngui-auto-complete
+          id="bottle"
+          class="form-control"
+          [source]="bottleLists"
+          [list-formatter]="autocompleListFormatter.bind(this)"
+          loading-text="検索中"
+          no-match-found-text="該当するボトルはありません。"
+          placeholder="ボトル名を検索してください"
+          display-property-name="name"
+          min-chars=0
+          auto-select-first-item="true"
+          (valueChanged)="selectMaterial($event, 'bottle')"
+          autocomplete="off"
+          aria-describedby="bottleHelp"
+          >
+          <div class="alert alert-danger" *ngIf="showBottleAlert">
+            ※ 検索結果候補から選択してください
+          </div>
+          <small id="bottleHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
+          <span *ngIf="!isBottleSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="isBottleSelected">
+            <span class="badge badge-success">選択中</span>
+            <span class="auto-selected ml-2">{{registerProduct.bottleData.name }}</span>
+          </div>
         </div>
       </div>
-    </div>
+      <div class="form-group row">
+        <label for="trigger" class="col-sm-2 col-form-label">トリガー</label>
+        <div class="col-sm-10">
+          <input
+          ngui-auto-complete
+          id="trigger"
+          class="form-control"
+          [source]="triggerLists"
+          [list-formatter]="autocompleListFormatter.bind(this)"
+          loading-text="検索中"
+          no-match-found-text="該当するトリガーはありません。"
+          placeholder="トリガー名を検索してください"
+          auto-select-first-item="true"
+          display-property-name="name"
+          min-chars=0
+          (valueChanged)="selectMaterial($event, 'trigger')"
+          autocomplete="off"
+          aria-describedby="triggerHelp"
+          >
+          <div class="alert alert-danger" *ngIf="showTriggerAlert">
+            ※ 検索結果候補から選択してください
+          </div>
+          <small id="triggerHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
+          <span *ngIf="!isTriggerSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="isTriggerSelected">
+            <span class="badge badge-success">選択中</span>
+            <span class="auto-selected ml-2">{{registerProduct.triggerData.name }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #isRefill>
+      <div class="form-group row">
+        <label for="bag" class="col-sm-2 col-form-label">詰め替え袋</label>
+        <div class="col-sm-10">
+          <input
+          ngui-auto-complete
+          id="bag"
+          class="form-control"
+          [source]="bagLists"
+          [list-formatter]="autocompleListFormatter.bind(this)"
+          loading-text="検索中"
+          no-match-found-text="該当する詰め替え袋はありません。"
+          placeholder="詰め替え袋名を検索してください"
+          auto-select-first-item="true"
+          display-property-name="name"
+          min-chars=0
+          (valueChanged)="selectMaterial($event, 'bag')"
+          autocomplete="off"
+          aria-describedby="bagHelp"
+          >
+          <div class="alert alert-danger" *ngIf="showBagAlert">
+            ※ 検索結果候補から選択してください
+          </div>
+          <small id="bagHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
+          <span *ngIf="!isBagSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="isBagSelected">
+            <span class="badge badge-success">選択中</span>
+            <span class="auto-selected ml-2">{{registerProduct.bagData.name }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
     <div class="form-group row">
       <label for="label" class="col-sm-2 col-form-label">ラベル</label>
       <div class="col-sm-10">
@@ -183,62 +223,62 @@
       </div>
     </div>
     <div class="form-group row">
-      <label for="trigger" class="col-sm-2 col-form-label">トリガー</label>
+      <label for="inCarton" class="col-sm-2 col-form-label">内側カートン</label>
       <div class="col-sm-10">
         <input
         ngui-auto-complete
-        id="trigger"
+        id="inCarton"
         class="form-control"
-        [source]="triggerLists"
+        [source]="cartonLists"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
-        no-match-found-text="該当するトリガーはありません。"
-        placeholder="トリガー名を検索してください"
+        no-match-found-text="該当するカートンはありません。"
+        placeholder="カートン名を検索してください"
         auto-select-first-item="true"
         display-property-name="name"
         min-chars=0
-        (valueChanged)="selectMaterial($event, 'trigger')"
+        (valueChanged)="selectMaterial($event, 'inCarton')"
         autocomplete="off"
-        aria-describedby="triggerHelp"
+        aria-describedby="inCartonHelp"
         >
-        <div class="alert alert-danger" *ngIf="showTriggerAlert">
+        <div class="alert alert-danger" *ngIf="showInCartonAlert">
           ※ 検索結果候補から選択してください
         </div>
-        <small id="triggerHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
-        <span *ngIf="!isTriggerSelected" class="badge badge-danger">未選択</span>
-        <div *ngIf="isTriggerSelected">
+        <small id="inCartonHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
+        <span *ngIf="!isInCartonSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isInCartonSelected">
           <span class="badge badge-success">選択中</span>
-          <span class="auto-selected ml-2">{{registerProduct.triggerData.name }}</span>
+          <span class="auto-selected ml-2">{{registerProduct.inCartonData.name }}</span>
         </div>
       </div>
     </div>
     <div class="form-group row">
-      <label for="bag" class="col-sm-2 col-form-label">詰め替え袋</label>
+      <label for="outCarton" class="col-sm-2 col-form-label">外側カートン</label>
       <div class="col-sm-10">
         <input
         ngui-auto-complete
-        id="bag"
+        id="outCarton"
         class="form-control"
-        [source]="bagLists"
+        [source]="cartonLists"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
-        no-match-found-text="該当する詰め替え袋はありません。"
-        placeholder="詰め替え袋名を検索してください"
+        no-match-found-text="該当するカートンはありません。"
+        placeholder="カートン名を検索してください"
         auto-select-first-item="true"
         display-property-name="name"
         min-chars=0
-        (valueChanged)="selectMaterial($event, 'bag')"
+        (valueChanged)="selectMaterial($event, 'outCarton')"
         autocomplete="off"
-        aria-describedby="bagHelp"
+        aria-describedby="outCartonHelp"
         >
-        <div class="alert alert-danger" *ngIf="showBagAlert">
+        <div class="alert alert-danger" *ngIf="showOutCartonAlert">
           ※ 検索結果候補から選択してください
         </div>
-        <small id="bagHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
-        <span *ngIf="!isBagSelected" class="badge badge-danger">未選択</span>
-        <div *ngIf="isBagSelected">
+        <small id="outCartonHelp" class="form-text text-muted">指定がない場合、空欄でも構いません。</small>
+        <span *ngIf="!isOutCartonSelected" class="badge badge-danger">未選択</span>
+        <div *ngIf="isOutCartonSelected">
           <span class="badge badge-success">選択中</span>
-          <span class="auto-selected ml-2">{{registerProduct.bagData.name }}</span>
+          <span class="auto-selected ml-2">{{registerProduct.outCartonData.name }}</span>
         </div>
       </div>
     </div>

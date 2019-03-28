@@ -7,7 +7,7 @@
   [iconImageUrl]=imageSrc
   ></app-sub-header>
   <div class="table-responsive">
-    <form (ngSubmit)="submit()" #productForm="ngForm">
+    <form #productForm="ngForm">
       <table class="table table-sm table-bordered">
         <thead class="thead-light">
           <tr>
@@ -16,7 +16,41 @@
             <th scope="col">編集欄</th>
           </tr>
         </thead>
-        <tbody>  
+        <tbody>
+          <tr>
+            <th scope="col">得意先名</th>
+            <td><a routerLink="/company/detail/{{product.companyId}}">{{product.companyName}}</a></td>
+            <td>
+              <div class="form-group">
+                <input
+                ngui-auto-complete
+                id="company"
+                class="form-control"
+                [source]="companyLists"
+                [list-formatter]="autocompleListFormatter.bind(this)"
+                loading-text="検索中"
+                no-match-found-text="該当する得意先はありません。"
+                placeholder="得意先名を検索してください"
+                display-property-name="name"
+                min-chars=0                 
+                auto-select-first-item="true"
+                (valueChanged)="selectMaterial($event, 'company')"
+                autocomplete="off"
+                >
+                <div class="alert alert-danger" *ngIf="showCompanyAlert">
+                  ※ 検索結果候補から選択してください
+                </div>
+                <span *ngIf="!isCompanySelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isCompanySelected">
+                  <span *ngIf="isCompanySelected" class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.companyData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('company')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
           <tr>
             <th scope="col">商品名</th>
             <td>{{product.name}}</td>
@@ -58,30 +92,6 @@
             </td>
           </tr>
           <tr>
-            <th scope="col">商品入り数</th>
-            <td>{{product.lot}}</td>
-            <td>
-              <div class="form-group">
-                <input
-                type="text"
-                class="form-control"
-                id="lot"
-                [(ngModel)]="registerProduct.lot"
-                name="lot"
-                placeholder="商品入り数を入力してください"
-                aria-describedby="lotHelp"
-                #lot="ngModel"
-                required
-                pattern="{{countPattern}}">
-                <div class="alert alert-danger" *ngIf="lot.errors && (lot.dirty || lot.touched)">
-                  <div [hidden]="!lot.errors.required">※ 項目が未入力です</div>
-                  <div [hidden]="!lot.errors.pattern">※ １以上の半角数字で入力してください</div>
-                </div>
-                <small id="lotHelp" class="form-text text-muted">指定がない場合、1を設定して下さい</small>
-              </div>
-            </td>
-          </tr>
-          <tr>
             <th scope="col">ボトル名</th>
             <td><a routerLink="/material/detail/bottle/{{product.bottleId}}">{{product.bottleName}}</a></td>
             <td>
@@ -109,74 +119,6 @@
                   <span class="badge badge-success">選択中</span>
                   <span class="auto-selected ml-2">{{registerProduct.bottleData.name }}</span>
                   <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('bottle')" title="キャンセル">
-                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
-                  </span>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="col">カートン名</th>
-            <td><a routerLink="/material/detail/carton/{{product.cartonId}}">{{product.cartonName}}</a></td>
-            <td>
-              <div class="form-group">
-                <input
-                ngui-auto-complete
-                id="carton"
-                class="form-control"
-                [source]="cartonLists"
-                [list-formatter]="autocompleListFormatter.bind(this)"
-                loading-text="検索中"
-                no-match-found-text="該当するカートンはありません。"
-                placeholder="カートン名を検索してください"
-                display-property-name="name"
-                min-chars=0                 
-                auto-select-first-item="true"
-                (valueChanged)="selectMaterial($event, 'carton')"
-                autocomplete="off"
-                >
-                <div class="alert alert-danger" *ngIf="showCartonAlert">
-                  ※ 検索結果候補から選択してください
-                </div>
-                <span *ngIf="!isCartonSelected" class="badge badge-danger">未選択</span>
-                <div *ngIf="isCartonSelected">
-                  <span class="badge badge-success">選択中</span>
-                  <span class="auto-selected ml-2">{{registerProduct.cartonData.name }}</span>
-                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('carton')" title="キャンセル">
-                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
-                  </span>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="col">ラベル名</th>
-            <td><a routerLink="/material/detail/label/{{product.labelId}}">{{product.labelName}}</a></td>
-            <td>
-              <div class="form-group">
-                <input
-                ngui-auto-complete
-                id="label"
-                class="form-control"
-                [source]="labelLists"
-                [list-formatter]="autocompleListFormatter.bind(this)"
-                loading-text="検索中"
-                no-match-found-text="該当するラベルはありません。"
-                placeholder="ラベル名を検索してください"
-                display-property-name="name"
-                min-chars=0                 
-                auto-select-first-item="true"
-                (valueChanged)="selectMaterial($event, 'label')"
-                autocomplete="off"
-                >
-                <div class="alert alert-danger" *ngIf="showLabelAlert">
-                  ※ 検索結果候補から選択してください
-                </div>
-                <span *ngIf="!isLabelSelected" class="badge badge-danger">未選択</span>
-                <div *ngIf="isLabelSelected">
-                  <span class="badge badge-success">選択中</span>
-                  <span class="auto-selected ml-2">{{registerProduct.labelData.name }}</span>
-                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('label')" title="キャンセル">
                     <fa-icon [icon]="['fas', 'times']"></fa-icon>
                   </span>
                 </div>
@@ -218,6 +160,40 @@
             </td>
           </tr>
           <tr>
+            <th scope="col">ラベル名</th>
+            <td><a routerLink="/material/detail/label/{{product.labelId}}">{{product.labelName}}</a></td>
+            <td>
+              <div class="form-group">
+                <input
+                ngui-auto-complete
+                id="label"
+                class="form-control"
+                [source]="labelLists"
+                [list-formatter]="autocompleListFormatter.bind(this)"
+                loading-text="検索中"
+                no-match-found-text="該当するラベルはありません。"
+                placeholder="ラベル名を検索してください"
+                display-property-name="name"
+                min-chars=0                 
+                auto-select-first-item="true"
+                (valueChanged)="selectMaterial($event, 'label')"
+                autocomplete="off"
+                >
+                <div class="alert alert-danger" *ngIf="showLabelAlert">
+                  ※ 検索結果候補から選択してください
+                </div>
+                <span *ngIf="!isLabelSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isLabelSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.labelData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('label')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
             <th scope="col">詰め替え袋名</th>
             <td><a routerLink="/material/detail/bag/{{product.bagId}}">{{product.bagName}}</a></td>
             <td>
@@ -252,33 +228,67 @@
             </td>
           </tr>
           <tr>
-            <th scope="col">得意先名</th>
-            <td><a routerLink="/company/detail/{{product.companyId}}">{{product.companyName}}</a></td>
+            <th scope="col">内側カートン名</th>
+            <td><a routerLink="/material/detail/carton/{{product.inCartonId}}">{{product.inCartonName}}</a></td>
             <td>
               <div class="form-group">
                 <input
                 ngui-auto-complete
-                id="company"
+                id="inCarton"
                 class="form-control"
-                [source]="companyLists"
+                [source]="cartonLists"
                 [list-formatter]="autocompleListFormatter.bind(this)"
                 loading-text="検索中"
-                no-match-found-text="該当する得意先はありません。"
-                placeholder="得意先名を検索してください"
+                no-match-found-text="該当するカートンはありません。"
+                placeholder="カートン名を検索してください"
                 display-property-name="name"
                 min-chars=0                 
                 auto-select-first-item="true"
-                (valueChanged)="selectMaterial($event, 'company')"
+                (valueChanged)="selectMaterial($event, 'inCarton')"
                 autocomplete="off"
                 >
-                <div class="alert alert-danger" *ngIf="showCompanyAlert">
+                <div class="alert alert-danger" *ngIf="showInCartonAlert">
                   ※ 検索結果候補から選択してください
                 </div>
-                <span *ngIf="!isCompanySelected" class="badge badge-danger">未選択</span>
-                <div *ngIf="isCompanySelected">
-                  <span *ngIf="isCompanySelected" class="badge badge-success">選択中</span>
-                  <span class="auto-selected ml-2">{{registerProduct.companyData.name }}</span>
-                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('company')" title="キャンセル">
+                <span *ngIf="!isInCartonSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isInCartonSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.inCartonData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('inCarton')" title="キャンセル">
+                    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th scope="col">外側カートン名</th>
+            <td><a routerLink="/material/detail/carton/{{product.outCartonId}}">{{product.outCartonName}}</a></td>
+            <td>
+              <div class="form-group">
+                <input
+                ngui-auto-complete
+                id="outCarton"
+                class="form-control"
+                [source]="cartonLists"
+                [list-formatter]="autocompleListFormatter.bind(this)"
+                loading-text="検索中"
+                no-match-found-text="該当するカートンはありません。"
+                placeholder="カートン名を検索してください"
+                display-property-name="name"
+                min-chars=0                 
+                auto-select-first-item="true"
+                (valueChanged)="selectMaterial($event, 'outCarton')"
+                autocomplete="off"
+                >
+                <div class="alert alert-danger" *ngIf="showOutCartonAlert">
+                  ※ 検索結果候補から選択してください
+                </div>
+                <span *ngIf="!isOutCartonSelected" class="badge badge-danger">未選択</span>
+                <div *ngIf="isOutCartonSelected">
+                  <span class="badge badge-success">選択中</span>
+                  <span class="auto-selected ml-2">{{registerProduct.outCartonData.name }}</span>
+                  <span class="pointer ml-2" style="color: red" (click)="cancelMaterialSelected('outCarton')" title="キャンセル">
                     <fa-icon [icon]="['fas', 'times']"></fa-icon>
                   </span>
                 </div>

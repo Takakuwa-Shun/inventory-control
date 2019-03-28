@@ -73,10 +73,6 @@ export class DetailCompanyComponent implements OnInit {
     <div class="container-fluid">
       <p>以下の内容で登録を修正しますか？</p>
       <div class="row">
-        <div class="col-4">コード</div>
-        <div class="col-8 pull-left">${this.company.id}</div>
-      </div>
-      <div class="row">
         <div class="col-4">名前</div>
         <div class="col-8 pull-left">${this.registerCompany.name}</div>
       </div>

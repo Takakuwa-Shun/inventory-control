@@ -29,9 +29,6 @@ export class MoveInventoryComponent implements OnInit {
   private _memoLoaded = false;
   private _userLoaded = false;
 
-  private _isTimeoutError: boolean;
-  private _timer;
-
   private _loginUserData: User;
 
   public registerInventory: Inventory;
@@ -118,9 +115,7 @@ export class MoveInventoryComponent implements OnInit {
 
   public confirmRegister() {
     const addCount = Number(this.registerInventory.addCount);
-    if (this._isTimeoutError) {
-      this._valueShareService.setCompleteModal('各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。', 20000);
-    } else if (this.registerInventory.sumCount < addCount){
+    if (this.registerInventory.sumCount < addCount){
       this._valueShareService.setCompleteModal('移動個数が総在庫量よりも多いです。', 20000);
     } else if(this.registerInventory.locationCount[this.selectedLocationBefore.id] < addCount) {
       this._valueShareService.setCompleteModal('移動個数が移動前倉庫の在庫量よりも多いです', 20000);
@@ -175,14 +170,16 @@ export class MoveInventoryComponent implements OnInit {
     this.registerInventory.actionDetail = `${this.selectedLocationBefore.name} → ${this.selectedLocationAfter.name}`;
     this.registerInventory.addCount = Number(this.registerInventory.addCount);
     this.registerInventory.arrLocationId = [this.selectedLocationBefore.id, this.selectedLocationAfter.id];
-    this.registerInventory.locationCount[this.selectedLocationBefore.id] -= this.registerInventory.addCount;
-    this.registerInventory.locationCount[this.selectedLocationAfter.id] += this.registerInventory.addCount;
 
     this._inventoryService.saveInventory(this.registerInventory, this.selectType).subscribe(() => {
       this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
-    }, (err) => {
+    }, (err: string) => {
       console.error(err);
-      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      if(err.startsWith('※')) {
+        this._valueShareService.setCompleteModal(err, 20000);
+      } else {
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      }
     });
   }
 
@@ -296,6 +293,7 @@ export class MoveInventoryComponent implements OnInit {
     .subscribe((res: Inventory) => {
       const latestInventory = res;
       this.registerInventory.sumCount = res.sumCount;
+      this.registerInventory.latestPath = res.latestPath;
 
       if (latestInventory.locationCount === null) {
         latestInventory.locationCount = {};
@@ -303,16 +301,16 @@ export class MoveInventoryComponent implements OnInit {
           latestInventory.locationCount[l.id] = 0;
         });
       }
-      this.registerInventory.locationCount = latestInventory.locationCount;
 
-      //  timerをセットする
-      if (this._timer) {
-        clearTimeout(this._timer);
-        this._isTimeoutError = false;
+      // 新たに倉庫が追加されていた場合
+      if (this.locationList.length > Object.keys(latestInventory.locationCount).length) {
+        for(const location of this.locationList){
+          if (!Object.keys(latestInventory.locationCount).includes(location.id)) {
+            latestInventory.locationCount[location.id] = 0;
+          }
+        }
       }
-      this._timer = setTimeout(() => {
-        this._isTimeoutError = true;
-      }, 3 * 60 * 1000);
+      this.registerInventory.locationCount = latestInventory.locationCount;
 
       this._valueShareService.setLoading(false);
     }, (err) => {

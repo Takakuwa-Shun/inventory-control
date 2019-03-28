@@ -5,14 +5,14 @@ interface BaseProduct{
     id: string;
     name: string;
     nameKana: string;
-    lot: number | string;
     imageUrl: string;
 }
 
 export interface DetailProduct extends BaseProduct {
     companyData: Company;
     bottleData: Material;
-    cartonData: Material;
+    inCartonData: Material;
+    outCartonData: Material;
     labelData: Material;
     triggerData: Material;
     bagData: Material;
@@ -23,8 +23,10 @@ export interface Product extends BaseProduct {
     companyName: string;
     bottleId: string;
     bottleName: string;
-    cartonId: string;
-    cartonName: string;
+    inCartonId: string;
+    inCartonName: string;
+    outCartonId: string;
+    outCartonName: string;
     labelId: string;
     labelName: string;
     triggerId: string;
@@ -38,14 +40,15 @@ export function convertDetailProductToProduct(product: DetailProduct): Product {
         id: product.id,
         name: product.name.trim(),
         nameKana: product.nameKana.trim(),
-        lot: Number(product.lot),
         imageUrl: product.imageUrl,
         companyId: product.companyData.id,
         companyName: product.companyData.name,
         bottleId: product.bottleData.id,
         bottleName: product.bottleData.name,
-        cartonId: product.cartonData.id,
-        cartonName: product.cartonData.name,
+        inCartonId: product.inCartonData.id,
+        inCartonName: product.inCartonData.name,
+        outCartonId: product.outCartonData.id,
+        outCartonName: product.outCartonData.name,
         labelId: product.labelData.id,
         labelName: product.labelData.name,
         triggerId: product.triggerData.id,
@@ -58,7 +61,8 @@ export function convertDetailProductToProduct(product: DetailProduct): Product {
 export function initDetailProduct(): DetailProduct {
 
     const bo = initMaterial();
-    const ca = initMaterial();
+    const ca1 = initMaterial();
+    const ca2 = initMaterial();
     const la = initMaterial();
     const tr = initMaterial();
     const ba = initMaterial();
@@ -68,10 +72,10 @@ export function initDetailProduct(): DetailProduct {
         id: '',
         name: '',
         nameKana: '',
-        lot: 1,
         imageUrl: '',
         bottleData: bo,
-        cartonData: ca,
+        inCartonData: ca1,
+        outCartonData: ca2,
         labelData: la,
         triggerData: tr,
         bagData: ba,

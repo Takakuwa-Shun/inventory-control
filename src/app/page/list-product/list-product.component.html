@@ -11,27 +11,27 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">{{csvListProduct[0].name}}</th>
-          <th scope="col">{{csvListProduct[0].lot}}</th>
           <th scope="col">{{csvListProduct[0].companyName}}</th>
+          <th scope="col">{{csvListProduct[0].name}}</th>
           <th scope="col">{{csvListProduct[0].bottleName}}</th>
-          <th scope="col">{{csvListProduct[0].cartonName}}</th>
-          <th scope="col">{{csvListProduct[0].labelName}}</th>
           <th scope="col">{{csvListProduct[0].triggerName}}</th>
+          <th scope="col">{{csvListProduct[0].labelName}}</th>
           <th scope="col">{{csvListProduct[0].bagName}}</th>
+          <th scope="col">{{csvListProduct[0].inCartonName}}</th>
+          <th scope="col">{{csvListProduct[0].outCartonName}}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let p of listProduct; let i = index" (click)="goDetail(p.id)">
           <th class="pointer" scope="row">{{i+1}}</th>
-          <td class="pointer">{{p.name}}</td>
-          <td class="pointer">{{p.lot}} </td>
           <td class="pointer">{{p.companyName}} </td>
+          <td class="pointer">{{p.name}}</td>
           <td class="pointer">{{p.bottleName}} </td>
-          <td class="pointer">{{p.cartonName}} </td>
-          <td class="pointer">{{p.labelName}} </td>
           <td class="pointer">{{p.triggerName}} </td>
+          <td class="pointer">{{p.labelName}} </td>
           <td class="pointer">{{p.bagName}} </td>
+          <td class="pointer">{{p.inCartonName}} </td>
+          <td class="pointer">{{p.outCartonName}} </td>
         </tr>
       </tbody>
     </table>

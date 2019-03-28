@@ -17,9 +17,20 @@ export class ProductService {
     @Inject(LOCALE_ID) private _locale: string
     ) {}
 
-  fetchAllProducts(): Observable<Product[]> {
+  public fetchProductListFilteringCompany(companyId: string): Observable<Product[]>{
     const queryFn: QueryFn = (ref: CollectionReference) => {
-      return ref.orderBy('nameKana', 'asc');
+      return ref.orderBy('nameKana', 'asc').where('companyId','==', companyId);
+    }
+
+    return this.fetchAllProducts(queryFn);
+  }
+
+  public fetchAllProducts(queryFn?: QueryFn): Observable<Product[]> {
+
+    if(!queryFn) {
+      queryFn = (ref: CollectionReference) => {
+        return ref.orderBy('nameKana', 'asc');
+      }
     }
     let collectionProduct: AngularFirestoreCollection<Product> = this._afStore.collection('products/', queryFn);
     return collectionProduct.get().pipe(
@@ -61,13 +72,5 @@ export class ProductService {
   deleteProductById(productId: string): Observable<void> {
     const docProduct: AngularFirestoreDocument<Product> = this._afStore.doc(`products/${productId}`);
     return from(docProduct.delete());
-  }
-
-  fetchProductImage(path: string){
-    return this._firebaseStorageService.fecthDownloadUrl(path);
-  }
-
-  deleteProductImage(path: string) {
-    return this._firebaseStorageService.deleteFile(path);
   }
 }

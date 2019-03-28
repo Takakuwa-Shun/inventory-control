@@ -28,8 +28,6 @@ export class AdjustInventoryComponent implements OnInit {
   private _locationLoaded = false;
   private _memoLoaded = false;
   private _userLoaded = false;
-  private _isTimeoutError: boolean;
-  private _timer;
 
   private _loginUserData: User;
   private _limitCount: number;
@@ -95,7 +93,6 @@ export class AdjustInventoryComponent implements OnInit {
     this.registerInventory.id = this._afStore.createId();
     this.registerInventory.actionType = ActionType.adjust;
     this.registerInventory.addCount = null;
-    this._isTimeoutError = false;
 
     this.targetSearchPlaceholder = '先に資材タイプを選択してください。';
     this.targetNoMatchFoundText = '検索できません。先に資材タイプを選択してください。';
@@ -117,9 +114,7 @@ export class AdjustInventoryComponent implements OnInit {
   public confirmRegister() {
 
     this.registerInventory.addCount = Number(this.registerInventory.addCount);
-    if (this._isTimeoutError) {
-      this._valueShareService.setCompleteModal('各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。', 20000);
-    } else if (!this.isPositive && this.registerInventory.sumCount < this.registerInventory.addCount){
+    if (!this.isPositive && this.registerInventory.sumCount < this.registerInventory.addCount){
       this._valueShareService.setCompleteModal('マイナス調整にも関わらず、調整個数が総在庫量よりも多いです。', 20000);
     } else if(!this.isPositive && this.registerInventory.locationCount[this.registerInventory.arrLocationId[0]] < this.registerInventory.addCount) {
       this._valueShareService.setCompleteModal('マイナス調整にも関わらず、調整個数が該当倉庫の在庫量よりも多いです', 20000);
@@ -171,21 +166,27 @@ export class AdjustInventoryComponent implements OnInit {
     }
     this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.actionDetail = this.selectedLocationName;
-    this.registerInventory.sumCount +=  this.registerInventory.addCount;
-    this.registerInventory.locationCount[this.registerInventory.arrLocationId[0]] += this.registerInventory.addCount;
     if (this.isPositive) {
       this._inventoryService.saveInventory(this.registerInventory, this.selectType).subscribe(() => {
         this._valueShareService.setCompleteModal('※ 登録が完了しました。', 5000, 'btn-outline-success');
-      }, (err) => {
+      }, (err: string) => {
         console.error(err);
-        this._valueShareService.setCompleteModal('※ 登録に失敗しました。', 5000);
+        if(err.startsWith('※')) {
+          this._valueShareService.setCompleteModal(err, 20000);
+        } else {
+          this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+        }
       });
     } else {
       this._inventoryService.checkAndSaveInventory(this.registerInventory, this.selectType, this._limitCount).subscribe(() => {
         this._valueShareService.setCompleteModal('※ 登録が完了しました。', 5000, 'btn-outline-success');
-      }, (err) => {
+      }, (err: string) => {
         console.error(err);
-        this._valueShareService.setCompleteModal('※ 登録に失敗しました。', 5000);
+        if(err.startsWith('※')) {
+          this._valueShareService.setCompleteModal(err, 20000);
+        } else {
+          this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+        }
       });
     }
   }
@@ -285,6 +286,7 @@ export class AdjustInventoryComponent implements OnInit {
     this._inventoryService.fetchLatestInventoryByTargetId(this.selectType, this.registerInventory.targetId)
     .subscribe((res: Inventory) => {
       const latestInventory = res;
+      this.registerInventory.latestPath = res.latestPath;
       this.registerInventory.sumCount = res.sumCount;
 
       if (latestInventory.locationCount === null) {
@@ -293,16 +295,17 @@ export class AdjustInventoryComponent implements OnInit {
           latestInventory.locationCount[l.id] = 0;
         });
       }
-      this.registerInventory.locationCount = latestInventory.locationCount;
 
-      //  timerをセットする
-      if (this._timer) {
-        clearTimeout(this._timer);
-        this._isTimeoutError = false;
+      // 新たに倉庫が追加されていた場合
+      if (this.locationList.length > Object.keys(latestInventory.locationCount).length) {
+        for(const location of this.locationList){
+          if (!Object.keys(latestInventory.locationCount).includes(location.id)) {
+            latestInventory.locationCount[location.id] = 0;
+          }
+        }
       }
-      this._timer = setTimeout(() => {
-        this._isTimeoutError = true;
-      }, 3 * 60 * 1000);
+
+      this.registerInventory.locationCount = latestInventory.locationCount;
 
       this._valueShareService.setLoading(false);
     }, (err) => {

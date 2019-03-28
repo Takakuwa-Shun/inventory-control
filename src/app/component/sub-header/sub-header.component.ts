@@ -94,6 +94,8 @@ export class SubHeaderComponent implements OnInit {
         break;
     }
 
+    // console.log(csv)
+
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
     const blob = new Blob([ bom, csv], { "type" : "text/csv" });
     this.csvDataSrc = this._sanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(blob));
@@ -107,7 +109,7 @@ export class SubHeaderComponent implements OnInit {
     }
 
     // 商品の場合
-    if('lot' in obj) {
+    if('companyName' in obj) {
       return type.pr;
     }
 
@@ -146,8 +148,6 @@ export class SubHeaderComponent implements OnInit {
       const m = obj as Material;
       csv += `${m.name}, ${m.nameKana}, ${m.type}, ${m.limitCount}, ${m.imageUrl}\n`;
     });
-    csv = csv.slice( 0, -2);
-
     return csv;
   }
 
@@ -155,10 +155,8 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const p = obj as Product;
-      csv += `${p.name}, ${p.nameKana}, ${p.lot}, ${p.imageUrl}, ${p.bottleId}, ${p.bottleName}, ${p.cartonId}, ${p.cartonName}, ${p.labelId}, ${p.labelName}, ${p.triggerId}, ${p.triggerName}, ${p.bagId}, ${p.bagName}\n`;
+      csv += `${p.companyName}, ${p.name}, ${p.nameKana}, ${p.imageUrl}, ${p.bottleName}, ${p.triggerName}, ${p.labelName}, ${p.bagName}, ${p.inCartonName}, ${p.outCartonName}\n`;
     });
-    csv = csv.slice( 0, -2);
-
     return csv;
   }
 
@@ -168,8 +166,6 @@ export class SubHeaderComponent implements OnInit {
       const u = obj as User;
       csv += `${u.displayName}, ${u.email}\n`;
     });
-    csv = csv.slice( 0, -2);
-
     return csv;
   }
 
@@ -179,8 +175,6 @@ export class SubHeaderComponent implements OnInit {
       const m = obj as Memo;
       csv += `${m.content}\n`;
     });
-    csv = csv.slice( 0, -2);
-
     return csv;
   }
 
@@ -190,8 +184,6 @@ export class SubHeaderComponent implements OnInit {
       const c = obj as Company;
       csv += `${c.name}, ${c.nameKana}\n`;
     });
-    csv = csv.slice( 0, -2);
-
     return csv;
   }
 

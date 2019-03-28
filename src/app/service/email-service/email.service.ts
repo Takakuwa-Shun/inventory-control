@@ -31,7 +31,8 @@ export class EmailService {
       <p>※ このメールは自動送信です。返信しないで下さい。</p>`;
 
       mailList.forEach((mail: string) => {
-        this._sendEmail(mail, subject, body);
+        console.log(body);
+        // this._sendEmail(mail, subject, body);
       });
     });
 

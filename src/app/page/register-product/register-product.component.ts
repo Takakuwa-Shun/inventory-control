@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Product, DetailProduct, initDetailProduct } from '../../model/product';
 import { Company } from './../../model/company';
-import { Material } from './../../model/material';
+import { Material, initMaterial } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from './../../service/material-service/material.service';
 import { CompanyService } from './../../service/company-service/company.service';
@@ -35,17 +35,21 @@ export class RegisterProductComponent implements OnInit {
 
   public isBagSelected: boolean;
   public isBottleSelected: boolean;
-  public isCartonSelected: boolean;
+  public isInCartonSelected: boolean;
+  public isOutCartonSelected: boolean;
   public isLabelSelected: boolean;
   public isTriggerSelected: boolean;
   public isCompanySelected: boolean;
 
   public showBagAlert: boolean;
   public showBottleAlert: boolean;
-  public showCartonAlert: boolean;
+  public showInCartonAlert: boolean;
+  public showOutCartonAlert: boolean;
   public showLabelAlert: boolean;
   public showTriggerAlert: boolean;
   public showCompanyAlert: boolean;
+
+  public isBody: boolean;
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
   public readonly countPattern: string = '^[1-9][0-9]*$';
@@ -82,9 +86,14 @@ export class RegisterProductComponent implements OnInit {
       this.registerProduct.bottleData.name = '-';
     }
 
-    if (this.registerProduct.cartonData.id === '') {
-      this.registerProduct.cartonData.id = null;
-      this.registerProduct.cartonData.name = '-';
+    if (this.registerProduct.inCartonData.id === '') {
+      this.registerProduct.inCartonData.id = null;
+      this.registerProduct.inCartonData.name = '-';
+    }
+
+    if (this.registerProduct.outCartonData.id === '') {
+      this.registerProduct.outCartonData.id = null;
+      this.registerProduct.outCartonData.name = '-';
     }
 
     if (this.registerProduct.labelData.id === '') {
@@ -109,9 +118,33 @@ export class RegisterProductComponent implements OnInit {
 
     console.log(this.registerProduct);
 
+    let body: string;
+
+    if(this.isBody) {
+      body = `
+      <div class="row">
+        <div class="col-4">ボトル</div>
+        <div class="col-8 pull-left">${this.registerProduct.bottleData.name}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">トリガー</div>
+        <div class="col-8 pull-left">${this.registerProduct.triggerData.name}</div>
+      </div>`
+    } else {
+      body = `
+      <div class="row">
+        <div class="col-4">詰め替え袋</div>
+        <div class="col-8 pull-left">${this.registerProduct.bagData.name}</div>
+      </div>`
+    }
+
     this.confirmBody = `
     <div class="container-fluid">
       <p>以下の内容で登録してもよろしいでしょうか？</p>
+      <div class="row">
+        <div class="col-4">得意先</div>
+        <div class="col-8 pull-left">${this.registerProduct.companyData.name}</div>
+      </div>
       <div class="row">
         <div class="col-4">名前</div>
         <div class="col-8 pull-left">${this.registerProduct.name}</div>
@@ -120,33 +153,18 @@ export class RegisterProductComponent implements OnInit {
         <div class="col-4">かな</div>
         <div class="col-8 pull-left">${this.registerProduct.nameKana}</div>
       </div>
-      <div class="row">
-        <div class="col-4">ボトル</div>
-        <div class="col-8 pull-left">${this.registerProduct.bottleData.name}</div>
-      </div>
-      <div class="row">
-        <div class="col-4">カートン</div>
-        <div class="col-8 pull-left">${this.registerProduct.cartonData.name}</div>
-      </div>
+      ${body}
       <div class="row">
         <div class="col-4">ラベル</div>
         <div class="col-8 pull-left">${this.registerProduct.labelData.name}</div>
       </div>
       <div class="row">
-        <div class="col-4">トリガー</div>
-        <div class="col-8 pull-left">${this.registerProduct.triggerData.name}</div>
+        <div class="col-4">内側カートン</div>
+        <div class="col-8 pull-left">${this.registerProduct.inCartonData.name}</div>
       </div>
       <div class="row">
-        <div class="col-4">詰め替え袋</div>
-        <div class="col-8 pull-left">${this.registerProduct.bagData.name}</div>
-      </div>
-      <div class="row">
-        <div class="col-4">得意先</div>
-        <div class="col-8 pull-left">${this.registerProduct.companyData.name}</div>
-      </div>
-      <div class="row">
-        <div class="col-4">商品入り数</div>
-        <div class="col-8 pull-left">${this.registerProduct.lot}</div>
+        <div class="col-4">外側カートン</div>
+        <div class="col-8 pull-left">${this.registerProduct.outCartonData.name}</div>
       </div>
       <div class="row">
         <div class="col-4">画像</div>
@@ -162,14 +180,15 @@ export class RegisterProductComponent implements OnInit {
       id: this._afStore.createId(),
       name: this.registerProduct.name.trim(),
       nameKana: this.registerProduct.nameKana.trim(),
-      lot: Number(this.registerProduct.lot),
       imageUrl: '',
       companyId: this.registerProduct.companyData.id,
       companyName: this.registerProduct.companyData.name,
       bottleId: this.registerProduct.bottleData.id,
       bottleName: this.registerProduct.bottleData.name,
-      cartonId: this.registerProduct.cartonData.id,
-      cartonName: this.registerProduct.cartonData.name,
+      inCartonId: this.registerProduct.inCartonData.id,
+      inCartonName: this.registerProduct.inCartonData.name,
+      outCartonId: this.registerProduct.outCartonData.id,
+      outCartonName: this.registerProduct.outCartonData.name,
       labelId: this.registerProduct.labelData.id,
       labelName: this.registerProduct.labelData.name,
       triggerId: this.registerProduct.triggerData.id,
@@ -204,15 +223,19 @@ export class RegisterProductComponent implements OnInit {
   formInit() :void {
     this.registerProduct = initDetailProduct();
 
+    this.isBody = true;
+
     this.isBottleSelected = false;
-    this.isCartonSelected = false;
+    this.isInCartonSelected = false;
+    this.isOutCartonSelected = false;
     this.isLabelSelected = false;
     this.isTriggerSelected = false;
     this.isBagSelected = false;
     this.isCompanySelected = false;
   
     this.showBottleAlert = false;
-    this.showCartonAlert = false;
+    this.showInCartonAlert = false;
+    this.showOutCartonAlert = false;
     this.showLabelAlert = false;
     this.showTriggerAlert = false;
     this.showBagAlert = false;
@@ -227,6 +250,22 @@ export class RegisterProductComponent implements OnInit {
 
     this._selectedImage = undefined;
     this.isInitInputImage = true;
+  }
+
+  public changeIsBody() {
+    if(this.isBody) {
+      this.showBagAlert = false;
+      this.registerProduct.bagData = initMaterial(); 
+      this.isBagSelected = false;
+    } else {
+      this.showBottleAlert = false;
+      this.registerProduct.bottleData = initMaterial(); 
+      this.isBottleSelected = false;
+
+      this.showTriggerAlert = false;
+      this.registerProduct.triggerData = initMaterial(); 
+      this.isTriggerSelected = false;
+    }
   }
 
   autocompleListFormatter = (data: any) => {
@@ -245,16 +284,26 @@ export class RegisterProductComponent implements OnInit {
           this.isBottleSelected = true;
         }
         break;
-      case MaterialTypeEn.ca:
-      case MaterialTypeJa.ca:
+      case MaterialTypeEn.inCa:
+      case MaterialTypeJa.inCa:
         if (typeof data === 'string') {
-          this.showCartonAlert = true;
+          this.showInCartonAlert = true;
         } else {
-          this.showCartonAlert = false;
-          this.registerProduct.cartonData = data; 
-          this.isCartonSelected = true;
-          break;
+          this.showInCartonAlert = false;
+          this.registerProduct.inCartonData = data; 
+          this.isInCartonSelected = true;
         }
+      break;
+      case MaterialTypeEn.outCa:
+      case MaterialTypeJa.outCa:
+        if (typeof data === 'string') {
+          this.showOutCartonAlert = true;
+        } else {
+          this.showOutCartonAlert = false;
+          this.registerProduct.outCartonData = data; 
+          this.isOutCartonSelected = true;
+        }
+        break;
       case MaterialTypeEn.la:
       case MaterialTypeJa.la:
         if (typeof data === 'string') {

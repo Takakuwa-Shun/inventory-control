@@ -29,9 +29,6 @@ export class PurchaseInventoryComponent implements OnInit {
   private _memoLoaded = false;
   private _userLoaded = false;
 
-  private _isTimeoutError: boolean;
-  private _timer;
-
   private _loginUserData: User;
 
   public registerInventory: Inventory;
@@ -112,47 +109,43 @@ export class PurchaseInventoryComponent implements OnInit {
   }
 
   public createBody() {
-    if (this._isTimeoutError) {
-      this._valueShareService.setCompleteModal('各倉庫の最新情報を取得してから一定時間経過しました。最初からやり直して下さい。', 20000);
-    } else {
-      const date = new Date();
-      const showDate = formatDate(date, "yyyy/MM/dd (EEE) HH:mm", this._locale);
-      this.registerInventory.date = date;
-      this.confirmBody = `
-      <div class="container-fluid">
-        <p>以下の内容で登録してもよろしいでしょうか？</p>
-        <div class="row">
-          <div class="col-4">日時</div>
-          <div class="col-8 pull-left">${showDate}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">作業従事者名</div>
-          <div class="col-8 pull-left">${this._loginUserData.displayName}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">資材名</div>
-          <div class="col-8 pull-left">${this.registerInventory.targetName}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">仕入れ個数</div>
-          <div class="col-8 pull-left">${this.registerInventory.addCount}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">作業項目</div>
-          <div class="col-8 pull-left">${ActionType.purchase}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">作業詳細</div>
-          <div class="col-8 pull-left">${this.selectedLocationName}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">備考</div>
-          <div class="col-8 pull-left">${this.registerInventory.memo}</div>
-        </div>
-      </div>`;
+    const date = new Date();
+    const showDate = formatDate(date, "yyyy/MM/dd (EEE) HH:mm", this._locale);
+    this.registerInventory.date = date;
+    this.confirmBody = `
+    <div class="container-fluid">
+      <p>以下の内容で登録してもよろしいでしょうか？</p>
+      <div class="row">
+        <div class="col-4">日時</div>
+        <div class="col-8 pull-left">${showDate}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">作業従事者名</div>
+        <div class="col-8 pull-left">${this._loginUserData.displayName}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">資材名</div>
+        <div class="col-8 pull-left">${this.registerInventory.targetName}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">仕入れ個数</div>
+        <div class="col-8 pull-left">${this.registerInventory.addCount}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">作業項目</div>
+        <div class="col-8 pull-left">${ActionType.purchase}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">作業詳細</div>
+        <div class="col-8 pull-left">${this.selectedLocationName}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">備考</div>
+        <div class="col-8 pull-left">${this.registerInventory.memo}</div>
+      </div>
+    </div>`;
 
-      this._openConfirmModal();
-    }
+    this._openConfirmModal();
   }
 
   public submit(): void {
@@ -160,13 +153,15 @@ export class PurchaseInventoryComponent implements OnInit {
     this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.actionDetail = this.selectedLocationName;
     this.registerInventory.addCount = Number(this.registerInventory.addCount);
-    this.registerInventory.sumCount +=  this.registerInventory.addCount;
-    this.registerInventory.locationCount[this.registerInventory.arrLocationId[0]] += this.registerInventory.addCount;
     this._inventoryService.saveInventory(this.registerInventory, this.selectType).subscribe(() => {
       this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
-    }, (err) => {
+    }, (err: string) => {
       console.error(err);
-      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      if(err.startsWith('※')) {
+        this._valueShareService.setCompleteModal(err, 20000);
+      } else {
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      }
     });
   }
 
@@ -265,6 +260,7 @@ export class PurchaseInventoryComponent implements OnInit {
     this._inventoryService.fetchLatestInventoryByTargetId(this.selectType, this.registerInventory.targetId)
     .subscribe((res: Inventory) => {
       const latestInventory = res;
+      this.registerInventory.latestPath = res.latestPath;
       this.registerInventory.sumCount = res.sumCount;
 
       if (latestInventory.locationCount === null) {
@@ -273,17 +269,16 @@ export class PurchaseInventoryComponent implements OnInit {
           latestInventory.locationCount[l.id] = 0;
         });
       }
-      this.registerInventory.locationCount = latestInventory.locationCount;
 
-
-      //  timerをセットする
-      if (this._timer) {
-        clearTimeout(this._timer);
-        this._isTimeoutError = false;
+      // 新たに倉庫が追加されていた場合
+      if (this.locationList.length > Object.keys(latestInventory.locationCount).length) {
+        for(const location of this.locationList){
+          if (!Object.keys(latestInventory.locationCount).includes(location.id)) {
+            latestInventory.locationCount[location.id] = 0;
+          }
+        }
       }
-      this._timer = setTimeout(() => {
-        this._isTimeoutError = true;
-      }, 3 * 60 * 1000);
+      this.registerInventory.locationCount = latestInventory.locationCount;
 
       this._valueShareService.setLoading(false);
     }, (err) => {

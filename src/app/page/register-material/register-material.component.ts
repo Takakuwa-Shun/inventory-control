@@ -3,7 +3,7 @@ import { Material, initMaterial } from './../../model/material'
 import { MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from './../../service/material-service/material.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 

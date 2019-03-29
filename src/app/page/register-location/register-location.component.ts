@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Location, initLocation } from './../../model/location';
 import { LocationService } from './../../service/location-service/location.service';
 import { HttpResponse } from '@angular/common/http';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 

@@ -12,7 +12,7 @@ import { MemoService } from './../../service/memo-service/memo.service';
 import { InventoryService } from './../../service/inventory-service/inventory.service';
 import { AuthService } from './../../service/auth-service/auth.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 

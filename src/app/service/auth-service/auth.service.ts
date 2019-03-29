@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 import { Observable, of, from} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
@@ -13,6 +13,8 @@ import { UserRegister } from '../../model/user';
 })
 export class AuthService {
 
+
+  // _afAuth;
   public user: Observable<User | null>;
 
   constructor(

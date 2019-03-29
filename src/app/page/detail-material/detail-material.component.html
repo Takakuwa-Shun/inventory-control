@@ -86,7 +86,7 @@
             <td>{{material.type}}</td>
             <td>
               <div class="form-group">
-                <select class="form-control" id="type" [(ngModel)]="registerMaterial.type" name="type" #type="ngModel" pattern="{{typePattern}}">
+                <select class="form-control" id="type" [(ngModel)]="registerMaterial.type" name="type" #type="ngModel">
                   <option *ngFor="let type of materialType" [value]="type">{{type}}</option>
                 </select>
               </div>

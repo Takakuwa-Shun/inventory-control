@@ -2,7 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Material } from './../../model/material';
 import { MaterialTypeJa } from './../../model/material-type';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { MaterialService } from './../../service/material-service/material.service';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;

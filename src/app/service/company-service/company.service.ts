@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, from} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Company } from './../../model/company';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from '@angular/fire/firestore';
 import { firestore } from 'firebase';
 
 @Injectable({

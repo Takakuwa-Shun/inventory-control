@@ -3,7 +3,7 @@ import { Product } from '../../model/product';
 import { FirebaseStorageService } from './../firebase-storage-service/firebase-storage.service';
 import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from '@angular/fire/firestore';
 import { formatDate } from '@angular/common';
 
 @Injectable({

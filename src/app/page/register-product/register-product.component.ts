@@ -7,7 +7,7 @@ import { MaterialService } from './../../service/material-service/material.servi
 import { CompanyService } from './../../service/company-service/company.service';
 import { ProductService } from './../../service/product-service/product.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 

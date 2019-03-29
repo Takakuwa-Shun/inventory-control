@@ -28,7 +28,7 @@ export class ListInventoryComponent implements OnInit {
 
   public listInventory: Inventory[] = [];
   public csvListInventory: object[];
-  public readonly titleListInventory: object[] = [{
+  public readonly titleListInventory: any[] = [{
     date: '日付',
     userName: '担当者名',
     targetName: '対象の名前',

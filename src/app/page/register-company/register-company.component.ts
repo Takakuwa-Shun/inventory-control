@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Company, initCompany } from './../../model/company';
 import { CompanyService } from './../../service/company-service/company.service';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
 

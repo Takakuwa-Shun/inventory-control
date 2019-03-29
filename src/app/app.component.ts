@@ -8,16 +8,15 @@ declare const $;
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
-
   public loading: boolean = false;
 
   public completeBody: string; 
   public completeBtnType: string;
 
-
   constructor(
     private _valueShareService: ValueShareService
-  ){}
+  ){
+  }
 
   ngOnInit () {
     this._setLocading();

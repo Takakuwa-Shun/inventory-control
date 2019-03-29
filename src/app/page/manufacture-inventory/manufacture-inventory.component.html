@@ -290,6 +290,32 @@
           <small id="lotForInCartonHelp" class="form-text text-muted">内側カートン一個に入るロット数を指定して下さい。未入力の場合は1になります。</small>
         </div>
       </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">割り切れない際の端数</label>
+        <div class="col-sm-10">
+          <div class="form-check form-check-inline" aria-describedby="in-floor-help">
+            <input
+              type="radio"
+              name="in-ceil"
+              id="in-ceil"
+              class="form-check-input"
+              [(ngModel)]="isInCeil"
+              [value]="true"
+              [checked]="isInCeil">
+            <label class="form-check-label pointer" for="in-ceil">切り上げ（半端分で１カートン使用）</label>
+            <input
+              type="radio"
+              name="in-floor"
+              id="in-floor"
+              class="form-check-input ml-2"
+              [(ngModel)]="isInCeil"
+              [value]="false"
+              [checked]="!isInCeil">
+            <label class="form-check-label pointer" for="in-floor">切り捨て（半端分にはカートンを使用しない）</label>
+          </div>
+          <small id="in-floor-help" class="form-text text-muted">製造・出荷個数をロット数で割り切れない場合、カートンの使用個数を切り上げる(多)か切り捨てるか(少)を選択</small>
+        </div>
+      </div>
     </div>
     <div *ngIf="showOutCarton">
       <hr>
@@ -341,6 +367,32 @@
             <div [hidden]="!lotForOutCarton.errors.pattern">※ １以上の半角数字で入力してください</div>
           </div>
           <small id="lotForOutCartonHelp" class="form-text text-muted">外側カートン一個に入るロット数を指定して下さい。未入力の場合は1になります。</small>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">割り切れない際の端数</label>
+        <div class="col-sm-10">
+          <div class="form-check form-check-inline" aria-describedby="out-floor-help">
+            <input
+              type="radio"
+              name="out-ceil"
+              id="out-ceil"
+              class="form-check-input"
+              [(ngModel)]="isOutCeil"
+              [value]="true"
+              [checked]="isOutCeil">
+            <label class="form-check-label pointer" for="out-ceil">切り上げ（半端分で１カートン使用）</label>
+            <input
+              type="radio"
+              name="out-floor"
+              id="out-floor"
+              class="form-check-input ml-2"
+              [(ngModel)]="isOutCeil"
+              [value]="false"
+              [checked]="!isOutCeil">
+            <label class="form-check-label pointer" for="out-floor">切り捨て（半端分にはカートンを使用しない）</label>
+          </div>
+          <small id="out-floor-help" class="form-text text-muted">製造・出荷個数をロット数で割り切れない場合、カートンの使用個数を切り上げる(多)か切り捨てるか(少)を選択</small>
         </div>
       </div>
     </div>

@@ -4,8 +4,6 @@ import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type'
 import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from '@angular/fire/firestore';
-import { FirebaseStorageService } from './../firebase-storage-service/firebase-storage.service';
-import { InventoryService } from './../inventory-service/inventory.service';
 import { formatDate } from '@angular/common';
 
 @Injectable({
@@ -22,14 +20,12 @@ export class MaterialService {
   }
 
   constructor(
-    private _inventoryService: InventoryService,
-    private _firebaseStorageService: FirebaseStorageService,
     private _afStore: AngularFirestore,
     @Inject(LOCALE_ID) private _locale: string
     ) { }
 
 
-  private _getCollectionPath(type: string): string{  
+  public getCollectionPath(type: string): string{  
     switch (type) {
       case MaterialTypeEn.bo:
       case MaterialTypeJa.bo:
@@ -96,7 +92,7 @@ export class MaterialService {
       return ref.orderBy('nameKana', 'asc');
     }
 
-    const collectionPath = this._getCollectionPath(type);
+    const collectionPath = this.getCollectionPath(type);
     if (collectionPath === null) {
       return new Observable(observer => observer.error());
     }
@@ -122,7 +118,7 @@ export class MaterialService {
 
   public fetchMaterialById(materialId: string, type: string): Observable<Material> {
 
-    const collectionPath = this._getCollectionPath(type);
+    const collectionPath = this.getCollectionPath(type);
     if (collectionPath === null) {
       return new Observable(observer => observer.error());
     }
@@ -141,7 +137,7 @@ export class MaterialService {
 
   public saveMaterial(material: Material): Observable<void> {
 
-    const collectionPath = this._getCollectionPath(material.type);
+    const collectionPath = this.getCollectionPath(material.type);
     if (collectionPath === null) {
       return new Observable(observer => observer.error());
     }
@@ -155,7 +151,7 @@ export class MaterialService {
     const batch = this._afStore.firestore.batch();
 
     arrMaterial.forEach((material: Material) => {
-      const collectionPath = this._getCollectionPath(material.type);
+      const collectionPath = this.getCollectionPath(material.type);
       if (collectionPath !== null) {
         const ref: firebase.firestore.DocumentReference = this._afStore.firestore.collection(collectionPath).doc(material.id);
         batch.set(ref, material);
@@ -163,20 +159,5 @@ export class MaterialService {
     });
 
     return from(batch.commit());
-  }
-
-  public deleteMaterial(materialId: string, type: string): Observable<void> {
-
-    const collectionPath = this._getCollectionPath(type);
-    if (collectionPath === null) {
-      return new Observable(observer => observer.error());
-    }
-
-    const batch = this._afStore.firestore.batch();
-
-    const ref: firebase.firestore.DocumentReference = this._afStore.firestore.collection(collectionPath).doc(materialId);
-    batch.delete(ref);
-
-    return this._inventoryService.deleteAllInventoris(batch, materialId, type);
   }
 }

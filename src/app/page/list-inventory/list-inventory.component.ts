@@ -3,7 +3,7 @@ import { formatDate } from '@angular/common';
 import { Inventory } from '../../model/inventory';
 import { User } from '../../model/user';
 import { Location } from './../../model/location';
-import { Material } from './../../model/material';
+import { Material, initMaterial } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from '../../model/material-type';
 import { InventoryService } from './../../service/inventory-service/inventory.service';
 import { LocationService } from './../../service/location-service/location.service';
@@ -61,7 +61,8 @@ export class ListInventoryComponent implements OnInit {
   public listLocationForFilter: Location[] = [{
     id: null,
     name: '全て',
-    nameKana: 'すべて'
+    nameKana: 'すべて',
+    isFactory: false,
   }];
   public selectedLocation: Location;
 
@@ -166,6 +167,8 @@ export class ListInventoryComponent implements OnInit {
       const data = this._localStorage.getObject('showTarget');
       this.changeTarget(data);
       this.search();
+    } else {
+      this.showTarget = initMaterial();
     }
   }
 

@@ -29,7 +29,7 @@ export class ProductService {
 
     if(!queryFn) {
       queryFn = (ref: CollectionReference) => {
-        return ref.orderBy('nameKana', 'asc');
+        return ref.orderBy('companyName', 'asc').orderBy('nameKana', 'asc');
       }
     }
     let collectionProduct: AngularFirestoreCollection<Product> = this._afStore.collection('products/', queryFn);

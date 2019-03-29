@@ -90,7 +90,7 @@ export class DetailLocationComponent implements OnInit {
   }
 
   delete(): void {
-    this._valueShareService.setLoading(true);;
+    this._valueShareService.setLoading(true);
     this.locationService.deleteLocation(this.location.id).subscribe((res) => {
       this._valueShareService.setCompleteModal('削除が完了しました。5秒後に自動的に一覧へ遷移します。', 5000, 'btn-outline-success');
 

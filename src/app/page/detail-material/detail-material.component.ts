@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from 'src/app/service/material-service/material.service';
+import { InventoryService } from 'src/app/service/inventory-service/inventory.service';
 import { HttpResponse } from '@angular/common/http';
 import { Material, initMaterial } from 'src/app/model/material';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
@@ -44,6 +45,7 @@ export class DetailMaterialComponent implements OnInit {
     private materialService: MaterialService,
     private _firebaseStorageService: FirebaseStorageService,
     private _valueShareService: ValueShareService,
+    private _inventoryService: InventoryService
   ) {
     this._valueShareService.setLoading(true);
   }
@@ -166,7 +168,7 @@ export class DetailMaterialComponent implements OnInit {
 
   delete(): void {
     this._valueShareService.setLoading(true);;
-    this.materialService.deleteMaterial(this.material.id, this.material.type).subscribe((res) => {
+    this._inventoryService.deleteMaterialAndAllInventoris(this.material.id, this.material.type).subscribe((res) => {
       if(this.material.imageUrl !== '') {
         this._firebaseStorageService.deleteFile(this.material.imageUrl).subscribe(() => {
           this._valueShareService.setCompleteModal('削除が完了しました。5秒後に自動的に一覧へ遷移します。', 5000, 'btn-outline-success');

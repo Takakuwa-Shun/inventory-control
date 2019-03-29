@@ -116,8 +116,6 @@ export class RegisterProductComponent implements OnInit {
       this.registerProduct.companyData.name = '-';
     }
 
-    console.log(this.registerProduct);
-
     let body: string;
 
     if(this.isBody) {
@@ -242,7 +240,8 @@ export class RegisterProductComponent implements OnInit {
     this.showCompanyAlert = false;
 
     $('#bottle').val("");
-    $('#carton').val("");
+    $('#inCarton').val("");
+    $('#outCarton').val("");
     $('#label').val("");
     $('#trigger').val("");
     $('#bag').val("");

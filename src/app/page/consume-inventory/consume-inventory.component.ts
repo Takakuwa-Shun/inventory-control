@@ -161,7 +161,7 @@ export class ConsumeInventoryComponent implements OnInit {
     this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.actionDetail = this.selectedLocationName;
     this.registerInventory.addCount = Number(this.registerInventory.addCount) * -1;
-    this._inventoryService.checkAndSaveInventory(this.registerInventory, this.selectType, this._limitCount).subscribe(() => {
+    this._inventoryService.saveInventory(this.registerInventory, this.selectType, true, this._limitCount).subscribe(() => {
       this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err: string) => {
       console.error(err);

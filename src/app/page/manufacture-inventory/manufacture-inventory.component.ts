@@ -49,8 +49,8 @@ export class ManufactureInventoryComponent implements OnInit {
   public bagLists: Material[];
   public productList: Product[];
   public memoList: string[] = [];
-  public locationList: Location[];
   public companyList: Company[];
+  private _locationList: Location[];
 
   public latestBottleInventory: Inventory;
   public latestInCartonInventory: Inventory;
@@ -62,10 +62,14 @@ export class ManufactureInventoryComponent implements OnInit {
   public detailProduct: DetailProduct;
   public inputCount: number;
   public inputMemo: string;
+  public inputLocation: Location;
   public inCartonLot: number;
   public outCartonLot: number;
+  public isInCeil: boolean;
+  public isOutCeil: boolean;
+  private _inCartonCount: number;
+  private _outCartonCount: number;
   private _inputDate: Date;
-  private inputLocation: Location;
 
   public showBag: boolean;
   public showBottle: boolean;
@@ -134,6 +138,8 @@ export class ManufactureInventoryComponent implements OnInit {
     this.inputCount = null;
     this.inCartonLot = null;
     this.outCartonLot = null;
+    this.isInCeil = true;
+    this.isOutCeil = true;
     this.inputMemo = '';
 
     this.showBottle = false;
@@ -175,6 +181,27 @@ export class ManufactureInventoryComponent implements OnInit {
 
 
   public selectCompany(data: any) :void {
+    this.imageSrc = ManufactureInventoryComponent.NO_IMAGE_URL;
+    this.isProductSelected = false;
+    this.isBottleSelected = false;
+    this.isInCartonSelected = false;
+    this.isOutCartonSelected = false;
+    this.isLabelSelected = false;
+    this.isTriggerSelected = false;
+    this.showBottle = false;
+    this.showInCarton = false;
+    this.showOutCarton = false;
+    this.showLabel = false;
+    this.showTrigger = false;
+    this.showBag = false;
+    $('#product').val('');
+    $('#bottle').val("");
+    $('#inCarton').val("");
+    $('#outCarton').val("");
+    $('#label').val("");
+    $('#trigger').val("");
+    $('#bag').val("");
+
     if (typeof data === 'string') {
       this.showCompanyAlert = true;
     } else {
@@ -277,6 +304,8 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   public confirmRegister() {
+    this.inputCount = Number(this.inputCount);
+
     if (this.inCartonLot === null) {
       this.inCartonLot = 1;
     }
@@ -285,12 +314,14 @@ export class ManufactureInventoryComponent implements OnInit {
       this.outCartonLot = 1;
     }
 
-    this.inputCount = Number(this.inputCount);
+    this._inCartonCount = this.isInCeil ? Math.ceil(this.inputCount / Number(this.inCartonLot)) : Math.floor(this.inputCount / Number(this.inCartonLot));
+    this._outCartonCount = this.isOutCeil ? Math.ceil(this.inputCount / Number(this.outCartonLot)) : Math.floor(this.inputCount / Number(this.outCartonLot));
+
     if (this.isBottleSelected && this.latestBottleInventory.locationCount[this.inputLocation.id] < this.inputCount){
       this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.bottleData.name}の${this.inputLocation.name}における在庫量が足りません。`, 20000);
-    } else if(this.isInCartonSelected && this.latestInCartonInventory.locationCount[this.inputLocation.id] < this.inputCount) {
+    } else if(this.isInCartonSelected && this.latestInCartonInventory.locationCount[this.inputLocation.id] < this._inCartonCount) {
       this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.inCartonData.name}の${this.inputLocation.name}における在庫量が足りません。`, 20000);
-    } else if(this.isOutCartonSelected && this.latestOutCartonInventory.locationCount[this.inputLocation.id] < this.inputCount) {
+    } else if(this.isOutCartonSelected && this.latestOutCartonInventory.locationCount[this.inputLocation.id] < this._outCartonCount) {
       this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.outCartonData.name}の${this.inputLocation.name}における在庫量が足りません。`, 20000);
     } else if(this.isLabelSelected && this.latestLabelInventory.locationCount[this.inputLocation.id] < this.inputCount) {
       this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.labelData.name}の${this.inputLocation.name}における在庫量が足りません。`, 20000);
@@ -298,10 +329,6 @@ export class ManufactureInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.triggerData.name}の${this.inputLocation.name}における在庫量が足りません。`, 20000);
     } else if(this.isBagSelected && this.latestBagInventory.locationCount[this.inputLocation.id] < this.inputCount) {
       this._valueShareService.setCompleteModal(`製造・出荷個数が多く、${this.detailProduct.bagData.name}の${this.inputLocation.name}における在庫量が足りません。`, 20000);
-    } else if(this.isInCartonSelected && this.inputCount % this.inCartonLot !== 0) {
-      this._valueShareService.setCompleteModal(`製造・出荷個数は内側カートンの指定ロット数で割り切れる数を入力して下さい`, 20000);
-    } else if(this.isOutCartonSelected && this.inputCount % this.outCartonLot !== 0 ) {
-      this._valueShareService.setCompleteModal(`製造・出荷個数は外側カートンの指定ロット数で割り切れる数を入力して下さい`, 20000);
     } else {
       this._inputDate = new Date();
       const showDate = formatDate(this._inputDate, "yyyy/MM/dd (EEE) HH:mm", this._locale);
@@ -333,6 +360,10 @@ export class ManufactureInventoryComponent implements OnInit {
           <div class="col-4">内側カートンロット数</div>
           <div class="col-8 pull-left">${this.inCartonLot}</div>
         </div>
+        <div class="row">
+          <div class="col-4">内側カートン使用数</div>
+          <div class="col-8 pull-left">${this._inCartonCount}</div>
+        </div>
         `
       }
 
@@ -347,6 +378,10 @@ export class ManufactureInventoryComponent implements OnInit {
         <div class="row">
           <div class="col-4">外側カートンロット数</div>
           <div class="col-8 pull-left">${this.outCartonLot}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">外側カートン使用数</div>
+          <div class="col-8 pull-left">${this._outCartonCount}</div>
         </div>
         `
       }
@@ -453,8 +488,8 @@ export class ManufactureInventoryComponent implements OnInit {
       inCartonInventory.id = this._afStore.createId();
       inCartonInventory.targetId = this.detailProduct.inCartonData.id;
       inCartonInventory.targetName = this.detailProduct.inCartonData.name;
-      inCartonInventory.addCount = inventory.addCount / this.inCartonLot;
-      inCartonInventory.actionDetail = `${this.detailProduct.name}の製造(ロット数: ${this.inCartonLot})`;
+      inCartonInventory.addCount =  this._inCartonCount * -1;
+      inCartonInventory.actionDetail = `${this.detailProduct.name}の製造, ロット数: ${this.inCartonLot} (${this.isInCeil ? '切上げ' : '切捨て'})`;
       inCartonInventory.arrLocationId[0] = this.inputLocation.id;
       inCartonInventory.locationCount = this.latestInCartonInventory.locationCount;
       inCartonInventory.latestPath = this.latestInCartonInventory.latestPath;
@@ -466,8 +501,8 @@ export class ManufactureInventoryComponent implements OnInit {
       outCartonInventory.id = this._afStore.createId();
       outCartonInventory.targetId = this.detailProduct.outCartonData.id;
       outCartonInventory.targetName = this.detailProduct.outCartonData.name;
-      outCartonInventory.addCount = inventory.addCount / this.outCartonLot;
-      outCartonInventory.actionDetail = `${this.detailProduct.name}の製造(ロット数: ${this.outCartonLot})`;
+      outCartonInventory.addCount = this._outCartonCount * -1;
+      outCartonInventory.actionDetail = `${this.detailProduct.name}の製造, ロット数: ${this.outCartonLot} (${this.isOutCeil ? '切上げ' : '切捨て'})`;
       outCartonInventory.arrLocationId[0] = this.inputLocation.id;
       outCartonInventory.locationCount = this.latestOutCartonInventory.locationCount;
       outCartonInventory.latestPath = this.latestOutCartonInventory.latestPath;
@@ -564,8 +599,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }
       } else {
         this.showBottle = true;
-        this.detailProduct.bottleData.id = data.bottleId;
-        this.detailProduct.bottleData.name = data.bottleName;
+        this.detailProduct.bottleData = arrBottleData[0];
         $('#bottle').val(data.bottleName);
         this._fetchLatestBottleInventory(true);
       }
@@ -584,8 +618,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }
       } else {
         this.showInCarton = true;
-        this.detailProduct.inCartonData.id = data.inCartonId;
-        this.detailProduct.inCartonData.name = data.inCartonName;
+        this.detailProduct.inCartonData = arrInCartonData[0];
         $('#inCarton').val(data.inCartonName);
         this._fetchLatestCartonInventory(true, true);
       }
@@ -604,8 +637,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }
       } else {
         this.showOutCarton = true;
-        this.detailProduct.outCartonData.id = data.outCartonId;
-        this.detailProduct.outCartonData.name = data.outCartonName;
+        this.detailProduct.outCartonData = arrOutCartonData[0];
         $('#outCarton').val(data.outCartonName);
         this._fetchLatestCartonInventory(true, false);
       }
@@ -624,8 +656,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }
       } else {
         this.showLabel = true;
-        this.detailProduct.labelData.id = data.labelId;
-        this.detailProduct.labelData.name = data.labelName;
+        this.detailProduct.labelData = arrLabelData[0];
         $('#label').val(data.labelName);
         this._fetchLatestLabelInventory(true);
       }
@@ -644,8 +675,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }
       } else {
         this.showTrigger = true;
-        this.detailProduct.triggerData.id = data.triggerId;
-        this.detailProduct.triggerData.name = data.triggerName;
+        this.detailProduct.triggerData = arrTriggerData[0];
         $('#trigger').val(data.triggerName);
         this._fetchLatestTriggerInventory(true);
       }
@@ -664,8 +694,7 @@ export class ManufactureInventoryComponent implements OnInit {
         }
       } else {
         this.showBag = true;
-        this.detailProduct.bagData.id = data.bagId;
-        this.detailProduct.bagData.name = data.bagName;
+        this.detailProduct.bagData = arrBagData[0];
         $('#bag').val(data.bagName);
         this._fetchLatestBagInventory(true);
       }
@@ -694,14 +723,14 @@ export class ManufactureInventoryComponent implements OnInit {
       this.latestBottleInventory = res;
       if (this.latestBottleInventory.locationCount === null) {
         this.latestBottleInventory.locationCount = {};
-        for(const location of this.locationList) {
+        for(const location of this._locationList) {
           this.latestBottleInventory.locationCount[location.id] = 0
         }
       }
 
       // 新たに倉庫が追加されていた場合
-      if (this.locationList.length > Object.keys(this.latestBottleInventory.locationCount).length) {
-        for(const location of this.locationList){
+      if (this._locationList.length > Object.keys(this.latestBottleInventory.locationCount).length) {
+        for(const location of this._locationList){
           if (!Object.keys(this.latestBottleInventory.locationCount).includes(location.id)) {
             this.latestBottleInventory.locationCount[location.id] = 0;
           }
@@ -733,14 +762,14 @@ export class ManufactureInventoryComponent implements OnInit {
         this.latestInCartonInventory = res;
         if (this.latestInCartonInventory.locationCount === null) {
           this.latestInCartonInventory.locationCount = {};
-          for(const location of this.locationList) {
+          for(const location of this._locationList) {
             this.latestInCartonInventory.locationCount[location.id] = 0
           }
         }
 
         // 新たに倉庫が追加されていた場合
-        if (this.locationList.length > Object.keys(this.latestInCartonInventory.locationCount).length) {
-          for(const location of this.locationList){
+        if (this._locationList.length > Object.keys(this.latestInCartonInventory.locationCount).length) {
+          for(const location of this._locationList){
             if (!Object.keys(this.latestInCartonInventory.locationCount).includes(location.id)) {
               this.latestInCartonInventory.locationCount[location.id] = 0;
             }
@@ -750,14 +779,14 @@ export class ManufactureInventoryComponent implements OnInit {
         this.latestOutCartonInventory = res;
         if (this.latestOutCartonInventory.locationCount === null) {
           this.latestOutCartonInventory.locationCount = {};
-          for(const location of this.locationList) {
+          for(const location of this._locationList) {
             this.latestOutCartonInventory.locationCount[location.id] = 0
           }
         }
 
         // 新たに倉庫が追加されていた場合
-        if (this.locationList.length > Object.keys(this.latestOutCartonInventory.locationCount).length) {
-          for(const location of this.locationList){
+        if (this._locationList.length > Object.keys(this.latestOutCartonInventory.locationCount).length) {
+          for(const location of this._locationList){
             if (!Object.keys(this.latestOutCartonInventory.locationCount).includes(location.id)) {
               this.latestOutCartonInventory.locationCount[location.id] = 0;
             }
@@ -795,14 +824,14 @@ export class ManufactureInventoryComponent implements OnInit {
       this.latestLabelInventory = res;
       if (this.latestLabelInventory.locationCount === null) {
         this.latestLabelInventory.locationCount = {};
-        for(const location of this.locationList) {
+        for(const location of this._locationList) {
           this.latestLabelInventory.locationCount[location.id] = 0
         }
       }
 
       // 新たに倉庫が追加されていた場合
-      if (this.locationList.length > Object.keys(this.latestLabelInventory.locationCount).length) {
-        for(const location of this.locationList){
+      if (this._locationList.length > Object.keys(this.latestLabelInventory.locationCount).length) {
+        for(const location of this._locationList){
           if (!Object.keys(this.latestLabelInventory.locationCount).includes(location.id)) {
             this.latestLabelInventory.locationCount[location.id] = 0;
           }
@@ -831,14 +860,14 @@ export class ManufactureInventoryComponent implements OnInit {
       this.latestTriggerInventory = res;
       if (this.latestTriggerInventory.locationCount === null) {
         this.latestTriggerInventory.locationCount = {};
-        for(const location of this.locationList) {
+        for(const location of this._locationList) {
           this.latestTriggerInventory.locationCount[location.id] = 0
         }
       }
 
       // 新たに倉庫が追加されていた場合
-      if (this.locationList.length > Object.keys(this.latestTriggerInventory.locationCount).length) {
-        for(const location of this.locationList){
+      if (this._locationList.length > Object.keys(this.latestTriggerInventory.locationCount).length) {
+        for(const location of this._locationList){
           if (!Object.keys(this.latestTriggerInventory.locationCount).includes(location.id)) {
             this.latestTriggerInventory.locationCount[location.id] = 0;
           }
@@ -867,14 +896,14 @@ export class ManufactureInventoryComponent implements OnInit {
       this.latestBagInventory = res;
       if (this.latestBagInventory.locationCount === null) {
         this.latestBagInventory.locationCount = {};
-        for(const location of this.locationList) {
+        for(const location of this._locationList) {
           this.latestBagInventory.locationCount[location.id] = 0
         }
       }
 
       // 新たに倉庫が追加されていた場合
-      if (this.locationList.length > Object.keys(this.latestBagInventory.locationCount).length) {
-        for(const location of this.locationList){
+      if (this._locationList.length > Object.keys(this.latestBagInventory.locationCount).length) {
+        for(const location of this._locationList){
           if (!Object.keys(this.latestBagInventory.locationCount).includes(location.id)) {
             this.latestBagInventory.locationCount[location.id] = 0;
           }
@@ -985,8 +1014,8 @@ export class ManufactureInventoryComponent implements OnInit {
     });
 
     this._locationService.fetchLocations().subscribe((res) => {
-      this.locationList = res;
-      this.inputLocation = res[0];
+      this._locationList = res;
+      this.inputLocation = this._locationList.filter(val => val.isFactory)[0];
       this._locationLoaded = true; 
       this._checkLoaded();
     }, (err) => {

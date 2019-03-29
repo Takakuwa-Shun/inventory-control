@@ -28,6 +28,7 @@ export class ListLocationComponent implements OnInit {
       id: '倉庫コード',
       name: '倉庫名',
       nameKana: '倉庫名かな',
+      isFactory: false,
     }];
     this.fetchAllLocations();
   }

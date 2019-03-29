@@ -97,7 +97,8 @@ export class SubHeaderComponent implements OnInit {
     // console.log(csv)
 
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([ bom, csv], { "type" : "text/csv" });
+    const option: BlobPropertyBag = { "type" : "text/csv" };
+    const blob = new Blob([ bom, csv], option);
     this.csvDataSrc = this._sanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(blob));
   }
 

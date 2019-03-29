@@ -166,29 +166,17 @@ export class AdjustInventoryComponent implements OnInit {
     }
     this.registerInventory.userName = this._loginUserData.displayName;
     this.registerInventory.actionDetail = this.selectedLocationName;
-    if (this.isPositive) {
-      this._inventoryService.saveInventory(this.registerInventory, this.selectType).subscribe(() => {
-        this._valueShareService.setCompleteModal('※ 登録が完了しました。', 5000, 'btn-outline-success');
-      }, (err: string) => {
-        console.error(err);
-        if(err.startsWith('※')) {
-          this._valueShareService.setCompleteModal(err, 20000);
-        } else {
-          this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
-        }
-      });
-    } else {
-      this._inventoryService.checkAndSaveInventory(this.registerInventory, this.selectType, this._limitCount).subscribe(() => {
-        this._valueShareService.setCompleteModal('※ 登録が完了しました。', 5000, 'btn-outline-success');
-      }, (err: string) => {
-        console.error(err);
-        if(err.startsWith('※')) {
-          this._valueShareService.setCompleteModal(err, 20000);
-        } else {
-          this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
-        }
-      });
-    }
+    
+    this._inventoryService.saveInventory(this.registerInventory, this.selectType, !this.isPositive, this._limitCount).subscribe(() => {
+      this._valueShareService.setCompleteModal('※ 登録が完了しました。', 5000, 'btn-outline-success');
+    }, (err: string) => {
+      console.error(err);
+      if(err.startsWith('※')) {
+        this._valueShareService.setCompleteModal(err, 20000);
+      } else {
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      }
+    });
   }
 
   public selectMaterial(data: Material) :void {

@@ -46,7 +46,7 @@ export class EmailService {
       Subject : subject,
       Body : body
     }).then((msg: string) => {
-      console.log(msg);
+      console.log('email sent');
       if (msg !== 'OK') {
         console.error(msg);
       }

@@ -1,7 +1,7 @@
 import { Injectable, Inject, LOCALE_ID } from '@angular/core';
 import { Product } from '../../model/product';
 import { FirebaseStorageService } from './../firebase-storage-service/firebase-storage.service';
-import { Observable, from, of } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from '@angular/fire/firestore';
 import { formatDate } from '@angular/common';

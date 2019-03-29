@@ -3,7 +3,6 @@ import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Location } from './../../model/location';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from '@angular/fire/firestore';
-import { firestore } from 'firebase';
 
 @Injectable({
   providedIn: 'root'

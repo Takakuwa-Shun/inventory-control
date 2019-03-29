@@ -1,6 +1,5 @@
 import { Injectable, Inject, LOCALE_ID } from '@angular/core';
 import { Material } from './../../model/material';
-import { Inventory } from './../../model/inventory';
 import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type'
 import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';

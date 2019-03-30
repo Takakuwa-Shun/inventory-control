@@ -87,10 +87,10 @@ export class ListInventoryComponent implements OnInit {
 
   public readonly listTarget = [
     { value: MaterialTypeEn.bo, name: MaterialTypeJa.bo },
-    { value: MaterialTypeEn.ca, name: MaterialTypeJa.ca },
-    { value: MaterialTypeEn.la, name: MaterialTypeJa.la },
     { value: MaterialTypeEn.tr, name: MaterialTypeJa.tr },
+    { value: MaterialTypeEn.la, name: MaterialTypeJa.la },
     { value: MaterialTypeEn.ba, name: MaterialTypeJa.ba },
+    { value: MaterialTypeEn.ca, name: MaterialTypeJa.ca },
   ];
 
   constructor(

@@ -14,7 +14,7 @@ declare const $;
 })
 export class RegisterMaterialFromFileComponent implements OnInit {
 
-  private readonly _nameKanaPattern: RegExp = /^[ -~-ぁ-ん-ー]*$/;
+  private readonly x: RegExp = /^[ -~-ぁ-ん-ー]*$/;
   private readonly _materialType =  [MaterialTypeJa.bo, MaterialTypeJa.ca, MaterialTypeJa.la, MaterialTypeJa.tr, MaterialTypeJa.ba];
 
   public csvDataSrc: SafeUrl;
@@ -123,39 +123,40 @@ export class RegisterMaterialFromFileComponent implements OnInit {
       const dataArr = reader.result.toString().split('\n').slice(1);
       for(const str of dataArr) {
 
-      const arr = str.split(',');
+        const arr = str.split(',');
 
-      if (arr.length !== 4) {
-        this._showError = true;
-        this._errorMsg = 'フォーマットに従い、1行につき4項目のデータを入力して下さい';
-        break;
-      }
-
-      // NaN, 0<= の場合
-      if (!(Number(arr[3]) > 0)) {
-        this._showError = true;
-        this._errorMsg = 'フラグには1以上の半角数字のみを入力して下さい。';
-        break;
-      }
-
-      // タイプチェック
-      if (this._materialType.indexOf(arr[2]) === -1) {
-        this._showError = true;
-        this._errorMsg = '種別にはボトル、カートン、ラベル、トリガー、詰め替え袋のいずれかの値を入力して下さい。';
-        break;
-      }
-
-      const material: Material = {
-        id: this._afStore.createId(),
-        name: arr[0].trim(),
-        nameKana: arr[1].trim(),
-        type: arr[2],
-        limitCount: Number(arr[3]),
-        imageUrl: ''
-      }
-      this._registerMaterials.push(material);
+        if(arr[0] !== '') {
+          if (arr.length !== 4) {
+            this._showError = true;
+            this._errorMsg = `${arr[0]}の資材に関して、フォーマットに従い、1行につき4項目のデータを入力して下さい`;
+            break;
+          }
+    
+          // NaN, 0<= の場合
+          if (!(Number(arr[3]) > 0)) {
+            this._showError = true;
+            this._errorMsg = `${arr[0]}の資材に関して、フラグには1以上の半角数字のみを入力して下さい。`;
+            break;
+          }
+    
+          // タイプチェック
+          if (this._materialType.indexOf(arr[2]) === -1) {
+            this._showError = true;
+            this._errorMsg = `${arr[0]}の資材に関して、種別にはボトル、カートン、ラベル、トリガー、詰め替え袋のいずれかの値を入力して下さい。`;
+            break;
+          }
+    
+          const material: Material = {
+            id: this._afStore.createId(),
+            name: arr[0].trim(),
+            nameKana: arr[1].trim(),
+            type: arr[2],
+            limitCount: Number(arr[3]),
+            imageUrl: ''
+          }
+          this._registerMaterials.push(material);
+        }
       };
-      console.log(dataArr);
       console.log(this._registerMaterials);
       this.showConfirm = true;
       this._valueShareService.setLoading(false);

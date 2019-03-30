@@ -29,10 +29,10 @@ export class ListMaterialComponent implements OnInit {
 
   public readonly materials = [
     { value: 'bottle', name: MaterialTypeJa.bo },
-    { value: 'carton', name: MaterialTypeJa.ca },
-    { value: 'label', name: MaterialTypeJa.la },
     { value: 'trigger', name: MaterialTypeJa.tr },
+    { value: 'label', name: MaterialTypeJa.la },
     { value: 'bag', name: MaterialTypeJa.ba },
+    { value: 'carton', name: MaterialTypeJa.ca },
   ];
 
   constructor(

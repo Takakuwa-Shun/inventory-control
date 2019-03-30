@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Inventory, ActionType, initInventory } from './../../model/inventory';
 import { Material } from './../../model/material';
-import { Company } from './../../model/company';
+import { Company, initCompany } from './../../model/company';
 import { Location, initLocation } from './../../model/location';
 import { Product, DetailProduct, initDetailProduct } from './../../model/product';
 import { Memo } from './../../model/memo';
@@ -207,7 +207,7 @@ export class ManufactureInventoryComponent implements OnInit {
     } else {
       this._valueShareService.setLoading(true);
       this.showCompanyAlert = false;
-      this.detailProduct.companyData = data; 
+      this.detailProduct.companyData = data;
       this.isCompanySelected = true;
       this._fetchProductList();
     }
@@ -1025,6 +1025,13 @@ export class ManufactureInventoryComponent implements OnInit {
 
     this._companyService.fetchCompanies().subscribe((res) => {
       this.companyList = res;
+
+      const noCompany: Company = {
+        id: null,
+        name: '得意先なし',
+        nameKana: ''
+      };
+      this.companyList.push(noCompany);
       this._companyLoaded = true; 
       this._checkLoaded();
     }, (err) => {

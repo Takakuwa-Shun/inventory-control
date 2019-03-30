@@ -45,12 +45,12 @@
       <label for="limitCount" class="col-sm-2 col-form-label">フラグ</label>
       <div class="col-sm-10">
         <input
-        type="text"
+        type="number"
         class="form-control"
         id="limitCount"
         [(ngModel)]="registerMaterial.limitCount"
         name="limitCount"
-        placeholder="フラグを入力してください"
+        placeholder="フラグを半角数字で入力してください"
         aria-describedby="limitCountHelp"
         #limitCount="ngModel"
         required

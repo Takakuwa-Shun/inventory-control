@@ -62,12 +62,12 @@
       <label for="addCount" class="col-sm-2 col-form-label">仕入れ個数</label>
       <div class="col-sm-10">
         <input
-        type="text"
+        type="number"
         class="form-control"
         id="addCount"
         [(ngModel)]="registerInventory.addCount"
         name="addCount"
-        placeholder="仕入れた数量を入力してください"
+        placeholder="仕入れた数量を半角で入力してください"
         #addCount="ngModel"
         required
         [pattern]="countPattern">

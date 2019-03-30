@@ -16,7 +16,7 @@ export class RegisterMaterialComponent implements OnInit {
 
   public registerMaterial: Material;
   private readonly _typeDefault = '資材タイプを選択してください';
-  public readonly materialType =  [this._typeDefault, MaterialTypeJa.bo, MaterialTypeJa.ca, MaterialTypeJa.la, MaterialTypeJa.tr, MaterialTypeJa.ba];
+  public readonly materialType =  [this._typeDefault, MaterialTypeJa.bo, MaterialTypeJa.tr, MaterialTypeJa.la, MaterialTypeJa.ba, MaterialTypeJa.ca];
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
   public readonly limitCountPattern: string = '^[1-9][0-9]*$';

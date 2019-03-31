@@ -1,18 +1,20 @@
 <div class="container-fluid">
   <app-sub-header
-  title="資材一括登録(.csvから)"
+  title="商品一括登録(.csvから)"
   [showPrint]=false
   [showCsv]=false
   ></app-sub-header>
-  <p>csvファイルから、資材の一括登録が可能です。</p>
+  <p>csvファイルから、商品の一括登録が可能です。</p>
   <p>登録の際には、データフォーマットに従い、2行目以降から以下の順で記入して下さい。</p>
-  <p><b>資材名, 資材名かな, 種別[ボトル, カートン, ラベル, トリガー, 詰め替え袋のいずれか], フラグ</b></p>
+  <p><b>得意先コード, 得意先名, 商品名, 商品名かな, ボトルコード, ボトル名, トリガーコード, トリガー名, ラベルコード, ラベル名, 
+  詰め替え袋コード, 詰め替え袋名, 内側カートンコード, 内側カートン名, 外側カートンコード, 外側カートン名</b></p>
   <ol type="1">
     <li><i>csvの文字コードとしてはUTF-8を使用して下さい。（ExcelではShift-jsで保存されることがあります。）</i></li>
+    <li><i>商品名, 商品名かな以外に関しては、なければ空欄でも構いません。但し、コードと名前がセットでないと登録はされません。</i></li>
     <li><i>画像に関しては、一括で登録できないので、画像に関しては個別で後に更新して下さい。</i></li>
   </ol>
   <hr>
-  <form #materialCsvForm="ngForm">
+  <form #productCsvForm="ngForm">
     <div class="form-group row">
       <label for="readCsv" class="col-sm-3 col-form-label">データフォーマット</label>
       <div class="col-sm-9">

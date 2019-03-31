@@ -91,7 +91,7 @@ export class DetailProductComponent implements OnInit {
 
   private _fetchAllDatas():void {
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.bo).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.bo).subscribe((res: Material[]) => {
       this.bottleLists = res;
       this._bottleLoaded = true;
       this._checkLoaded();
@@ -100,7 +100,7 @@ export class DetailProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ca).subscribe((res: Material[]) => {
       this.cartonLists = res;
       this._cartonLoaded = true;
       this._checkLoaded();
@@ -109,7 +109,7 @@ export class DetailProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.la).subscribe((res: Material[]) => {
       this.labelLists = res;
       this._labelLoaded = true;
       this._checkLoaded();
@@ -118,7 +118,7 @@ export class DetailProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
       this.triggerLists = res;
       this._triggerLoaded = true;
       this._checkLoaded();
@@ -127,7 +127,7 @@ export class DetailProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
       this.bagLists = res;
       this._bagLoaded = true;
       this._checkLoaded();
@@ -162,7 +162,7 @@ export class DetailProductComponent implements OnInit {
         const arrBottleData = this.bottleLists.filter(val => val.id === this.product.bottleId);
         if (arrBottleData.length === 0) {
           this.product.bottleId = null;
-          this.product.bottleName += ' (※ 削除されました)';
+          this.product.bottleName += ' (※ 削除されたか、廃止中です。)';
         } else {
           bottleData = arrBottleData[0];
           this.isBottleSelected = true;
@@ -174,7 +174,7 @@ export class DetailProductComponent implements OnInit {
         const arrCartonData = this.cartonLists.filter(val => val.id === this.product.inCartonId);
         if (arrCartonData.length === 0) {
           this.product.inCartonId = null;
-          this.product.inCartonName += ' (※ 削除されました)';
+          this.product.inCartonName += ' (※ 削除されたか、廃止中です。)';
         } else {
           inCartonData = arrCartonData[0];
           this.isInCartonSelected = true;
@@ -186,7 +186,7 @@ export class DetailProductComponent implements OnInit {
         const arrCartonData = this.cartonLists.filter(val => val.id === this.product.outCartonId);
         if (arrCartonData.length === 0) {
           this.product.outCartonId = null;
-          this.product.outCartonName += ' (※ 削除されました)';
+          this.product.outCartonName += ' (※ 削除されたか、廃止中です。)';
         } else {
           outCartonData = arrCartonData[0];
           this.isOutCartonSelected = true;
@@ -198,7 +198,7 @@ export class DetailProductComponent implements OnInit {
         const arrLabelData = this.labelLists.filter(val => val.id === this.product.labelId);
         if (arrLabelData.length === 0) {
           this.product.labelId = null;
-          this.product.labelName += ' (※ 削除されました)';
+          this.product.labelName += ' (※ 削除されたか、廃止中です。)';
         } else {
           labelData = arrLabelData[0];
           this.isLabelSelected = true;
@@ -210,7 +210,7 @@ export class DetailProductComponent implements OnInit {
         const arrTriggerData = this.triggerLists.filter(val => val.id === this.product.triggerId);
         if (arrTriggerData.length === 0) {
           this.product.triggerId = null;
-          this.product.triggerName += ' (※ 削除されました)';
+          this.product.triggerName += ' (※ 削除されたか、廃止中です。)';
         } else {
           triggerData = arrTriggerData[0];
           this.isTriggerSelected = true;
@@ -222,7 +222,7 @@ export class DetailProductComponent implements OnInit {
         const arrBagData = this.bagLists.filter(val => val.id === this.product.bagId);
         if (arrBagData.length === 0) {
           this.product.bagId = null;
-          this.product.bagName += ' (※ 削除されました)';
+          this.product.bagName += ' (※ 削除されたか、廃止中です。)';
         } else {
           bagData = arrBagData[0];
           this.isBagSelected = true;

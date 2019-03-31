@@ -28,6 +28,7 @@ import { ManufactureInventoryComponent } from './page/manufacture-inventory/manu
 import { AdjustInventoryComponent } from './page/adjust-inventory/adjust-inventory.component';
 import { RegisterMaterialFromFileComponent } from './page/register-material-from-file/register-material-from-file.component';
 import { NotFoundComponent } from './page/not-found/not-found.component';
+import { RegisterProductFromFileComponent } from './page/register-product-from-file/register-product-from-file.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -46,6 +47,7 @@ const routes: Routes = [
   { path: 'inventory/adjust', component: AdjustInventoryComponent, canActivate: [AuthGuard] },
   { path: 'material/register', component: RegisterMaterialComponent, canActivate: [AuthGuard]},
   { path: 'material/register/from-csv', component: RegisterMaterialFromFileComponent, canActivate: [AuthGuard] },
+  { path: 'product/register/from-csv', component: RegisterProductFromFileComponent, canActivate: [AuthGuard] },
   { path: 'product/register', component: RegisterProductComponent, canActivate: [AuthGuard] },
   { path: 'location/register', component: RegisterLocationComponent, canActivate: [AuthGuard] },
   { path: 'company/register', component: RegisterCompanyComponent, canActivate: [AuthGuard] },

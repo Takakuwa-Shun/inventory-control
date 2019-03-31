@@ -69,6 +69,18 @@ export class ProductService {
     return from(docProduct.set(product));
   }
 
+  public saveProductFromArr(arrProduct: Product[]): Observable<void> {
+
+    const batch = this._afStore.firestore.batch();
+
+    arrProduct.forEach((pr: Product) => {
+      const ref: firebase.firestore.DocumentReference = this._afStore.firestore.collection('products/').doc(pr.id);
+      batch.set(ref, pr);
+    });
+
+    return from(batch.commit());
+  }
+
   deleteProductById(productId: string): Observable<void> {
     const docProduct: AngularFirestoreDocument<Product> = this._afStore.doc(`products/${productId}`);
     return from(docProduct.delete());

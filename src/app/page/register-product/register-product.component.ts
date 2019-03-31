@@ -359,7 +359,7 @@ export class RegisterProductComponent implements OnInit {
 
   private _fetchAllDatas():void {
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.bo).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.bo).subscribe((res: Material[]) => {
       this.bottleLists = res;
       this._bottleLoaded = true;
       this._checkLoaded();
@@ -368,7 +368,7 @@ export class RegisterProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ca).subscribe((res: Material[]) => {
       this.cartonLists = res;
       this._cartonLoaded = true;
       this._checkLoaded();
@@ -377,7 +377,7 @@ export class RegisterProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.la).subscribe((res: Material[]) => {
       this.labelLists = res;
       this._labelLoaded = true;
       this._checkLoaded();
@@ -386,7 +386,7 @@ export class RegisterProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
       this.triggerLists = res;
       this._triggerLoaded = true;
       this._checkLoaded();
@@ -395,7 +395,7 @@ export class RegisterProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
       this.bagLists = res;
       this._bagLoaded = true;
       this._checkLoaded();

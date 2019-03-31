@@ -594,7 +594,7 @@ export class ManufactureInventoryComponent implements OnInit {
           $('#bottle').val("");
           this.showBottle = false;
         } else {
-          $('#bottle').val(`${data.bottleName} (※削除されました)`);
+          $('#bottle').val(`${data.bottleName} (※ 削除されたか、廃止中です)`);
           this.showBottle = true;
         }
       } else {
@@ -613,7 +613,7 @@ export class ManufactureInventoryComponent implements OnInit {
           $('#carton').val("");
           this.showInCarton = false;
         } else {
-          $('#carton').val(`${data.inCartonName} (※削除されました)`);
+          $('#carton').val(`${data.inCartonName} (※ 削除されたか、廃止中です)`);
           this.showInCarton = true;
         }
       } else {
@@ -633,7 +633,7 @@ export class ManufactureInventoryComponent implements OnInit {
           this.showOutCarton = false;
         } else {
           this.showOutCarton = true;
-          $('#carton').val(`${data.outCartonName} (※削除されました)`);
+          $('#carton').val(`${data.outCartonName} (※ 削除されたか、廃止中です)`);
         }
       } else {
         this.showOutCarton = true;
@@ -652,7 +652,7 @@ export class ManufactureInventoryComponent implements OnInit {
           this.showLabel = false;
         } else {
           this.showLabel = true;
-          $('#label').val(`${data.labelName} (※削除されました)`);
+          $('#label').val(`${data.labelName} (※ 削除されたか、廃止中です)`);
         }
       } else {
         this.showLabel = true;
@@ -670,7 +670,7 @@ export class ManufactureInventoryComponent implements OnInit {
           $('#trigger').val("");
           this.showTrigger = false;
         } else {
-          $('#trigger').val(`${data.triggerName} (※削除されました)`);
+          $('#trigger').val(`${data.triggerName} (※ 削除されたか、廃止中です)`);
           this.showTrigger = true;
         }
       } else {
@@ -690,7 +690,7 @@ export class ManufactureInventoryComponent implements OnInit {
           $('#bag').val("");
         } else {
           this.showBag = true;
-          $('#bag').val(`${data.bagName} (※削除されました)`);
+          $('#bag').val(`${data.bagName} (※ 削除されたか、廃止中です)`);
         }
       } else {
         this.showBag = true;
@@ -948,7 +948,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
   private _fetchAllDatas():void {
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.bo).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.bo).subscribe((res: Material[]) => {
       this.bottleLists = res;
       this._bottleLoaded = true;
       this._checkLoaded();
@@ -957,7 +957,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ca).subscribe((res: Material[]) => {
       this.cartonLists = res;
       this._inCartonLoaded = true;
       this._checkLoaded();
@@ -966,7 +966,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.la).subscribe((res: Material[]) => {
       this.labelLists = res;
       this._labelLoaded = true;
       this._checkLoaded();
@@ -975,7 +975,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
       this.triggerLists = res;
       this._triggerLoaded = true;
       this._checkLoaded();
@@ -984,7 +984,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
       this.bagLists = res;
       this._bagLoaded = true;
       this._checkLoaded();

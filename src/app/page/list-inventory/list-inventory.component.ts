@@ -49,14 +49,7 @@ export class ListInventoryComponent implements OnInit {
   private _bagLists: Material[];
   public searchList: Material[] = [];
   public selectedTargetType: string;
-  public selectedTarget: Material = {
-    id: null,
-    name: '検索欄から選択して下さい',
-    nameKana: null,
-    type: null,
-    limitCount: null,
-    imageUrl: null
-  };
+  public selectedTarget: Material = initMaterial();
   public isTargetSelected: boolean;
   public listLocationForFilter: Location[] = [{
     id: null,
@@ -107,6 +100,7 @@ export class ListInventoryComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.selectedTarget.name = '検索欄から選択して下さい';
 
     this.showTargetAlert = false;
     this.isTargetSelected = false;
@@ -279,7 +273,7 @@ export class ListInventoryComponent implements OnInit {
       this.searchList = this._bottleLists;
     } else {
       this._valueShareService.setLoading(true);;
-      this._materialService.fetchMaterialLists(MaterialTypeEn.bo).subscribe((res: Material[]) => {
+      this._materialService.fetchMaterialList(MaterialTypeEn.bo).subscribe((res: Material[]) => {
         this._bottleLists = res;
         this.searchList = this._bottleLists;
         this._valueShareService.setLoading(false);;
@@ -295,7 +289,7 @@ export class ListInventoryComponent implements OnInit {
       this.searchList = this._cartonLists;
     } else {
       this._valueShareService.setLoading(true);;
-      this._materialService.fetchMaterialLists(MaterialTypeEn.ca).subscribe((res: Material[]) => {
+      this._materialService.fetchMaterialList(MaterialTypeEn.ca).subscribe((res: Material[]) => {
         this._cartonLists = res;
         this.searchList = this._cartonLists;
         this._valueShareService.setLoading(false);;
@@ -311,7 +305,7 @@ export class ListInventoryComponent implements OnInit {
       this.searchList = this._labelLists;
     } else {
       this._valueShareService.setLoading(true);;
-      this._materialService.fetchMaterialLists(MaterialTypeEn.la).subscribe((res: Material[]) => {
+      this._materialService.fetchMaterialList(MaterialTypeEn.la).subscribe((res: Material[]) => {
         this._labelLists = res;
         this.searchList = this._labelLists;
         this._valueShareService.setLoading(false);;
@@ -327,7 +321,7 @@ export class ListInventoryComponent implements OnInit {
       this.searchList = this._triggerLists;
     } else {
       this._valueShareService.setLoading(true);;
-      this._materialService.fetchMaterialLists(MaterialTypeEn.tr).subscribe((res: Material[]) => {
+      this._materialService.fetchMaterialList(MaterialTypeEn.tr).subscribe((res: Material[]) => {
         this._triggerLists = res;
         this.searchList = this._triggerLists;
         this._valueShareService.setLoading(false);;
@@ -343,7 +337,7 @@ export class ListInventoryComponent implements OnInit {
       this.searchList = this._bagLists;
     } else {
       this._valueShareService.setLoading(true);;
-      this._materialService.fetchMaterialLists(MaterialTypeEn.ba).subscribe((res: Material[]) => {
+      this._materialService.fetchMaterialList(MaterialTypeEn.ba).subscribe((res: Material[]) => {
         this._bagLists = res;
         this.searchList = this._bagLists;
         this._valueShareService.setLoading(false);;

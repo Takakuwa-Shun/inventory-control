@@ -5,6 +5,12 @@ export interface Material{
     type: string;
     limitCount: number | string;
     imageUrl: string;
+    status: string;
+}
+
+export const MaterialStatus = {
+    use: '',
+    noUse: '廃止',
 }
 
 export function initMaterial(): Material {
@@ -14,7 +20,8 @@ export function initMaterial(): Material {
         nameKana: '',
         type: '',
         limitCount: null,
-        imageUrl: ''
+        imageUrl: '',
+        status: MaterialStatus.use,
 	}
 	return result;
 }

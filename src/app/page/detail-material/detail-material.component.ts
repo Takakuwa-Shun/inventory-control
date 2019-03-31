@@ -4,7 +4,7 @@ import { MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from 'src/app/service/material-service/material.service';
 import { InventoryService } from 'src/app/service/inventory-service/inventory.service';
 import { HttpResponse } from '@angular/common/http';
-import { Material, initMaterial } from 'src/app/model/material';
+import { Material, initMaterial, MaterialStatus } from 'src/app/model/material';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
@@ -18,6 +18,7 @@ export class DetailMaterialComponent implements OnInit {
 
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
+  public readonly MaterialStatus = MaterialStatus;
   public material: Material;
   public registerMaterial: Material;
 
@@ -106,7 +107,13 @@ export class DetailMaterialComponent implements OnInit {
         <div class="col-4">画像</div>
         <div class="col-8 pull-left">${fileName}</div>
       </div>
+      <div class="row">
+        <div class="col-4">ステータス</div>
+        <div class="col-8 pull-left">${this.registerMaterial.status}</div>
+      </div>
     </div>`;
+    console.log(this.registerMaterial);
+    console.log(this._selectedImage);
   }
 
   submit(): void {
@@ -164,6 +171,18 @@ export class DetailMaterialComponent implements OnInit {
       console.log(err);
       this._valueShareService.setCompleteModal('※ 修正に失敗しました');
     });
+  }
+
+  public changeStatus(): void {
+    if (this.material.status === MaterialStatus.use) {
+      this.material.status = MaterialStatus.noUse;
+      this.registerMaterial.status = MaterialStatus.noUse;
+      this._selectedImage = undefined;
+      this.isInitInputImage = true;
+    } else {
+      this.material.status = MaterialStatus.use;
+      this.registerMaterial.status = MaterialStatus.use;
+    }
   }
 
   delete(): void {

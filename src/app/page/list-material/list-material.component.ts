@@ -15,15 +15,16 @@ declare const $;
 export class ListMaterialComponent implements OnInit {
 
   public listMaterial: Material[];
+  public csvListMaterial: Material[];
   public titleListMaterial: Material[] = [{
     id: '資材コード',
     name: '資材名',
     nameKana: '資材名かな',
     type: '種別',
     limitCount: 'フラグ',
-    imageUrl: '画像パス'
+    imageUrl: '画像パス',
+    status: 'ステータス',
   }];
-  public csvListMaterial: Material[];
   public selectedMaterilal: string;
   public selectedMaterilalNameJa: string;
 
@@ -46,7 +47,7 @@ export class ListMaterialComponent implements OnInit {
 
   ngOnInit() {
     this.filterInit();
-    this.fetchMaterialLists(this.selectedMaterilal);
+    this._fetchMaterialList(this.selectedMaterilal);
   }
 
   private _setMaterialNameJa(): void {
@@ -82,9 +83,9 @@ export class ListMaterialComponent implements OnInit {
     }
   }
 
-  public fetchMaterialLists(type: string): void {
+  private _fetchMaterialList(type: string): void {
     this.localStorage.setItem('selectedMaterilal', type);
-    this.materialService.fetchMaterialLists(type).subscribe((res: Material[]) => {
+    this.materialService.fetchMaterialList(type).subscribe((res: Material[]) => {
       this.listMaterial = res;
       this.csvListMaterial = this.titleListMaterial.concat(this.listMaterial);
       this._valueShareService.setLoading(false);;
@@ -99,7 +100,7 @@ export class ListMaterialComponent implements OnInit {
     this.selectedMaterilal = type;
     this._setMaterialNameJa();
     this.listMaterial = [];
-    this.fetchMaterialLists(this.selectedMaterilal);
+    this._fetchMaterialList(this.selectedMaterilal);
   }
 
   goDetail(id: string) {

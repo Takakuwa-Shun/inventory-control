@@ -1,5 +1,5 @@
 import { Injectable, Inject, LOCALE_ID } from '@angular/core';
-import { Material } from './../../model/material';
+import { Material, MaterialStatus } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type'
 import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -87,9 +87,19 @@ export class MaterialService {
     return `images/material/${imageFile.name}_${dateImp}`;
   }
 
-  public fetchMaterialLists(type: string): Observable<Material[]> {
+  public fetchMaterialListWhereStatusIsUse(type: string): Observable<Material[]> {
     const queryFn: QueryFn = (ref: CollectionReference) => {
-      return ref.orderBy('nameKana', 'asc');
+      return ref.orderBy('nameKana', 'asc').where('status', '==', MaterialStatus.use);
+    }
+
+    return this.fetchMaterialList(type, queryFn);
+  }
+
+  public fetchMaterialList(type: string, queryFn?: QueryFn): Observable<Material[]> {
+    if(!queryFn) {
+      queryFn = (ref: CollectionReference) => {
+        return ref.orderBy('nameKana', 'asc');
+      }
     }
 
     const collectionPath = this.getCollectionPath(type);

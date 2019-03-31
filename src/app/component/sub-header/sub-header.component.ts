@@ -129,14 +129,14 @@ export class SubHeaderComponent implements OnInit {
       return type.user;
     }
 
+    // 倉庫の場合
+    if('isFactory' in obj) {
+      return type.lo;
+    }
+
     // 得意先の場合
     if('name' in obj) {
       return type.com;
-    }
-
-    // 倉庫の場合
-    if('name' in obj) {
-      return type.lo;
     }
 
     // どれでもない
@@ -147,7 +147,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const m = obj as Material;
-      csv += `${m.name}, ${m.nameKana}, ${m.type}, ${m.limitCount}, ${m.imageUrl}\n`;
+      csv += `${m.id},${m.name},${m.nameKana},${m.type},${m.limitCount},${m.imageUrl},${m.status}\n`;
     });
     return csv;
   }
@@ -156,7 +156,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const p = obj as Product;
-      csv += `${p.companyName}, ${p.name}, ${p.nameKana}, ${p.imageUrl}, ${p.bottleName}, ${p.triggerName}, ${p.labelName}, ${p.bagName}, ${p.inCartonName}, ${p.outCartonName}\n`;
+      csv += `${p.companyName},${p.name},${p.nameKana},${p.imageUrl},${p.bottleName},${p.triggerName},${p.labelName},${p.bagName},${p.inCartonName},${p.outCartonName}\n`;
     });
     return csv;
   }
@@ -165,7 +165,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const u = obj as User;
-      csv += `${u.displayName}, ${u.email}\n`;
+      csv += `${u.displayName},${u.email}\n`;
     });
     return csv;
   }
@@ -183,7 +183,7 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const c = obj as Company;
-      csv += `${c.name}, ${c.nameKana}\n`;
+      csv += `${c.id},${c.name},${c.nameKana}\n`;
     });
     return csv;
   }
@@ -197,7 +197,7 @@ export class SubHeaderComponent implements OnInit {
 
       let locationCountCsv: string = '';
       Object.keys(locationNameObj).map((locationId: string) => {
-        locationCountCsv += `${i.locationCount[locationId]}, `;
+        locationCountCsv += `${i.locationCount[locationId]},`;
       });
       locationCountCsv = locationCountCsv.slice( 0, -1);
 
@@ -207,7 +207,7 @@ export class SubHeaderComponent implements OnInit {
       } else {
         date = formatDate(new firestore.Timestamp(i.date['seconds'], i.date['nanoseconds']).toDate(), "yy年MM月dd日", this._locale);
       }
-      csv += `${date}, ${i.userName}, ${i.targetName}, ${i.addCount}, ${i.actionType}, ${i.actionDetail}, ${i.memo}, ${locationCountCsv}${i.sumCount}\n`;
+      csv += `${date},${i.userName},${i.targetName},${i.addCount},${i.actionType},${i.actionDetail},${i.memo},${locationCountCsv}${i.sumCount}\n`;
       ++cnt;
     }
 

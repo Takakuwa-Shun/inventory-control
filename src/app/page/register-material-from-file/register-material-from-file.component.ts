@@ -1,6 +1,6 @@
 import { Component, OnInit} from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Material } from './../../model/material';
+import { Material, MaterialStatus } from './../../model/material';
 import { MaterialTypeJa } from './../../model/material-type';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MaterialService } from './../../service/material-service/material.service';
@@ -14,7 +14,7 @@ declare const $;
 })
 export class RegisterMaterialFromFileComponent implements OnInit {
 
-  private readonly x: RegExp = /^[ -~-ぁ-ん-ー]*$/;
+  private readonly _kanaRegExp: RegExp = /^[ -~-ぁ-ん-ー]*$/;
   private readonly _materialType =  [MaterialTypeJa.bo, MaterialTypeJa.ca, MaterialTypeJa.la, MaterialTypeJa.tr, MaterialTypeJa.ba];
 
   public csvDataSrc: SafeUrl;
@@ -62,7 +62,7 @@ export class RegisterMaterialFromFileComponent implements OnInit {
       },
       {
       name: '例1ボトル',
-      nameKana: 'れい１ぼとる',
+      nameKana: 'れい1ぼとる',
       type: 'ボトル',
       limitCount: '1000',
       },
@@ -125,24 +125,36 @@ export class RegisterMaterialFromFileComponent implements OnInit {
 
         const arr = str.split(',');
 
-        if(arr[0] !== '') {
+        if(arr[0] !== '' || arr[1] !== '' || arr[2] !== '' || arr[3] !== '') {        
           if (arr.length !== 4) {
             this._showError = true;
-            this._errorMsg = `${arr[0]}の資材に関して、フォーマットに従い、1行につき4項目のデータを入力して下さい`;
+            this._errorMsg = `「${arr[0]}」に関して、フォーマットに従い、1行につき4項目のデータを入力して下さい`;
+            break;
+          }
+
+          if (arr[0] === '' || arr[1] === '' || arr[2] === '' || arr[3] === '') {
+            this._showError = true;
+            this._errorMsg = `「${arr[0]}」に関して、未入力項目があります`;
+            break;
+          }
+
+          if (!this._kanaRegExp.test(arr[1].trim())) {
+            this._showError = true;
+            this._errorMsg = `「${arr[0]}」に関して、資材名かなには、全角かな・半角英数字・半角記号・半角スペース以外は入力しないでください`;
             break;
           }
     
           // NaN, 0<= の場合
-          if (!(Number(arr[3]) > 0)) {
+          if (!(Number(arr[3].trim()) > 0)) {
             this._showError = true;
-            this._errorMsg = `${arr[0]}の資材に関して、フラグには1以上の半角数字のみを入力して下さい。`;
+            this._errorMsg = `「${arr[0]}」に関して、フラグには1以上の半角数字のみを入力して下さい。`;
             break;
           }
     
           // タイプチェック
-          if (this._materialType.indexOf(arr[2]) === -1) {
+          if (!this._materialType.includes(arr[2].trim())) {
             this._showError = true;
-            this._errorMsg = `${arr[0]}の資材に関して、種別にはボトル、カートン、ラベル、トリガー、詰め替え袋のいずれかの値を入力して下さい。`;
+            this._errorMsg = `「${arr[0]}」に関して、種別にはボトル、カートン、ラベル、トリガー、詰め替え袋のいずれかの値を入力して下さい。`;
             break;
           }
     
@@ -150,13 +162,20 @@ export class RegisterMaterialFromFileComponent implements OnInit {
             id: this._afStore.createId(),
             name: arr[0].trim(),
             nameKana: arr[1].trim(),
-            type: arr[2],
-            limitCount: Number(arr[3]),
-            imageUrl: ''
+            type: arr[2].trim(),
+            limitCount: Number(arr[3].trim()),
+            imageUrl: '',
+            status: MaterialStatus.use,
           }
           this._registerMaterials.push(material);
         }
       };
+      if(this._registerMaterials.length === 0) {
+        this._showError = true;
+        this._errorMsg = `登録すべきデータがありません。`;
+      }
+
+      console.log(dataArr);
       console.log(this._registerMaterials);
       this.showConfirm = true;
       this._valueShareService.setLoading(false);

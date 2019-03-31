@@ -33,6 +33,7 @@ import { RegisterCompanyComponent } from './page/register-company/register-compa
 import { RegisterLocationComponent } from './page/register-location/register-location.component';
 import { RegisterUserComponent } from './page/register-user/register-user.component';
 import { RegisterMaterialFromFileComponent } from './page/register-material-from-file/register-material-from-file.component';
+import { RegisterProductFromFileComponent } from './page/register-product-from-file/register-product-from-file.component';
 import { ListProductComponent } from './page/list-product/list-product.component';
 import { ListMaterialComponent } from './page/list-material/list-material.component';
 import { ListCompanyComponent } from './page/list-company/list-company.component';
@@ -102,6 +103,7 @@ import { FirebaseStorageService } from './service/firebase-storage-service/fireb
     RegisterMaterialFromFileComponent,
     NotFoundComponent,
     ImageCropperWrapperComponent,
+    RegisterProductFromFileComponent,
   ],
   imports: [
     BrowserModule,

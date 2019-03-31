@@ -16,7 +16,12 @@
             <th scope="col">編集欄</th>
           </tr>
         </thead>
-        <tbody>  
+        <tbody>
+          <tr>
+            <th scope="col">資材コード</th>
+            <td>{{material.id}}</td>
+            <td>コードの編集は出来ません</td>
+          </tr>
           <tr>
             <th scope="col">資材名</th>
             <td>{{material.name}}</td>
@@ -86,9 +91,23 @@
             <td>{{material.type}}</td>
             <td>
               <div class="form-group">
-                <select class="form-control" id="type" [(ngModel)]="registerMaterial.type" name="type" #type="ngModel">
+                <select class="form-control" id="type" [(ngModel)]="registerMaterial.type" name="type" #type="ngModel" [disabled]="material.status === MaterialStatus.noUse">
                   <option *ngFor="let type of materialType" [value]="type">{{type}}</option>
                 </select>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th scope="col">ステータス</th>
+            <td>{{material.status}}</td>
+            <td>
+              <div class="form-group">
+                <button
+                type="button"
+                class="btn btn-danger"
+                aria-describedby="statusHelp"
+                (click)="changeStatus()">{{material.status === MaterialStatus.use ? '「廃止」に変更' : '「廃止」解除'}}</button>
+                <small id="statusHelp" class="form-text text-muted">ステータス「{{MaterialStatus.noUse}}」にすると、今後この資材を使った商品登録や、この資材に対する在庫入力が出来なくなります</small>
               </div>
             </td>
           </tr>
@@ -97,16 +116,18 @@
             <td>      
               <img class="show-icon img-thumbnail rounded img-fluid" [src]="imageSrc" alt="読み込みエラー">
             </td>
-            <td>下記から画像の登録・修正が可能です。</td>
+            <td>{{material.status === MaterialStatus.use ? '下記から画像の登録・修正が可能です。' : '修正不可' }}</td>
           </tr>
         </tbody>
       </table>
-      <app-image-cropper-wrapper
-        inputTitle="画像修正"
-        [_isInited]="isInitInputImage"
-        (loadFailed)="imageLoadFailed()"
-        (cropped)="selectImage($event)"
-      ></app-image-cropper-wrapper>
+      <div *ngIf="material.status === MaterialStatus.use">
+        <app-image-cropper-wrapper
+          inputTitle="画像修正"
+          [_isInited]="isInitInputImage"
+          (loadFailed)="imageLoadFailed()"
+          (cropped)="selectImage($event)"
+        ></app-image-cropper-wrapper>
+      </div>
       <div class="row">
         <div class="mx-auto">
           <button class="btn btn-outline-dark" (click)="goBack()">資材一覧へ</button>
@@ -125,7 +146,8 @@
           type="button"
           class="btn btn-danger"
           data-toggle="modal"
-          data-target="#DeleteModal">削除</button>
+          data-target="#DeleteModal"
+          [disabled]="material.status === MaterialStatus.use">削除</button>
         </div>
       </div>
     </form>

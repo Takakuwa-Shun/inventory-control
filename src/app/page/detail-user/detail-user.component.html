@@ -27,6 +27,7 @@
                 [(ngModel)]="registerUser.displayName"
                 name="name"
                 #name="ngModel"
+                autocomplete="off"
                 required>
                 <div class="alert alert-danger" *ngIf="name.errors && (name.dirty || name.touched)">
                   <div [hidden]="!name.errors.required">※ 項目が未入力です</div>
@@ -46,6 +47,7 @@
                 [(ngModel)]="registerUser.email"
                 name="email"
                 #email="ngModel"
+                autocomplete="off"
                 required
                 pattern="{{emailPattern}}">
                 <div class="alert alert-danger" *ngIf="email.errors && (email.dirty || email.touched)">

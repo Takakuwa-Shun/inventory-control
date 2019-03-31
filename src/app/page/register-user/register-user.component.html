@@ -16,6 +16,7 @@
         placeholder="名前を入力してください"
         name="name"
         #name="ngModel"
+        autocomplete="off"
         required>
         <div class="alert alert-danger" *ngIf="name.errors && (name.dirty || name.touched)">
           <div [hidden]="!name.errors.required">※ 項目が未入力です</div>
@@ -33,6 +34,7 @@
         name="email"
         placeholder="メールアドレスを入力してください"
         #email="ngModel"
+        autocomplete="off"
         required
         pattern="{{emailPattern}}">
         <div class="alert alert-danger" *ngIf="email.errors && (email.dirty || email.touched)">
@@ -52,6 +54,7 @@
         name="password"
         placeholder="パスワードを入力してください"
         #password="ngModel"
+        autocomplete="off"
         required
         pattern="{{passwordPattern}}">
         <div class="alert alert-danger" *ngIf="password.errors && (password.dirty || password.touched)">

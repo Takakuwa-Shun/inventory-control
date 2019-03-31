@@ -69,6 +69,7 @@
         name="addCount"
         placeholder="移動する数量を半角で入力してください"
         #addCount="ngModel"
+        autocomplete="off"
         required
         [pattern]="countPattern">
         <div class="alert alert-danger" *ngIf="addCount.errors && (addCount.dirty || addCount.touched)">

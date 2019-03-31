@@ -93,6 +93,7 @@
         placeholder="調整した数量を半角で入力してください"
         #addCount="ngModel"
         required
+        autocomplete="off"
         [pattern]="countPattern">
         <div class="alert alert-danger" *ngIf="addCount.errors && (addCount.dirty || addCount.touched)">
           <div [hidden]="!addCount.errors.required">※ 項目が未入力です</div>

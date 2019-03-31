@@ -34,6 +34,7 @@
                 [(ngModel)]="registerMaterial.name"
                 name="name"
                 #name="ngModel"
+                autocomplete="off"
                 required>
                 <div class="alert alert-danger" *ngIf="name.errors && (name.dirty || name.touched)">
                   <div [hidden]="!name.errors.required">※ 項目が未入力です</div>
@@ -53,6 +54,7 @@
                 [(ngModel)]="registerMaterial.nameKana"
                 name="nameKana"
                 #nameKana="ngModel"
+                autocomplete="off"
                 required
                 pattern="{{nameKanaPattern}}">
                 <div class="alert alert-danger" *ngIf="nameKana.errors && (nameKana.dirty || nameKana.touched)">
@@ -76,6 +78,7 @@
                 placeholder="フラグを半角数字で入力してください"
                 aria-describedby="limitCountHelp"
                 #limitCount="ngModel"
+                autocomplete="off"
                 required
                 pattern="{{limitCountPattern}}">
                 <div class="alert alert-danger" *ngIf="limitCount.errors && (limitCount.dirty || limitCount.touched)">

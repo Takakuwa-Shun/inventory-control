@@ -76,6 +76,7 @@
         name="count"
         placeholder="製造・出荷した数量を半角で入力してください"
         #count="ngModel"
+        autocomplete="off"
         required
         [pattern]="countPattern">
         <div class="alert alert-danger" *ngIf="count.errors && (count.dirty || count.touched)">
@@ -283,6 +284,7 @@
           placeholder="ロット数を半角で入力してください"
           aria-describedby="lotForInCartonHelp"
           #lotForInCarton="ngModel"
+          autocomplete="off"
           pattern="{{countPattern}}">
           <div class="alert alert-danger" *ngIf="lotForInCarton.errors && (lotForInCarton.dirty || lotForInCarton.touched)">
             <div [hidden]="!lotForInCarton.errors.pattern">※ １以上の半角数字で入力してください</div>
@@ -362,6 +364,7 @@
           placeholder="ロット数を半角で入力してください"
           aria-describedby="lotForOutCartonHelp"
           #lotForOutCarton="ngModel"
+          autocomplete="off"
           pattern="{{countPattern}}">
           <div class="alert alert-danger" *ngIf="lotForOutCarton.errors && (lotForOutCarton.dirty || lotForOutCarton.touched)">
             <div [hidden]="!lotForOutCarton.errors.pattern">※ １以上の半角数字で入力してください</div>

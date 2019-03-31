@@ -58,6 +58,7 @@ const routes: Routes = [
   { path: 'product/detail/:id', component: DetailProductComponent, canActivate: [AuthGuard] },
   { path: 'material/detail/:type/:id', component: DetailMaterialComponent, canActivate: [AuthGuard] },
   { path: '404', component: NotFoundComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full'},
   { path: '**', redirectTo: '404', pathMatch: 'full'},
 ];
 

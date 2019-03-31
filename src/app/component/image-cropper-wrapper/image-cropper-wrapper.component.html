@@ -14,6 +14,9 @@
               #imageUrl
               (change)="fileChangeEvent($event)"
               aria-describedby="imageUrlHelp">
+            <span class="pointer ml-2" style="color: red" (click)="cancelFileSelect()" title="キャンセル">
+              <fa-icon [icon]="['fas', 'times']"></fa-icon>
+            </span>
             <small *ngIf="!showCropper" id="imageUrlHelp" class="form-text text-muted">画像がなければ、未選択で構いません。</small>
           </div>
         </div>

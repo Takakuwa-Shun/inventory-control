@@ -82,7 +82,7 @@ export class DetailMaterialComponent implements OnInit {
   }
 
   createBody(){
-    const fileName = this._selectedImage ? this._selectedImage.name : '未選択';
+    const fileName = this._selectedImage ? this._selectedImage.name : '修正なし';
 
     this.confirmBody = `
     <div class="container-fluid">

@@ -38,9 +38,16 @@ export class ImageCropperWrapperComponent implements OnChanges {
     $('#imageUrl').val('');
   }
 
+  public cancelFileSelect(): void {
+    $('#imageUrl').val('');
+    this.showCropper = false;
+    this.cropped.emit();
+    this.croppedImage = ImageCropperWrapperComponent.NO_IMAGE_URL;
+  }
+
   public fileChangeEvent(event): void {
     if (event.srcElement.files.length === 0) {
-      this.showCropper = false;
+      this.cancelFileSelect();
     } else {
       this.imageChangedEvent = event;
       this._fileName = event.srcElement.files[0].name;

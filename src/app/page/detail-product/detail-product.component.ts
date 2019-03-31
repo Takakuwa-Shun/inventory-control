@@ -268,7 +268,7 @@ export class DetailProductComponent implements OnInit {
   }
 
   createBody(){
-    const fileName = this._selectedImage ? this._selectedImage.name : '未選択';
+    const fileName = this._selectedImage ? this._selectedImage.name : '修正なし';
 
     if (this.registerProduct.bottleData.id === '') {
       this.registerProduct.bottleData.id = null;
@@ -346,7 +346,7 @@ export class DetailProductComponent implements OnInit {
       </div>
       <div class="row">
         <div class="col-4">画像</div>
-        <div class="col-8 pull-left">>${fileName}</div>
+        <div class="col-8 pull-left">${fileName}</div>
       </div>
     </div>`;
   }

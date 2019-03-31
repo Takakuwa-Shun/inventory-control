@@ -156,6 +156,34 @@ export class SubHeaderComponent implements OnInit {
     let csv = '';
     list.forEach((obj: object) => {
       const p = obj as Product;
+
+      if(p.companyId === null) {
+        p.companyId = '';
+      }
+
+      if(p.bottleId === null) {
+        p.bottleId = '';
+      }
+
+      if(p.triggerId === null) {
+        p.triggerId = '';
+      }
+
+      if(p.labelId === null) {
+        p.labelId = '';
+      }
+
+      if(p.bagId === null) {
+        p.bagId = '';
+      }
+
+      if(p.inCartonId === null) {
+        p.inCartonId = '';
+      }
+
+      if(p.outCartonId === null) {
+        p.outCartonId = '';
+      }
       csv += `${p.companyId},${p.companyName},${p.name},${p.nameKana},${p.imageUrl},${p.bottleId},${p.bottleName},${p.triggerId},${p.triggerName},${p.labelId},${p.labelName},${p.bagId},${p.bagName},${p.inCartonId},${p.inCartonName},${p.outCartonId},${p.outCartonName}\n`;
     });
     return csv;

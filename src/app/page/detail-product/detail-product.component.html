@@ -302,7 +302,14 @@
             <td>      
               <img class="show-icon img-thumbnail rounded img-fluid" [src]="imageSrc" alt="読み込みエラー">
             </td>
-            <td>下記から画像の登録・修正が可能です。</td>
+            <td>
+              <span>画像の登録・修正は下記から可能です。</span>
+              <button
+              type="button"
+              class="btn btn-danger ml-2"
+              (click)="deleteImage()"
+              [disabled]="product.imageUrl === ''">画像を削除</button>
+            </td>
           </tr>
         </tbody>
       </table>

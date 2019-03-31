@@ -119,7 +119,14 @@
             <td>      
               <img class="show-icon img-thumbnail rounded img-fluid" [src]="imageSrc" alt="読み込みエラー">
             </td>
-            <td>{{material.status === MaterialStatus.use ? '下記から画像の登録・修正が可能です。' : '修正不可' }}</td>
+            <td>
+              <span>{{material.status === MaterialStatus.use ? '画像の登録・修正は下記から可能です。' : '修正不可' }}</span>
+              <button
+              type="button"
+              class="btn btn-danger ml-2"
+              (click)="deleteImage()"
+              [disabled]="material.imageUrl === '' || material.status === MaterialStatus.noUse">画像を削除</button>
+            </td>
           </tr>
         </tbody>
       </table>

@@ -385,19 +385,42 @@ export class DetailProductComponent implements OnInit {
     }
   }
 
-  private _saveProduct(product: Product) {
+  private _saveProduct(product: Product, successMsg?: string, errMsg?: string) {
     this.productService.saveProduct(product).subscribe(() =>{
       this.product = convertDetailProductToProduct(this.registerProduct);
 
-      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
+      if(successMsg) {
+        this._valueShareService.setCompleteModal(successMsg, 5000, 'btn-outline-success');
+      } else {
+        this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
+      }
     }, (err) => {
       console.error(err);
-      this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      if(errMsg) {
+        this._valueShareService.setCompleteModal(errMsg);
+      } else {
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      }
+
     });
   }
 
+  public deleteImage() {
+    this._valueShareService.setLoading(true);
+    if(this.product.imageUrl !== '') {
+      this._firebaseStorageService.deleteFile(this.product.imageUrl).subscribe(() => {
+        this.imageSrc = DetailProductComponent.NO_IMAGE_URL;
+        this.product.imageUrl = '';
+        this._saveProduct(this.product, '※ 画像を削除しました。', '※ 画像の削除に失敗しました。');
+      }, (err) => {
+        console.log(err);
+        this._valueShareService.setCompleteModal('※ 画像の削除に失敗しました。');
+      });
+    }
+  }
+
   delete(): void {
-    this._valueShareService.setLoading(true);;
+    this._valueShareService.setLoading(true);
     this.productService.deleteProductById(this.product.id).subscribe(() => {
       if(this.product.imageUrl !== '') {
         this._firebaseStorageService.deleteFile(this.product.imageUrl).subscribe(() => {

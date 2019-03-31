@@ -155,21 +155,23 @@ export class DetailMaterialComponent implements OnInit {
     }
   }
 
-  private _saveMaterial(material: Material): void {
+  private _saveMaterial(material: Material, successMsg?: string, errMsg?: string): void {
     this.materialService.saveMaterial(material).subscribe((res) => {
-      this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
+      if(successMsg) {
+        this._valueShareService.setCompleteModal(successMsg, 5000, 'btn-outline-success');
+      } else {
+        this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
+      }
 
       this.material = this.registerMaterial;
       this.registerMaterial = Object.assign({}, this.material);
-
-      if (this.material.imageUrl !== '') {
-        this._firebaseStorageService.fecthDownloadUrl(this.material.imageUrl).subscribe((url) => {
-          this.imageSrc = url;
-        });
-      }
     }, (err) => {
       console.log(err);
-      this._valueShareService.setCompleteModal('※ 修正に失敗しました');
+      if(errMsg) {
+        this._valueShareService.setCompleteModal(errMsg);
+      } else {
+        this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
+      }
     });
   }
 
@@ -182,6 +184,20 @@ export class DetailMaterialComponent implements OnInit {
     } else {
       this.material.status = MaterialStatus.use;
       this.registerMaterial.status = MaterialStatus.use;
+    }
+  }
+
+  public deleteImage() {
+    this._valueShareService.setLoading(true);
+    if(this.material.imageUrl !== '') {
+      this._firebaseStorageService.deleteFile(this.material.imageUrl).subscribe(() => {
+        this.imageSrc = DetailMaterialComponent.NO_IMAGE_URL;
+        this.material.imageUrl = '';
+        this._saveMaterial(this.material, '※ 画像を削除しました。', '※ 画像の削除に失敗しました。');
+      }, (err) => {
+        console.log(err);
+        this._valueShareService.setCompleteModal('※ 画像の削除に失敗しました。');
+      });
     }
   }
 

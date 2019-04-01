@@ -29,6 +29,7 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
+          <th scope="col">資材画像</th>
           <th scope="col">{{titleListMaterial[0].name}}</th>
           <th scope="col">{{titleListMaterial[0].nameKana}}</th>
           <th scope="col">{{titleListMaterial[0].type}}</th>
@@ -39,6 +40,7 @@
       <tbody>
         <tr *ngFor="let m of listMaterial; let i = index" (click)="goDetail(m.id)">
           <th class="pointer" scope="row">{{i+1}}</th>
+          <td class="pointer"><img [src]="m.imageSrc" class="list-icon img-thumbnail rounded img-fluid"></td>
           <td class="pointer">{{m.name}}</td>
           <td class="pointer">{{m.nameKana}}</td>
           <td class="pointer">{{m.type}}</td>

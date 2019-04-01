@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseStorageService {
+
+  private objDownloadUrl = {};
 
   constructor(
     private _storage: AngularFireStorage
@@ -19,9 +22,17 @@ export class FirebaseStorageService {
   }
 
   public fecthDownloadUrl(filePath: string): Observable<string> {
+    if(this.objDownloadUrl[filePath]) {
+      return of(this.objDownloadUrl[filePath]);
+    }
+
     const pathReference = this._storage.storage.ref(filePath);
 
-    return from(pathReference.getDownloadURL());
+    return from(pathReference.getDownloadURL()).pipe(
+      tap((url: string) => {
+        this.objDownloadUrl[filePath] = url;
+      })
+    );
   }
 
   public deleteFile(filePath: string): Observable<any> {

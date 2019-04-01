@@ -33,6 +33,7 @@
         ngui-auto-complete
         id="material"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="searchList"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -85,6 +86,7 @@
         ngui-auto-complete
         id="location"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="locationList"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"

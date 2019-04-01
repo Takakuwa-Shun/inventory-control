@@ -13,6 +13,7 @@
         ngui-auto-complete
         id="company"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="listCompany"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -33,6 +34,7 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
+          <th scope="col">商品画像</th>
           <th scope="col">{{titleListProduct[0].companyName}}</th>
           <th scope="col">{{titleListProduct[0].name}}</th>
           <th scope="col">{{titleListProduct[0].bottleName}}</th>
@@ -46,6 +48,7 @@
       <tbody>
         <tr *ngFor="let p of listProduct; let i = index" (click)="goDetail(p.id)">
           <th class="pointer" scope="row">{{i+1}}</th>
+          <td class="pointer"><img [src]="p.imageSrc" class="list-icon img-thumbnail rounded img-fluid"></td>
           <td class="pointer">{{p.companyName}} </td>
           <td class="pointer">{{p.name}}</td>
           <td class="pointer">{{p.bottleName}} </td>

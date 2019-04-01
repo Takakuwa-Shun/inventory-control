@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CompanyService } from './../../service/company-service/company.service';
 import { ProductService } from './../../service/product-service/product.service';
-import { Product } from 'src/app/model/product';
-import { ValueShareService } from './../../service/value-share-service/value-share.service'
+import { Product, ProductWithImage } from 'src/app/model/product';
+import { ValueShareService } from './../../service/value-share-service/value-share.service';
+import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
 import { Company } from 'src/app/model/company';
 declare const $;
 
@@ -14,7 +15,9 @@ declare const $;
 })
 export class ListProductComponent implements OnInit {
 
-  public listProduct: Product[];
+  private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
+
+  public listProduct: ProductWithImage[];
   public csvListProduct: Product[];
   public listCompany: Company[];
   private _selectedCompany: Company;
@@ -45,6 +48,7 @@ export class ListProductComponent implements OnInit {
     private _companyService: CompanyService,
     private productService: ProductService,
     private _valueShareService: ValueShareService,
+    private _firebaseStorageService: FirebaseStorageService,
   ) {
     this._valueShareService.setLoading(true);
    }
@@ -76,6 +80,19 @@ export class ListProductComponent implements OnInit {
     });
   }
 
+  private _downloadImages() {
+    for(const p of this.listProduct) {
+      p.imageSrc = ListProductComponent.NO_IMAGE_URL;
+      if(p.imageUrl !== '') {
+        this._firebaseStorageService.fecthDownloadUrl(p.imageUrl).subscribe((res: string) => {
+          p.imageSrc = res;
+        }, (err) => {
+          console.log(err);
+        });
+      }
+    }
+  }
+
   public autocompleListFormatter = (data: any) => {
     return `<span>${data.name}</span>`;
   }
@@ -93,6 +110,7 @@ export class ListProductComponent implements OnInit {
   private _fetchProductList(): void {
     this.productService.fetchAllProducts().subscribe((res: Product[]) => {
       this.listProduct = res;
+      this._downloadImages();
       this.csvListProduct = this.titleListProduct.concat(this.listProduct);
       this._valueShareService.setLoading(false);;
     }, (err) => {
@@ -104,6 +122,7 @@ export class ListProductComponent implements OnInit {
   private _fetchProductListFilteringCompany(company: Company): void {
     this.productService.fetchProductListFilteringCompany(company.id).subscribe((res: Product[]) => {
       this.listProduct = res;
+      this._downloadImages();
       this.csvListProduct = this.titleListProduct.concat(this.listProduct);
       this._valueShareService.setLoading(false);;
     }, (err) => {

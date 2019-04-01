@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Material } from './../../model/material';
+import { Material, MaterialWithImage } from './../../model/material';
 import { MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from './../../service/material-service/material.service';
 import { LocalStorageService } from './../../service/local-storage-service/local-storage.service';
-import { ValueShareService } from './../../service/value-share-service/value-share.service'
+import { ValueShareService } from './../../service/value-share-service/value-share.service';
+import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
 declare const $;
 
 @Component({
@@ -14,7 +15,9 @@ declare const $;
 })
 export class ListMaterialComponent implements OnInit {
 
-  public listMaterial: Material[];
+  private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
+
+  public listMaterial: MaterialWithImage[];
   public csvListMaterial: Material[];
   public titleListMaterial: Material[] = [{
     id: '資材コード',
@@ -41,6 +44,7 @@ export class ListMaterialComponent implements OnInit {
     private materialService: MaterialService,
     private localStorage: LocalStorageService,
     private _valueShareService: ValueShareService,
+    private _firebaseStorageService: FirebaseStorageService,
   ) {
     this._valueShareService.setLoading(true);
    }
@@ -83,10 +87,24 @@ export class ListMaterialComponent implements OnInit {
     }
   }
 
+  private _downloadImages(): void {
+    for(const m of this.listMaterial) {
+      m.imageSrc = ListMaterialComponent.NO_IMAGE_URL;
+      if(m.imageUrl !== '') {
+        this._firebaseStorageService.fecthDownloadUrl(m.imageUrl).subscribe((res: string) => {
+          m.imageSrc = res;
+        }, (err) => {
+          console.log(err);
+        });
+      }
+    }
+  }
+
   private _fetchMaterialList(type: string): void {
     this.localStorage.setItem('selectedMaterilal', type);
     this.materialService.fetchMaterialList(type).subscribe((res: Material[]) => {
       this.listMaterial = res;
+      this._downloadImages();
       this.csvListMaterial = this.titleListMaterial.concat(this.listMaterial);
       this._valueShareService.setLoading(false);;
     }, (err) => {

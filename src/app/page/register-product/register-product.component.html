@@ -12,6 +12,7 @@
         ngui-auto-complete
         id="company"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="companyLists"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -108,6 +109,7 @@
           ngui-auto-complete
           id="bottle"
           class="form-control"
+          [re-focus-after-select]=false
           [source]="bottleLists"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
@@ -138,6 +140,7 @@
           ngui-auto-complete
           id="trigger"
           class="form-control"
+          [re-focus-after-select]=false
           [source]="triggerLists"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
@@ -170,6 +173,7 @@
           ngui-auto-complete
           id="bag"
           class="form-control"
+          [re-focus-after-select]=false
           [source]="bagLists"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
@@ -201,6 +205,7 @@
         ngui-auto-complete
         id="label"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="labelLists"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -231,6 +236,7 @@
         ngui-auto-complete
         id="inCarton"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="cartonLists"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -261,6 +267,7 @@
         ngui-auto-complete
         id="outCarton"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="cartonLists"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"

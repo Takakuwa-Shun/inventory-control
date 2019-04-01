@@ -33,6 +33,7 @@
         ngui-auto-complete
         id="material"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="searchList"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -85,6 +86,7 @@
         ngui-auto-complete
         id="location-before"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="locationList"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -117,6 +119,7 @@
         ngui-auto-complete
         id="location-after"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="locationList"
         [list-formatter]="autocompleListFormatter.bind(this)"
         loading-text="検索中"
@@ -150,6 +153,7 @@
         id="memo"
         name="memo"
         class="form-control"
+        [re-focus-after-select]=false
         [source]="memoList"
         loading-text="検索中"
         no-match-found-text="該当する備考はありません。"

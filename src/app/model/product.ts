@@ -35,6 +35,10 @@ export interface Product extends BaseProduct {
     bagName: string;
 }
 
+export interface ProductWithImage extends Product {
+    imageSrc?: string;
+}
+
 export function convertDetailProductToProduct(product: DetailProduct): Product {
     return {
         id: product.id,
@@ -55,6 +59,51 @@ export function convertDetailProductToProduct(product: DetailProduct): Product {
         triggerName: product.triggerData.name,
         bagId: product.bagData.id,
         bagName: product.bagData.name,
+    };
+}
+
+export function convertProductToDetailProduct(p: Product): DetailProduct {
+
+    const bo = initMaterial();
+    bo.id = p.bottleId;
+    bo.name = p.bottleName;
+
+    const ca1 = initMaterial();
+    ca1.id = p.inCartonId;
+    ca1.name = p.inCartonName;
+
+    const ca2 = initMaterial();
+    ca2.id = p.outCartonId;
+    ca2.name = p.outCartonName;
+
+    const la = initMaterial();
+    la.id = p.labelId;
+    la.name = p.labelName;
+
+    const tr = initMaterial();
+    tr.id = p.triggerId;
+    tr.name = p.triggerName;
+
+    const ba = initMaterial();
+    ba.id = p.bagId; 
+    ba.name = p.bagName;
+
+    const com = initCompany();
+    com.id = p.companyId;
+    com.name = p.companyName;
+
+    return {
+        id: p.id,
+        name: p.name.trim(),
+        nameKana: p.nameKana.trim(),
+        imageUrl: p.imageUrl,
+        companyData: com,
+        bottleData: bo,
+        inCartonData: ca1,
+        outCartonData: ca2,
+        labelData: la,
+        triggerData: tr,
+        bagData: ba,
     };
 }
 

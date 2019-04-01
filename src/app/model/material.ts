@@ -8,6 +8,10 @@ export interface Material{
     status: string;
 }
 
+export interface MaterialWithImage extends Material { 
+    imageSrc?: string;
+}
+
 export const MaterialStatus = {
     use: '',
     noUse: '廃止',

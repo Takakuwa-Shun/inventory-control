@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { Company, initCompany } from './../../model/company';
-import { Product, DetailProduct, convertDetailProductToProduct, initDetailProduct } from './../../model/product';
+import { Product, DetailProduct, convertDetailProductToProduct, initDetailProduct, convertProductToDetailProduct } from './../../model/product';
 import { Material, initMaterial } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from './../../model/material-type';
 import { MaterialService } from './../../service/material-service/material.service';
@@ -20,19 +20,20 @@ export class DetailProductComponent implements OnInit {
 
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
-  private _bottleLoaded = false;
-  private _cartonLoaded = false;
-  private _labelLoaded = false;
-  private _triggerLoaded = false;
-  private _bagLoaded = false;
-  private _companyLoaded = false;
+  public showEditCompany: boolean;
+  public showEditBottle: boolean;
+  public showEditTrigger: boolean;
+  public showEditLabel: boolean;
+  public showEditBag: boolean;
+  public showEditInCarton: boolean;
+  public showEditOutCarton: boolean;
 
-  public bottleLists: Material[];
-  public cartonLists: Material[];
-  public labelLists: Material[];
-  public triggerLists: Material[];
-  public bagLists: Material[];
-  public companyLists: Company[];
+  public bottleLists: Material[] = []; 
+  public cartonLists: Material[] = [];
+  public labelLists: Material[] = [];
+  public triggerLists: Material[] = [];
+  public bagLists: Material[] = [];
+  public companyLists: Company[] = [];
 
   public showBottleAlert: boolean = false;
   public showInCartonAlert: boolean = false;
@@ -63,7 +64,7 @@ export class DetailProductComponent implements OnInit {
 
   public readonly deleteBtnType = 'btn-danger';
   public readonly deleteModal = 'DeleteModal';
-  public readonly deleteBody = '本当に削除してもよろしいですか？';;
+  public readonly deleteBody = '本当に削除してもよろしいですか？';
   public readonly deleteBtn = '削除';
 
   public imageSrc: string = DetailProductComponent.NO_IMAGE_URL;
@@ -83,177 +84,159 @@ export class DetailProductComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._formInit();
     this.registerProduct = initDetailProduct();
+    this._fetchProductDetail();
     this.product = convertDetailProductToProduct(this.registerProduct);
-    this._fetchAllDatas();
     this.isInitInputImage = true;
   }
 
-  private _fetchAllDatas():void {
+  private _formInit() {
+    this.showEditBottle = false;
+    this.showEditTrigger = false;
+    this.showEditLabel = false;
+    this.showEditBag = false;
+    this.showEditInCarton = false;
+    this.showEditOutCarton = false;
+    this.showEditCompany = false;
+  }
 
+  public getData(type: string) {
+    console.log('クリックされた');
+    switch(type){
+      case MaterialTypeEn.bo:
+      case MaterialTypeJa.bo:
+        if (this.bottleLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchBottleList();
+        }
+        break;
+      case MaterialTypeEn.inCa:
+      case MaterialTypeJa.inCa:
+        if (this.cartonLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchCartonList(true);
+        } else {
+          this.showEditInCarton = true;
+        }
+        break;
+      case MaterialTypeEn.outCa:
+      case MaterialTypeJa.outCa:
+        if (this.cartonLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchCartonList(false);
+        } else {
+          this.showEditOutCarton = true;
+        }
+        break;
+      case MaterialTypeEn.la:
+      case MaterialTypeJa.la:
+        if (this.labelLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchLabelList();
+        }
+        break;
+      case MaterialTypeEn.tr:
+      case MaterialTypeJa.tr:
+        if (this.triggerLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchTriggerList();
+        }
+        break;
+      case MaterialTypeEn.ba:
+      case MaterialTypeJa.ba:
+        if (this.bagLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchBagList();
+        }
+        break;
+      case 'company':
+      case '得意先':
+        if (this.companyLists.length === 0) {
+          this._valueShareService.setLoading(true);
+          this._fetchCompanyList();
+        }
+        break;
+      default:
+        console.error('typeおかしいよ？ : ' + type);
+    }
+  }
+
+  private _fetchBottleList():void {
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.bo).subscribe((res: Material[]) => {
       this.bottleLists = res;
-      this._bottleLoaded = true;
-      this._checkLoaded();
+      this._valueShareService.setLoading(false);
+      this.showEditBottle = true;
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
+  }
 
+  private _fetchCartonList(isInCarton: boolean):void {
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ca).subscribe((res: Material[]) => {
       this.cartonLists = res;
-      this._cartonLoaded = true;
-      this._checkLoaded();
+      this._valueShareService.setLoading(false);
+      if(isInCarton) {
+        this.showEditInCarton = true;
+      } else {
+        this.showEditOutCarton = true;
+      }
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ca}データの取得に失敗しました。`, 10000);
     });
+  }
 
+  private _fetchLabelList():void {
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.la).subscribe((res: Material[]) => {
       this.labelLists = res;
-      this._labelLoaded = true;
-      this._checkLoaded();
+      this._valueShareService.setLoading(false);
+      this.showEditLabel = true;
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
+  }
 
+  private _fetchTriggerList():void {
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
       this.triggerLists = res;
-      this._triggerLoaded = true;
-      this._checkLoaded();
+      this._valueShareService.setLoading(false);
+      this.showEditTrigger = true;
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
     });
+  }
 
+  private _fetchBagList():void {
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
       this.bagLists = res;
-      this._bagLoaded = true;
-      this._checkLoaded();
+      this._valueShareService.setLoading(false);
+      this.showEditBag = true;
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
     });
+  }
 
+  private _fetchCompanyList():void {
     this._companyService.fetchCompanies().subscribe((res: Company[]) => {
       this.companyLists = res;
-      this._companyLoaded = true;
-      this._checkLoaded();
+      this.showEditCompany = true;
+      this._valueShareService.setLoading(false);
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal('※ 得意先データの取得に失敗しました。');
     });
   }
 
-  private _checkLoaded() {
-    if (this._bottleLoaded && this._cartonLoaded && this._labelLoaded && this._triggerLoaded && this._bagLoaded && this._companyLoaded) {
-      this._fetchProductDetail();
-    }
-  }
-
   private _fetchProductDetail() :void {
     const productId = this.route.snapshot.paramMap.get('id');
     this.productService.fetchProductById(productId).subscribe((res: Product) => {
       this.product = res;
-
-      let bottleData: Material = initMaterial();
-      if (this.product.bottleId !== null) {
-        const arrBottleData = this.bottleLists.filter(val => val.id === this.product.bottleId);
-        if (arrBottleData.length === 0) {
-          this.product.bottleId = null;
-          this.product.bottleName += ' (※ 削除されたか、廃止中です。)';
-        } else {
-          bottleData = arrBottleData[0];
-          this.isBottleSelected = true;
-        }
-      }
-
-      let inCartonData: Material = initMaterial();
-      if (this.product.inCartonId !== null) {
-        const arrCartonData = this.cartonLists.filter(val => val.id === this.product.inCartonId);
-        if (arrCartonData.length === 0) {
-          this.product.inCartonId = null;
-          this.product.inCartonName += ' (※ 削除されたか、廃止中です。)';
-        } else {
-          inCartonData = arrCartonData[0];
-          this.isInCartonSelected = true;
-        }
-      }
-
-      let outCartonData: Material = initMaterial();
-      if (this.product.outCartonId !== null) {
-        const arrCartonData = this.cartonLists.filter(val => val.id === this.product.outCartonId);
-        if (arrCartonData.length === 0) {
-          this.product.outCartonId = null;
-          this.product.outCartonName += ' (※ 削除されたか、廃止中です。)';
-        } else {
-          outCartonData = arrCartonData[0];
-          this.isOutCartonSelected = true;
-        }
-      }
-
-      let labelData: Material = initMaterial();
-      if (this.product.labelId !== null) {
-        const arrLabelData = this.labelLists.filter(val => val.id === this.product.labelId);
-        if (arrLabelData.length === 0) {
-          this.product.labelId = null;
-          this.product.labelName += ' (※ 削除されたか、廃止中です。)';
-        } else {
-          labelData = arrLabelData[0];
-          this.isLabelSelected = true;
-        }
-      }
-
-      let triggerData: Material = initMaterial();
-      if (this.product.triggerId !== null) {
-        const arrTriggerData = this.triggerLists.filter(val => val.id === this.product.triggerId);
-        if (arrTriggerData.length === 0) {
-          this.product.triggerId = null;
-          this.product.triggerName += ' (※ 削除されたか、廃止中です。)';
-        } else {
-          triggerData = arrTriggerData[0];
-          this.isTriggerSelected = true;
-        }
-      }
-
-      let bagData: Material = initMaterial();
-      if (this.product.bagId !== null) {
-        const arrBagData = this.bagLists.filter(val => val.id === this.product.bagId);
-        if (arrBagData.length === 0) {
-          this.product.bagId = null;
-          this.product.bagName += ' (※ 削除されたか、廃止中です。)';
-        } else {
-          bagData = arrBagData[0];
-          this.isBagSelected = true;
-        }
-      }
-
-      let companyData: Company = initCompany();
-      if (this.product.companyId !== null) {
-        const arrCompanyData = this.companyLists.filter(val => val.id === this.product.companyId);
-        if (arrCompanyData.length === 0) {
-          this.product.companyId = null;
-          this.product.companyName += ' (※ 削除されました)';
-        } else {
-          companyData = arrCompanyData[0];
-          this.isCompanySelected = true;
-        }
-      }
-
-      this.registerProduct = {
-        id: this.product.id,
-        name: this.product.name,
-        nameKana: this.product.nameKana,
-        imageUrl: this.product.imageUrl,
-        bottleData: bottleData,
-        inCartonData: inCartonData,
-        outCartonData: outCartonData,
-        labelData: labelData,
-        triggerData: triggerData,
-        bagData: bagData,
-        companyData: companyData,
-      }
+      this.registerProduct = convertProductToDetailProduct(res);
 
       if (this.product.imageUrl !== '') {
         this._firebaseStorageService.fecthDownloadUrl(this.product.imageUrl).subscribe((url) => {
@@ -394,6 +377,7 @@ export class DetailProductComponent implements OnInit {
       } else {
         this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
       }
+      this._formInit();
     }, (err) => {
       console.error(err);
       if(errMsg) {
@@ -401,7 +385,7 @@ export class DetailProductComponent implements OnInit {
       } else {
         this._valueShareService.setCompleteModal('※ 登録に失敗しました。');
       }
-
+      this._formInit();
     });
   }
 

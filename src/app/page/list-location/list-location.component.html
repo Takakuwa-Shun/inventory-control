@@ -12,14 +12,12 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">{{csvListLocation[0].name}}</th>
-          <th scope="col">{{csvListLocation[0].nameKana}}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let l of listLocation; let i = index" (click)="goDetail(l.id)">
           <th class="pointer" scope="row">{{i+1}}</th>
           <td class="pointer">{{l.name}}</td>
-          <td class="pointer">{{l.nameKana}}</td>
         </tr>
       </tbody>
     </table>

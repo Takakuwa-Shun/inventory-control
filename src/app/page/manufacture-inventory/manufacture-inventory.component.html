@@ -110,16 +110,21 @@
       </div>
     </div>
     <hr>
-    <div *ngIf="showBottle">
+    <div *ngIf="bottleInput.show">
       <div class="form-group row">
-        <label for="bottle" class="col-sm-2 col-form-label">ボトル</label>
-        <div class="col-sm-10">
+        <div class="col-sm-2">    
+          <label for="bottle" class="col-form-label">ボトル</label>
+        </div>
+        <div class="col-sm-1">
+          <img [src]="bottleInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+        </div>
+        <div class="col-sm-9">
           <input
           ngui-auto-complete
           id="bottle"
           class="form-control"
           [re-focus-after-select]=false
-          [source]="bottleLists"
+          [source]="bottleInput.listMaterial"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
           no-match-found-text="該当するボトルはありません。"
@@ -131,29 +136,34 @@
           autocomplete="off"
           [disabled]="!isProductSelected"
           >
-          <div class="alert alert-danger" *ngIf="showBottleAlert">
+          <div class="alert alert-danger" *ngIf="bottleInput.showAlert">
             ※ 検索結果候補から選択してください
           </div>
-          <span *ngIf="!isBottleSelected" class="badge badge-danger">未選択</span>
-          <div *ngIf="isBottleSelected">
+          <span *ngIf="!bottleInput.isSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="bottleInput.isSelected">
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.bottleData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{latestBottleInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{bottleInput.latestInventory.locationCount[inputLocation.id]}}個</span>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="showTrigger">
+    <div *ngIf="triggerInput.show">
       <div class="form-group row">
-        <label for="trigger" class="col-sm-2 col-form-label">トリガー</label>
-        <div class="col-sm-10">
+        <div class="col-sm-2">
+          <label for="trigger" class="col-form-label">トリガー</label>
+        </div>
+        <div class="col-sm-1">
+          <img [src]="triggerInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+        </div>
+        <div class="col-sm-9">
           <input
           ngui-auto-complete
           id="trigger"
           class="form-control"
           [re-focus-after-select]=false
-          [source]="triggerLists"
+          [source]="triggerInput.listMaterial"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
           no-match-found-text="該当するトリガーはありません。"
@@ -165,29 +175,34 @@
           autocomplete="off"
           [disabled]="!isProductSelected"
           >
-          <div class="alert alert-danger" *ngIf="showTriggerAlert">
+          <div class="alert alert-danger" *ngIf="triggerInput.showAlert">
             ※ 検索結果候補から選択してください
           </div>
-          <span *ngIf="!isTriggerSelected" class="badge badge-danger">未選択</span>
-          <div *ngIf="isTriggerSelected">
+          <span *ngIf="!triggerInput.isSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="triggerInput.isSelected">
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.triggerData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{latestTriggerInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{triggerInput.latestInventory.locationCount[inputLocation.id]}}個</span>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="showLabel">
+    <div *ngIf="labelInput.show">
       <div class="form-group row">
-        <label for="label" class="col-sm-2 col-form-label">ラベル</label>
-        <div class="col-sm-10">
+        <div class="col-sm-2">
+          <label for="label" class="col-form-label">ラベル</label>
+        </div>
+        <div class="col-sm-1">
+          <img [src]="labelInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+        </div>
+        <div class="col-sm-9">
           <input
           ngui-auto-complete
           id="label"
           class="form-control"
           [re-focus-after-select]=false
-          [source]="labelLists"
+          [source]="labelInput.listMaterial"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
           no-match-found-text="該当するラベルはありません。"
@@ -199,29 +214,34 @@
           autocomplete="off"
           [disabled]="!isProductSelected"
           >
-          <div class="alert alert-danger" *ngIf="showLabelAlert">
+          <div class="alert alert-danger" *ngIf="labelInput.showAlert">
             ※ 検索結果候補から選択してください
           </div>
-          <span *ngIf="!isLabelSelected" class="badge badge-danger">未選択</span>
-          <div *ngIf="isLabelSelected">
+          <span *ngIf="!labelInput.isSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="labelInput.isSelected">
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.labelData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{latestLabelInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{labelInput.latestInventory.locationCount[inputLocation.id]}}個</span>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="showBag">
+    <div *ngIf="bagInput.show">
       <div class="form-group row">
-        <label for="bag" class="col-sm-2 col-form-label">詰め替え袋</label>
-        <div class="col-sm-10">
+        <div class="col-sm-2">
+          <label for="bag" class="col-form-label">詰め替え袋</label>
+        </div>
+        <div class="col-sm-1">
+          <img [src]="bagInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+        </div>
+        <div class="col-sm-9">
           <input
           ngui-auto-complete
           id="bag"
           class="form-control"
           [re-focus-after-select]=false
-          [source]="bagLists"
+          [source]="bagInput.listMaterial"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
           no-match-found-text="該当する詰め替え袋はありません。"
@@ -233,30 +253,35 @@
           autocomplete="off"
           [disabled]="!isProductSelected"
           >
-          <div class="alert alert-danger" *ngIf="showBagAlert">
+          <div class="alert alert-danger" *ngIf="bagInput.showAlert">
             ※ 検索結果候補から選択してください
           </div>
-          <span *ngIf="!isBagSelected" class="badge badge-danger">未選択</span>
-          <div *ngIf="isBagSelected">
+          <span *ngIf="!bagInput.isSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="bagInput.isSelected">
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.bagData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{latestBagInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{bagInput.latestInventory.locationCount[inputLocation.id]}}個</span>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="showInCarton">
+    <div *ngIf="inCartonInput.show">
       <hr>
       <div class="form-group row">
-        <label for="inCarton" class="col-sm-2 col-form-label">内側カートン</label>
-        <div class="col-sm-10">
+        <div class="col-sm-2">
+          <label for="inCarton" class="col-form-label">内側カートン</label>
+        </div>
+        <div class="col-sm-1">
+          <img [src]="inCartonInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+        </div>
+        <div class="col-sm-9">
           <input
           ngui-auto-complete
           id="inCarton"
           class="form-control"
           [re-focus-after-select]=false
-          [source]="cartonLists"
+          [source]="inCartonInput.listMaterial"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
           no-match-found-text="該当するカートンはありません。"
@@ -268,15 +293,15 @@
           autocomplete="off"
           [disabled]="!isProductSelected"
           >
-          <div class="alert alert-danger" *ngIf="showInCartonAlert">
+          <div class="alert alert-danger" *ngIf="inCartonInput.showAlert">
             ※ 検索結果候補から選択してください
           </div>
-          <span *ngIf="!isInCartonSelected" class="badge badge-danger">未選択</span>
-          <div *ngIf="isInCartonSelected">
+          <span *ngIf="!inCartonInput.isSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="inCartonInput.isSelected">
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.inCartonData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{latestInCartonInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{inCartonInput.latestInventory.locationCount[inputLocation.id]}}個</span>
           </div>
         </div>
       </div>
@@ -327,17 +352,22 @@
         </div>
       </div>
     </div>
-    <div *ngIf="showOutCarton">
+    <div *ngIf="outCartonInput.show">
       <hr>
       <div class="form-group row">
-        <label for="outCarton" class="col-sm-2 col-form-label">外側カートン</label>
-        <div class="col-sm-10">
+        <div class="col-sm-2">
+          <label for="outCarton" class="col-form-label">外側カートン</label>
+        </div>
+        <div class="col-sm-1">
+          <img [src]="outCartonInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+        </div>
+        <div class="col-sm-9">
           <input
           ngui-auto-complete
           id="outCarton"
           class="form-control"
           [re-focus-after-select]=false
-          [source]="cartonLists"
+          [source]="outCartonInput.listMaterial"
           [list-formatter]="autocompleListFormatter.bind(this)"
           loading-text="検索中"
           no-match-found-text="該当するカートンはありません。"
@@ -349,15 +379,15 @@
           autocomplete="off"
           [disabled]="!isProductSelected"
           >
-          <div class="alert alert-danger" *ngIf="showOutCartonAlert">
+          <div class="alert alert-danger" *ngIf="outCartonInput.showAlert">
             ※ 検索結果候補から選択してください
           </div>
-          <span *ngIf="!isOutCartonSelected" class="badge badge-danger">未選択</span>
-          <div *ngIf="isOutCartonSelected">
+          <span *ngIf="!outCartonInput.isSelected" class="badge badge-danger">未選択</span>
+          <div *ngIf="outCartonInput.isSelected">
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.outCartonData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{latestOutCartonInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{outCartonInput.latestInventory.locationCount[inputLocation.id]}}個</span>
           </div>
         </div>
       </div>

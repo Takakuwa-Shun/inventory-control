@@ -414,21 +414,21 @@ export class InventoryService {
       })
     }
 
-    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, filteredLocationId?: string): Observable<Inventory[]> {
+    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationId?: string): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
         if (isNext) {
-          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).startAfter(this._endOfDocSnapshot).limit(InventoryService.LIMIT);
+          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).startAfter(this._endOfDocSnapshot).limit(limit);
         } else {
-          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).endBefore(this._startOfDocSnapshot).limit(InventoryService.LIMIT);
+          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).endBefore(this._startOfDocSnapshot).limit(limit);
         }
       }
 
       return this._fetchInventories(type, queryFn, filteredLocationId);
     }
 
-    public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, filteredLocationId?: string): Observable<Inventory[]> {
+    public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationId?: string): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
-        return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).limit(InventoryService.LIMIT);
+        return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).limit(limit);
       }
 
       return this._fetchInventories(type, queryFn, filteredLocationId);

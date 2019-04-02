@@ -99,6 +99,22 @@
       </ng-container>
     </div>
     <div class="row">
+      <label for="show-limit" class="col-sm-2 col-form-label">表示件数</label>
+      <ng-container *ngFor="let l of listLimit; index as i">
+        <div class="form-check form-check-inline">
+          <input
+            type="radio"
+            name="show-limit"
+            id="limits{{i}}"
+            class="form-check-input"
+            [(ngModel)]="showLimit"
+            [value]="l"
+            [checked]="showLimit === l">
+          <label class="form-check-label pointer" for="limits{{i}}">{{l}}</label>
+        </div>
+      </ng-container>
+    </div>
+    <div class="row">
       <div class="mx-auto">
         <button
         type="button"

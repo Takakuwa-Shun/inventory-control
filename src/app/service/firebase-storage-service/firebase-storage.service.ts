@@ -21,8 +21,8 @@ export class FirebaseStorageService {
     return from(this._storage.upload(filePath, file, meta));
   }
 
-  public fecthDownloadUrl(filePath: string): Observable<string> {
-    if(this.objDownloadUrl[filePath]) {
+  public fecthDownloadUrl(filePath: string, reload: boolean = false): Observable<string> {
+    if(!reload && this.objDownloadUrl[filePath]) {
       return of(this.objDownloadUrl[filePath]);
     }
 

@@ -143,7 +143,7 @@ export class DetailMaterialComponent implements OnInit {
 
         this._saveMaterial(material);
 
-        this._firebaseStorageService.fecthDownloadUrl(this.material.imageUrl).subscribe((url) => {
+        this._firebaseStorageService.fecthDownloadUrl(this.material.imageUrl, true).subscribe((url) => {
           this.imageSrc = url;
         });
       }, (err) => {

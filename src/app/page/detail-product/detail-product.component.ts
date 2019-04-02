@@ -358,7 +358,7 @@ export class DetailProductComponent implements OnInit {
       this._firebaseStorageService.saveFile(this._selectedImage, filePath).subscribe((res) => {
         this._saveProduct(editProduct);
 
-        this._firebaseStorageService.fecthDownloadUrl(editProduct.imageUrl).subscribe((url) => {
+        this._firebaseStorageService.fecthDownloadUrl(editProduct.imageUrl, true).subscribe((url) => {
           this.imageSrc = url;
         });
       }, (err) => {

@@ -60,6 +60,7 @@ export class ListInventoryComponent implements OnInit {
   public selectedLocation: Location;
 
   public imageSrc: string;
+  public showLimit: number;
 
   public startDate: Date;
   public endDate: Date;
@@ -86,6 +87,8 @@ export class ListInventoryComponent implements OnInit {
     { value: MaterialTypeEn.ca, name: MaterialTypeJa.ca },
   ];
 
+  public readonly listLimit = [10, 30, 50];
+
   constructor(
     private inventoryService: InventoryService,
     private _userService: UserService,
@@ -101,6 +104,7 @@ export class ListInventoryComponent implements OnInit {
 
   ngOnInit() {
     this.selectedTarget.name = '検索欄から選択して下さい';
+    this.showLimit = 10;
 
     this.showTargetAlert = false;
     this.isTargetSelected = false;
@@ -168,7 +172,7 @@ export class ListInventoryComponent implements OnInit {
 
   public getFollowingList(isNext: boolean) {
     this._valueShareService.setLoading(true);;
-    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this._locId)
+    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this._locId)
     .subscribe((res: Inventory[]) => {
       if (res.length > 0) {
         this.noNext = false;
@@ -257,7 +261,7 @@ export class ListInventoryComponent implements OnInit {
     } else {
       this._locId = this.selectedLocation.id;
     }
-    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this._locId)
+    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this._locId)
     .subscribe((res: Inventory[]) => {
       this.listInventory = res;
       this.csvListInventory = this.titleListInventory.concat(this.listInventory);

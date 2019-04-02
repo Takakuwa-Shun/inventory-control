@@ -17,20 +17,17 @@ declare const $;
   styleUrls: ['./register-product.component.css']
 })
 export class RegisterProductComponent implements OnInit {
-  private _bottleLoaded = false;
   private _cartonLoaded = false;
   private _labelLoaded = false;
-  private _triggerLoaded = false;
-  private _bagLoaded = false;
   private _companyLoaded = false;
 
   public registerProduct: DetailProduct;
 
-  public bottleLists: Material[];
+  public bottleLists: Material[] = [];
   public cartonLists: Material[];
   public labelLists: Material[];
-  public triggerLists: Material[];
-  public bagLists: Material[];
+  public triggerLists: Material[] = [];
+  public bagLists: Material[] = [];
   public companyLists: Company[];
 
   public isBagSelected: boolean;
@@ -50,6 +47,7 @@ export class RegisterProductComponent implements OnInit {
   public showCompanyAlert: boolean;
 
   public isBody: boolean;
+  public isRefill: boolean;
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
   public readonly countPattern: string = '^[1-9][0-9]*$';
@@ -74,7 +72,7 @@ export class RegisterProductComponent implements OnInit {
    }
 
   ngOnInit() {
-    this._fetchAllDatas();
+    this._fetchBaseDatas();
     this.formInit();
   }
 
@@ -221,7 +219,8 @@ export class RegisterProductComponent implements OnInit {
   formInit() :void {
     this.registerProduct = initDetailProduct();
 
-    this.isBody = true;
+    this.isBody = false;
+    this.isRefill = false;
 
     this.isBottleSelected = false;
     this.isInCartonSelected = false;
@@ -251,19 +250,21 @@ export class RegisterProductComponent implements OnInit {
     this.isInitInputImage = true;
   }
 
-  public changeIsBody() {
-    if(this.isBody) {
-      this.showBagAlert = false;
-      this.registerProduct.bagData = initMaterial(); 
-      this.isBagSelected = false;
+  public changeIsBody(isBody: boolean) {
+    if(isBody) {
+      if(this.bottleLists.length === 0 || this.triggerLists.length === 0) {
+        this._valueShareService.setLoading(true);
+        this._fetchBodyDatas();
+      } else {
+        this._initBodyInput();
+      }
     } else {
-      this.showBottleAlert = false;
-      this.registerProduct.bottleData = initMaterial(); 
-      this.isBottleSelected = false;
-
-      this.showTriggerAlert = false;
-      this.registerProduct.triggerData = initMaterial(); 
-      this.isTriggerSelected = false;
+      if(this.bagLists.length === 0) {
+        this._valueShareService.setLoading(true);
+        this._fetchBagDatas();
+      } else {
+        this._initRefillInput();
+      }
     }
   }
 
@@ -357,17 +358,68 @@ export class RegisterProductComponent implements OnInit {
     this.isInitInputImage = false;
   }
 
-  private _fetchAllDatas():void {
+  private _fetchBodyDatas():void {
+    let bottleLoaded = false;
+    let triggerLoaded = false;
 
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.bo).subscribe((res: Material[]) => {
       this.bottleLists = res;
-      this._bottleLoaded = true;
-      this._checkLoaded();
+      bottleLoaded = true;
+      if(triggerLoaded) {
+        this._initBodyInput();
+        this._valueShareService.setLoading(false);
+      }
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.bo}データの取得に失敗しました。`, 10000);
     });
 
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
+      this.triggerLists = res;
+      triggerLoaded = true;
+      if(bottleLoaded) {
+        this._initBodyInput();
+        this._valueShareService.setLoading(false);
+      }
+    }, (err) => {
+      console.error(err);
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
+    });
+  }
+
+  private _initBodyInput(): void {
+    this.isBody = true;
+    this.isRefill = false;
+    this.showBagAlert = false;
+    this.registerProduct.bagData = initMaterial(); 
+    this.isBagSelected = false;
+  }
+
+
+  private _initRefillInput(): void {
+    this.isBody = false;
+    this.isRefill = true;
+    this.showBottleAlert = false;
+    this.registerProduct.bottleData = initMaterial(); 
+    this.isBottleSelected = false;
+  
+    this.showTriggerAlert = false;
+    this.registerProduct.triggerData = initMaterial(); 
+    this.isTriggerSelected = false;
+  }
+
+  private _fetchBagDatas():void {
+    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
+      this.bagLists = res;
+      this._initRefillInput();
+      this._valueShareService.setLoading(false);
+    }, (err) => {
+      console.error(err);
+      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
+    });
+  }
+
+  private _fetchBaseDatas():void {
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ca).subscribe((res: Material[]) => {
       this.cartonLists = res;
       this._cartonLoaded = true;
@@ -386,24 +438,6 @@ export class RegisterProductComponent implements OnInit {
       this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.la}データの取得に失敗しました。`, 10000);
     });
 
-    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
-      this.triggerLists = res;
-      this._triggerLoaded = true;
-      this._checkLoaded();
-    }, (err) => {
-      console.error(err);
-      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.tr}データの取得に失敗しました。`, 10000);
-    });
-
-    this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
-      this.bagLists = res;
-      this._bagLoaded = true;
-      this._checkLoaded();
-    }, (err) => {
-      console.error(err);
-      this._valueShareService.setCompleteModal(`※ ${MaterialTypeJa.ba}データの取得に失敗しました。`, 10000);
-    });
-
     this._companyService.fetchCompanies().subscribe((res: Company[]) => {
       this.companyLists = res;
       this._companyLoaded = true;
@@ -415,7 +449,7 @@ export class RegisterProductComponent implements OnInit {
   }
 
   private _checkLoaded() {
-    if (this._bottleLoaded && this._cartonLoaded && this._labelLoaded && this._triggerLoaded && this._bagLoaded && this._companyLoaded) {
+    if (this._cartonLoaded && this._labelLoaded &&  this._companyLoaded) {
       this._valueShareService.setLoading(false);
     }
   }

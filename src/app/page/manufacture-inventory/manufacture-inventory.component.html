@@ -112,13 +112,15 @@
     <hr>
     <div *ngIf="bottleInput.show">
       <div class="form-group row">
-        <div class="col-sm-2">    
-          <label for="bottle" class="col-form-label">ボトル</label>
+        <div class="col-sm-2">
+          <div class="row col">
+            <label for="bottle" class="col-form-label">ボトル</label>
+          </div>
+          <div class="row col">
+            <img [src]="bottleInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+          </div>
         </div>
-        <div class="col-sm-1">
-          <img [src]="bottleInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <input
           ngui-auto-complete
           id="bottle"
@@ -150,14 +152,17 @@
       </div>
     </div>
     <div *ngIf="triggerInput.show">
+      <hr>
       <div class="form-group row">
         <div class="col-sm-2">
-          <label for="trigger" class="col-form-label">トリガー</label>
+          <div class="row col">
+            <label for="trigger" class="col-form-label">トリガー</label>
+          </div>
+          <div class="row col">
+            <img [src]="triggerInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+          </div>
         </div>
-        <div class="col-sm-1">
-          <img [src]="triggerInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <input
           ngui-auto-complete
           id="trigger"
@@ -189,14 +194,17 @@
       </div>
     </div>
     <div *ngIf="labelInput.show">
+      <hr>
       <div class="form-group row">
         <div class="col-sm-2">
-          <label for="label" class="col-form-label">ラベル</label>
+          <div class="row col">
+            <label for="label" class="col-form-label">ラベル</label>
+          </div>
+          <div class="row col">
+            <img [src]="labelInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+          </div>
         </div>
-        <div class="col-sm-1">
-          <img [src]="labelInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <input
           ngui-auto-complete
           id="label"
@@ -228,14 +236,17 @@
       </div>
     </div>
     <div *ngIf="bagInput.show">
+      <hr>
       <div class="form-group row">
         <div class="col-sm-2">
-          <label for="bag" class="col-form-label">詰め替え袋</label>
+          <div class="row col">
+            <label for="bag" class="col-form-label">詰め替え袋</label>
+          </div>
+          <div class="row col">
+            <img [src]="bagInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+          </div>
         </div>
-        <div class="col-sm-1">
-          <img [src]="bagInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <input
           ngui-auto-complete
           id="bag"
@@ -270,12 +281,14 @@
       <hr>
       <div class="form-group row">
         <div class="col-sm-2">
-          <label for="inCarton" class="col-form-label">内側カートン</label>
+          <div class="row col">
+            <label for="inCarton" class="col-form-label">内側カートン</label>
+          </div>
+          <div class="row col">
+            <img [src]="inCartonInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+          </div>
         </div>
-        <div class="col-sm-1">
-          <img [src]="inCartonInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <input
           ngui-auto-complete
           id="inCarton"
@@ -356,12 +369,14 @@
       <hr>
       <div class="form-group row">
         <div class="col-sm-2">
-          <label for="outCarton" class="col-form-label">外側カートン</label>
+          <div class="row col">
+            <label for="outCarton" class="col-form-label">外側カートン</label>
+          </div>
+          <div class="row col">
+            <img [src]="outCartonInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
+          </div>
         </div>
-        <div class="col-sm-1">
-          <img [src]="outCartonInput.imageSrc" class="list-icon img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <input
           ngui-auto-complete
           id="outCarton"

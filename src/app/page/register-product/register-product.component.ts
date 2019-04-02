@@ -10,6 +10,7 @@ import { FirebaseStorageService } from './../../service/firebase-storage-service
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ValueShareService } from './../../service/value-share-service/value-share.service'
 declare const $;
+const NO_IMAGE_URL = './../../../assets/no-image.png';
 
 @Component({
   selector: 'app-register-product',
@@ -45,6 +46,13 @@ export class RegisterProductComponent implements OnInit {
   public showLabelAlert: boolean;
   public showTriggerAlert: boolean;
   public showCompanyAlert: boolean;
+
+  public bagImageSrc: string;
+  public bottleImageSrc: string;
+  public inCartonImageSrc: string;
+  public outCartonImageSrc: string;
+  public labelImageSrc: string;
+  public triggerImageSrc: string;
 
   public isBody: boolean;
   public isRefill: boolean;
@@ -207,6 +215,48 @@ export class RegisterProductComponent implements OnInit {
     }
   }
 
+  private　_setImage(type: string, image: string) :void {
+    switch(type){
+      case MaterialTypeEn.bo:
+      case MaterialTypeJa.bo:
+        this.bottleImageSrc = image;
+        break;
+      case MaterialTypeEn.inCa:
+      case MaterialTypeJa.inCa:
+        this.inCartonImageSrc = image;
+        break;  
+      case MaterialTypeEn.outCa:
+      case MaterialTypeJa.outCa:
+        this.outCartonImageSrc = image;
+        break;
+      case MaterialTypeEn.la:
+      case MaterialTypeJa.la:
+        this.labelImageSrc = image;
+        break;
+      case MaterialTypeEn.tr:
+      case MaterialTypeJa.tr:
+        this.triggerImageSrc = image;
+        break;
+      case MaterialTypeEn.ba:
+      case MaterialTypeJa.ba:
+        this.bagImageSrc = image;
+        break;
+      default:
+        console.error('typeおかしいよ？ : ' + type);
+    }
+  }
+
+  private _downloadImages(type: string, imageUrl: string) {
+    this._setImage(type, NO_IMAGE_URL);
+    if(imageUrl !== '') {
+      this._firebaseStorageService.fecthDownloadUrl(imageUrl).subscribe((res: string) => {
+        this._setImage(type, res);
+      }, (err) => {
+        console.log(err);
+      });
+    } 
+  }
+
   private _saveProduct(product: Product) {
     this._productService.saveProduct(product).subscribe(() =>{
       this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
@@ -237,6 +287,13 @@ export class RegisterProductComponent implements OnInit {
     this.showTriggerAlert = false;
     this.showBagAlert = false;
     this.showCompanyAlert = false;
+
+    this.bottleImageSrc = NO_IMAGE_URL;
+    this.triggerImageSrc = NO_IMAGE_URL;
+    this.labelImageSrc = NO_IMAGE_URL;
+    this.bagImageSrc = NO_IMAGE_URL;
+    this.inCartonImageSrc = NO_IMAGE_URL;
+    this.outCartonImageSrc = NO_IMAGE_URL;
 
     $('#bottle').val("");
     $('#inCarton').val("");
@@ -272,7 +329,7 @@ export class RegisterProductComponent implements OnInit {
     return `<span>${data.name}</span>`;
   }
 
-  selectMaterial(data: any, type: string) :void {
+  selectMaterial(data: Material, type: string) :void {
     switch(type){
       case MaterialTypeEn.bo:
       case MaterialTypeJa.bo:
@@ -282,6 +339,7 @@ export class RegisterProductComponent implements OnInit {
           this.showBottleAlert = false;
           this.registerProduct.bottleData = data; 
           this.isBottleSelected = true;
+          this._downloadImages(MaterialTypeEn.bo, data.imageUrl);
         }
         break;
       case MaterialTypeEn.inCa:
@@ -292,6 +350,7 @@ export class RegisterProductComponent implements OnInit {
           this.showInCartonAlert = false;
           this.registerProduct.inCartonData = data; 
           this.isInCartonSelected = true;
+          this._downloadImages(MaterialTypeEn.inCa, data.imageUrl);
         }
       break;
       case MaterialTypeEn.outCa:
@@ -302,6 +361,7 @@ export class RegisterProductComponent implements OnInit {
           this.showOutCartonAlert = false;
           this.registerProduct.outCartonData = data; 
           this.isOutCartonSelected = true;
+          this._downloadImages(MaterialTypeEn.outCa, data.imageUrl);
         }
         break;
       case MaterialTypeEn.la:
@@ -312,6 +372,7 @@ export class RegisterProductComponent implements OnInit {
           this.showLabelAlert = false;
           this.registerProduct.labelData = data; 
           this.isLabelSelected = true;
+          this._downloadImages(MaterialTypeEn.la, data.imageUrl);
         }
         break;
       case MaterialTypeEn.tr:
@@ -322,6 +383,7 @@ export class RegisterProductComponent implements OnInit {
           this.showTriggerAlert = false;
           this.registerProduct.triggerData = data; 
           this.isTriggerSelected = true;
+          this._downloadImages(MaterialTypeEn.tr, data.imageUrl);
         }
         break;
       case MaterialTypeEn.ba:
@@ -332,6 +394,7 @@ export class RegisterProductComponent implements OnInit {
           this.showBagAlert = false;
           this.registerProduct.bagData = data; 
           this.isBagSelected = true;
+          this._downloadImages(MaterialTypeEn.ba, data.imageUrl);
         }
         break;
       case 'company':

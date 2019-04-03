@@ -22,8 +22,6 @@ interface Batch {
 })
 export class InventoryService {
 
-  private static readonly LIMIT = 100;
-
   private _startOfDocSnapshot: firebase.firestore.DocumentSnapshot;
   private _endOfDocSnapshot: firebase.firestore.DocumentSnapshot;
 

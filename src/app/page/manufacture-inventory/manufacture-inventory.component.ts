@@ -245,6 +245,9 @@ export class ManufactureInventoryComponent implements OnInit {
     this.bagInput.setImage(type, image);
     this.inCartonInput.setImage(type, image);
     this.outCartonInput.setImage(type, image);
+    if(type === MaterialTypeEn.pr) {
+      this.imageSrc = image;
+    }
   }
 
   private _downloadImages(type: string, imageUrl: string) {

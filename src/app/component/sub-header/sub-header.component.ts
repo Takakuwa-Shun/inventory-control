@@ -1,13 +1,17 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { formatDate, Location } from '@angular/common';
+import { SafeUrl } from '@angular/platform-browser';
+import { formatDate } from '@angular/common';
+import { Location as AngularLocation } from '@angular/common';
 import { firestore } from 'firebase';
+import { Location } from './../../model/location';
 import { Material } from './../../model/material';
 import { Product } from './../../model/product';
 import { Company } from './../../model/company';
 import { Inventory } from './../../model/inventory';
 import { Memo } from './../../model/memo';
 import { User } from './../../model/user';
+import { ExcelServiceService } from './../../service/excel-service/excel-service.service';
+import { ExcelSheet } from './../../model/excel-sheet';
 
 const type = {
   in : 'inventory',
@@ -28,19 +32,19 @@ const type = {
 export class SubHeaderComponent implements OnInit {
 
   @Input() title: string;
-  @Input() showCsv: boolean;
+  @Input() showExcel: boolean;
   @Input() showPrint: boolean;
-  @Input() csvData: object[];
-  @Input() csvFileName: string;
+  @Input() excelData: object[];
+  @Input() locationNameMap: object;
   @Input() iconImageUrl: string;
   @Input() showImage: boolean = false;
 
-  public csvDataSrc: SafeUrl;
+  public excelDataSrc: SafeUrl;
 
   constructor(
-    private _sanitizer: DomSanitizer,
-    private _location: Location,
-    @Inject(LOCALE_ID) private _locale: string
+    private _location: AngularLocation,
+    @Inject(LOCALE_ID) private _locale: string,
+    private _excelServiceService: ExcelServiceService,
     ) { }
 
   ngOnInit() {
@@ -54,52 +58,35 @@ export class SubHeaderComponent implements OnInit {
     window.print();
   }
 
-  convertToCsv() {
-
-    // ファイル名を作成
-    const date = formatDate(new Date(), "yyyyMMdd_HHmm", this._locale);
-    if (this.csvFileName) {
-      this.csvFileName = `${this.csvFileName}_${date}.csv`;
-    } else {
-      this.csvFileName = `${this.title}_${date}.csv`;      
-    }
-
-    const dataType = this._checkType(this.csvData[0]);
-    let csv: string;
+  convertToExcel() {
+    const dataType = this._checkType(this.excelData[0]);
 
     switch(dataType) {
       case type.in:
-        csv = this._setInventryCsv(this.csvData);
+        this._exportInventorySheet(this.excelData);
         break;
       case type.pr:
-        csv = this._setProductCsv(this.csvData);
+        this._exportProductSheet(this.excelData);
         break;
       case type.ma:
-        csv = this._setMaterialCsv(this.csvData);
+        this._exportMaterialSheet(this.excelData);
         break;
       case type.user:
-        csv = this._setUserCsv(this.csvData);
+        this._exportUserSheet(this.excelData);
         break;
       case type.memo:
-        csv = this._setMemoCsv(this.csvData);
+        this._exportMemoSheet(this.excelData);
         break;
       case type.com:
-        csv = this._setCompanyCsv(this.csvData);
+        this._exportCompanySheet(this.excelData);
         break;
       case type.lo:
-        csv = this._setCompanyCsv(this.csvData);
+        this._exportLocationSheet(this.excelData);
         break;
       default:
         console.error('typeおかしいよ : ' + type);
         break;
     }
-
-    // console.log(csv)
-
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const option: BlobPropertyBag = { "type" : "text/csv" };
-    const blob = new Blob([ bom, csv], option);
-    this.csvDataSrc = this._sanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(blob));
   }
 
   private _checkType(obj: object): string{
@@ -143,18 +130,35 @@ export class SubHeaderComponent implements OnInit {
     return type.err;
   }
 
-  private _setMaterialCsv(list: object[]): string {
-    let csv = '';
-    list.forEach((obj: object) => {
+  private _exportMaterialSheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
       const m = obj as Material;
-      csv += `${m.id},${m.name},${m.nameKana},${m.type},${m.limitCount},${m.imageUrl},${m.status}\n`;
-    });
-    return csv;
+      const data = {
+        "資材コード" : m.id,
+        "資材名": m.name,
+        "資材名かな": m.nameKana,
+        "種別": m.type,
+        "フラグ": m.limitCount,
+        "画像パス": m.imageUrl,
+        "ステータス": m.status,
+      };
+      json.push(data);
+    }
+
+    const title = list[0] as Material;
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: `${title.type}一覧`,
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, `${title.type}一覧`);
   }
 
-  private _setProductCsv(list: object[]): string {
-    let csv = '';
-    list.forEach((obj: object) => {
+  private _exportProductSheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
       const p = obj as Product;
 
       if(p.companyId === null) {
@@ -184,36 +188,143 @@ export class SubHeaderComponent implements OnInit {
       if(p.outCartonId === null) {
         p.outCartonId = '';
       }
-      csv += `${p.companyId},${p.companyName},${p.name},${p.nameKana},${p.imageUrl},${p.bottleId},${p.bottleName},${p.triggerId},${p.triggerName},${p.labelId},${p.labelName},${p.bagId},${p.bagName},${p.inCartonId},${p.inCartonName},${p.outCartonId},${p.outCartonName}\n`;
-    });
-    return csv;
+
+      const data = {
+        "得意先コード" : p.companyId,
+        "得意先名": p.companyName,
+        "商品名": p.name,
+        "商品名かな": p.nameKana,
+        "画像パス": p.imageUrl,
+        "ボトルコード": p.bottleId,
+        "ボトル名": p.bottleName,
+        "トリガーコード": p.triggerId,
+        "トリガー名": p.triggerName,
+        "ラベルコード": p.labelId,
+        "ラベル名": p.labelName,
+        "詰め替え袋コード": p.bagId,
+        "詰め替え袋名": p.bagName,
+        "内側カートンコード": p.inCartonId,
+        "内側カートン名": p.inCartonName,
+        "外側カートンコード": p.outCartonId,
+        "外側カートン名": p.outCartonName,
+      };
+      json.push(data);
+    }
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: '商品一覧',
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, '商品一覧');
   }
 
-  private _setUserCsv(list: object[]): string {
-    let csv = '';
-    list.forEach((obj: object) => {
+  private _exportUserSheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
       const u = obj as User;
-      csv += `${u.displayName},${u.email}\n`;
-    });
-    return csv;
+      const data = {
+        "担当者名" : u.displayName,
+        "メールアドレス": u.email,
+      };
+      json.push(data);
+    }
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: '担当者一覧',
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, '担当者一覧');
   }
 
-  private _setMemoCsv(list: object[]): string {
-    let csv = '';
-    list.forEach((obj: object) => {
+  private _exportMemoSheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
       const m = obj as Memo;
-      csv += `${m.content}\n`;
-    });
-    return csv;
+      const data = {
+        "備考内容" : m.content,
+      };
+      json.push(data);
+    }
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: '備考一覧',
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, '備考一覧');
   }
 
-  private _setCompanyCsv(list: object[]): string {
-    let csv = '';
-    list.forEach((obj: object) => {
+  private _exportCompanySheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
       const c = obj as Company;
-      csv += `${c.id},${c.name},${c.nameKana}\n`;
-    });
-    return csv;
+      const data = {
+        "得意先コード" : c.id,
+        "得意先名" : c.name,
+        "得意先名かな" : c.nameKana,
+      };
+      json.push(data);
+    }
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: '得意先一覧',
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, '得意先一覧');
+  }
+
+  private _exportLocationSheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
+      const l = obj as Location;
+      const data = {
+        "倉庫コード" : l.id,
+        "倉庫名" : l.name,
+        "倉庫名かな" : l.nameKana,
+      };
+      json.push(data);
+    }
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: '倉庫一覧',
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, '倉庫一覧');
+  }
+
+  private _exportInventorySheet(list: object[]): void {
+    const json = [];
+    for (const obj of list) {
+      const i = obj as Inventory;
+      const date = formatDate(new firestore.Timestamp(i.date['seconds'], i.date['nanoseconds']).toDate(), "yy年MM月dd日", this._locale);
+      const data = {
+        "日付": date,
+        "担当者": i.userName,
+        "対象の名前": i.targetName,
+        "数量": i.addCount,
+        "作業項目": i.actionType,
+        "作業詳細": i.actionDetail,
+        "備考": i.memo,
+      };
+      Object.keys(this.locationNameMap).map((locationId: string) => {
+        data[this.locationNameMap[locationId]] = `${i.locationCount[locationId]}`;
+      });
+      data["全倉庫合計"] = i.sumCount;
+      json.push(data);
+    }
+
+    const title = list[0] as Inventory;
+
+    const excelSheet: ExcelSheet[] = [{
+      sheetName: `${title.targetName}一覧`,
+      json: json
+    }];
+
+    this._excelServiceService.exportAsExcelFile(excelSheet, `${title.targetName}一覧`);
   }
 
   private _setInventryCsv(list: object[]): string {

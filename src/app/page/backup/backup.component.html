@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <app-sub-header
+    title="バックアップ"
+    [showPrint]=false
+    [showExcel]=false
+  ></app-sub-header>
+  <div class="row">
+    <label for="target-kind" class="col-sm-2 col-form-label">対象種類</label>
+    <ng-container *ngFor="let t of listTarget; index as i">
+      <div class="form-check form-check-inline">
+        <input
+          type="radio"
+          name="target-kind"
+          id="targets{{i}}"
+          class="form-check-input"
+          [(ngModel)]="selectedTargetType"
+          [value]="t"
+          [checked]="selectedTargetType === t">
+        <label class="form-check-label pointer" for="targets{{i}}">{{t}}</label>
+      </div>
+    </ng-container>
+  </div>
+  <div class="row">
+    <label for="range" class="col-sm-2 col-form-label">対象範囲</label>
+    <ng-container *ngFor="let r of listRange; index as i">
+      <div class="form-check form-check-inline">
+        <input
+          type="radio"
+          name="range"
+          id="range{{i}}"
+          class="form-check-input"
+          [(ngModel)]="selectedRange"
+          [value]="r.value"
+          [checked]="selectedRange === r.value">
+        <label class="form-check-label pointer" for="range{{i}}">{{r.name}}</label>
+      </div>
+    </ng-container>
+  </div>
+  <div class="row">
+    <div class="mx-auto">
+      <button
+      type="button"
+      class="btn btn-primary"
+      (click)="create()">作成</button>
+    </div>
+  </div>
+</div>

@@ -14,11 +14,6 @@ declare const $;
 export class ListUserComponent implements OnInit {
 
   public listUser: User[];
-  public csvListUser: User[] = [{
-    uid: '担当者コード',
-    displayName: '担当者名',
-    email: 'メールアドレス',
-  }];
 
   private _currentUser: User;
 
@@ -43,7 +38,6 @@ export class ListUserComponent implements OnInit {
   private fetchAllUsers(): void {
     this._userService.fetchAllUsers().subscribe((res: User[]) => {
       this.listUser = res;
-      this.csvListUser = this.csvListUser.concat(this.listUser);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.error(err);

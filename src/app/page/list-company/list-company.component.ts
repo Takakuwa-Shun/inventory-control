@@ -13,7 +13,6 @@ declare const $;
 export class ListCompanyComponent implements OnInit {
 
   public listCompany: Company[];
-  public csvListCompany: Company[];
 
   constructor(
     private router: Router,
@@ -24,19 +23,12 @@ export class ListCompanyComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.csvListCompany = [{
-      id: '得意先コード',
-      name: '得意先名',
-      nameKana: '得意先名かな'
-    }];
-
     this.fetchAllCompany();
   }
 
   private fetchAllCompany(): void {
     this.companyService.fetchCompanies().subscribe((res: Company[]) => {
       this.listCompany = res;
-      this.csvListCompany = this.csvListCompany.concat(this.listCompany);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);

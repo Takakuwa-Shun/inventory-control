@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Inventory } from '../../model/inventory';
-import { User } from '../../model/user';
 import { Location } from './../../model/location';
 import { Material, initMaterial } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from '../../model/material-type';
@@ -11,7 +10,7 @@ import { UserService } from './../../service/user-service/user.service';
 import { LocalStorageService } from './../../service/local-storage-service/local-storage.service';
 import { MaterialService } from './../../service/material-service/material.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
-import { ValueShareService } from './../../service/value-share-service/value-share.service'
+import { ValueShareService } from './../../service/value-share-service/value-share.service';
 declare const $;
 
 @Component({
@@ -23,23 +22,9 @@ export class ListInventoryComponent implements OnInit {
 
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
-  private _userLoaded = false;
-  private _locationLoaded = false;
-
   public listInventory: Inventory[] = [];
-  public csvListInventory: object[];
-  public readonly titleListInventory: any[] = [{
-    date: '日付',
-    userName: '担当者名',
-    targetName: '対象の名前',
-    addCount: '数量',
-    actionType: '作業項目',
-    actionDetail: '作業詳細',
-    memo: '備考',
-    sumCount: '全倉庫合計',
-  }];
+  public locationNameMap: object = {};
 
-  public userObj: object = {};
   public listSelectedLocation: Location[];
   private _listLocation: Location[];
   private _bottleLists: Material[];
@@ -113,7 +98,6 @@ export class ListInventoryComponent implements OnInit {
 
     this._filterInit();
     this.changeTargetType();
-    this._fetchAllUser();
     this._fetchAllLocations();
   }
 
@@ -178,7 +162,6 @@ export class ListInventoryComponent implements OnInit {
         this.noNext = false;
         this.noPrevious = false;
         this.listInventory = res;
-        this.csvListInventory = this.titleListInventory.concat(this.listInventory);
       } else {
         if (isNext) {
           this.noNext = true;
@@ -264,7 +247,6 @@ export class ListInventoryComponent implements OnInit {
     this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this._locId)
     .subscribe((res: Inventory[]) => {
       this.listInventory = res;
-      this.csvListInventory = this.titleListInventory.concat(this.listInventory);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.error(err);
@@ -352,19 +334,6 @@ export class ListInventoryComponent implements OnInit {
     }
   }
 
-  private _fetchAllUser(): void {
-    this._userService.fetchAllUsers().subscribe((res: User[]) => {
-      res.forEach((user: User) => {
-        this.userObj[user.uid] = user.displayName;
-      });
-      this._userLoaded = true;
-      this._checkLoaded();
-    }, (err) => {
-      console.error(err);
-      this._valueShareService.setCompleteModal('※ 担当者情報のロードに失敗しました。', 10000);
-    });
-  }
-
   private _fetchAllLocations():void {
     this._locationService.fetchLocations().subscribe((res: Location[]) => {
       this._listLocation = res;
@@ -372,14 +341,11 @@ export class ListInventoryComponent implements OnInit {
       this._setListSelectedLocation();
 
       // csvのため
-      const locationCountCsv = {};
       for (const l of this._listLocation) {
-        locationCountCsv[l.id] = l.name;
+        this.locationNameMap[l.id] = l.name;
       }
-      this.titleListInventory[0]['locationCount'] = locationCountCsv;
 
-      this._locationLoaded = true; 
-      this._checkLoaded();
+      this._valueShareService.setLoading(false);
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal('※ 倉庫のデータの取得に失敗しました。', 10000);
@@ -397,12 +363,6 @@ export class ListInventoryComponent implements OnInit {
           return val.id === this.selectedLocation.id;
         });
       }
-    }
-  }
-
-  private _checkLoaded() {
-    if (this._userLoaded && this._locationLoaded ) {
-      this._valueShareService.setLoading(false);;
     }
   }
 }

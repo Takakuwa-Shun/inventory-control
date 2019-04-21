@@ -465,4 +465,41 @@ export class InventoryService {
         })
       );
     }
+
+    public fetchBackupInventory(type: string, days: number): Observable<Object> {
+      const arrCollectionPath = this._getCollectionPath(type);
+      if (arrCollectionPath === null) {
+        return new Observable(observer => observer.error());
+      }
+
+      const startDate: Date = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      const queryFn: QueryFn = (ref: CollectionReference) => {
+        return ref.orderBy('date', 'desc').where('date', '>=', startDate);
+      }
+
+      const collectionInventory: AngularFirestoreCollection<Inventory> = this._afStore.collection(`${arrCollectionPath[0]}/`, queryFn);
+
+      return collectionInventory.get().pipe(
+        map((querySnapshot: firebase.firestore.QuerySnapshot) => {
+          const result: Object = {};
+          querySnapshot.forEach((doc: firebase.firestore.QueryDocumentSnapshot) => {
+            if (doc.exists) {
+              const data = doc.data() as Inventory;
+
+              if (result.hasOwnProperty(data.targetId)) {
+                const arr: Inventory[] = result[data.targetId];
+                arr.push(data);
+                result[data.targetId] = arr;
+              } else {
+                result[data.targetId] = [data];
+              }
+            }
+          });
+          return result;
+        })
+      );
+
+    }
 }

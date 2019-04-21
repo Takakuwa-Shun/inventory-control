@@ -21,10 +21,8 @@
     <span *ngIf="showPrint" class="pointer print-hidden" style="color: #999" (click)="print()">
       <fa-icon [icon]="['fas', 'print']" size="2x" [border]="true" pull="right"></fa-icon>
     </span>
-    <span *ngIf="showCsv" class="pointer print-hidden" style="color: #999" (click)="convertToCsv()">
-      <a  id="download" [href]="csvDataSrc" [download]="csvFileName">
-        <fa-icon [icon]="['fas', 'file-csv']" size="2x" [border]="true" pull="right"></fa-icon>
-      </a>
+    <span *ngIf="showExcel" class="pointer print-hidden" style="color: #999" (click)="convertToExcel()">
+      <fa-icon [icon]="['fas', 'file-excel']" size="2x" [border]="true" pull="right" style="color:green;"></fa-icon>
     </span>
   </div>
 </div>

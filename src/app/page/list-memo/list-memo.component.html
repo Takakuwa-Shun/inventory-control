@@ -2,8 +2,8 @@
   <app-sub-header
   title="備考一覧"
   [showPrint]=true
-  [showCsv]=true
-  [csvData]="csvListMemo"
+  [showExcel]=true
+  [excelData]="listMemo"
   ></app-sub-header>
   <div class="print-hidden">
     <form #memoForm="ngForm">
@@ -40,7 +40,7 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col" class="word-break">{{csvTitleMemo[0].content}}</th>
+          <th scope="col" class="word-break">備考内容</th>
           <th class="print-hidden" scope="col">編集</th>
           <th class="print-hidden" scope="col">削除</th>
         </tr>

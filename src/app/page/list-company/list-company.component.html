@@ -2,8 +2,8 @@
   <app-sub-header
   title="得意先一覧"
   [showPrint]=true
-  [showCsv]=true
-  [csvData]="csvListCompany"
+  [showExcel]=true
+  [excelData]="listCompany"
   ></app-sub-header>
   <p class="print-hidden">列をクリックすると、そのデータの修正・削除を行う画面に遷移します。</p>
   <div class="table-responsive">
@@ -11,7 +11,7 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">{{csvListCompany[0].name}}</th>
+          <th scope="col">得意先名</th>
         </tr>
       </thead>
       <tbody>

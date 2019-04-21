@@ -2,8 +2,8 @@
   <app-sub-header
   title="商品一覧"
   [showPrint]=true
-  [showCsv]=true
-  [csvData]="csvListProduct"
+  [showExcel]=true
+  [excelData]="listProduct"
   ></app-sub-header>
   <div class="print-hidden">
     <div class="form-group row">
@@ -35,14 +35,14 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">商品画像</th>
-          <th scope="col">{{titleListProduct[0].companyName}}</th>
-          <th scope="col">{{titleListProduct[0].name}}</th>
-          <th scope="col">{{titleListProduct[0].bottleName}}</th>
-          <th scope="col">{{titleListProduct[0].triggerName}}</th>
-          <th scope="col">{{titleListProduct[0].labelName}}</th>
-          <th scope="col">{{titleListProduct[0].bagName}}</th>
-          <th scope="col">{{titleListProduct[0].inCartonName}}</th>
-          <th scope="col">{{titleListProduct[0].outCartonName}}</th>
+          <th scope="col">得意先名</th>
+          <th scope="col">商品名</th>
+          <th scope="col">ボトル名</th>
+          <th scope="col">トリガー名</th>
+          <th scope="col">ラベル名</th>
+          <th scope="col">詰め替え袋名</th>
+          <th scope="col">内側カートン名</th>
+          <th scope="col">外側カートン名</th>
         </tr>
       </thead>
       <tbody>

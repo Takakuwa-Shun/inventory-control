@@ -18,31 +18,7 @@ export class ListProductComponent implements OnInit {
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
   public listProduct: ProductWithImage[];
-  public csvListProduct: Product[];
   public listCompany: Company[];
-  private _selectedCompany: Company;
-
-  public readonly titleListProduct: Product[] = [{
-    id: '商品コード',
-    name: '商品名',
-    nameKana: '商品名かな',
-    imageUrl: '画像パス',
-    companyId: '得意先コード',
-    companyName: '得意先名',
-    bottleId: 'ボトルコード',
-    bottleName: 'ボトル名',
-    inCartonId: '内側カートンコード',
-    inCartonName: '内側カートン名',
-    outCartonId: '外側カートンコード',
-    outCartonName: '外側カートン名',
-    labelId: 'ラベルコード',
-    labelName: 'ラベル名',
-    triggerId: 'トリガーコード',
-    triggerName: 'トリガー名',
-    bagId: '詰め替え袋コード',
-    bagName: '詰め替え袋名',
-  }];
-
   constructor(
     private router: Router,
     private _companyService: CompanyService,
@@ -55,7 +31,6 @@ export class ListProductComponent implements OnInit {
 
   ngOnInit() {
     this.fetchAllCompanies();
-    this.csvListProduct = this.titleListProduct;
   }
 
   private fetchAllCompanies(): void {
@@ -98,12 +73,13 @@ export class ListProductComponent implements OnInit {
   }
 
   public selectCompany(data: Company) {
-    this._valueShareService.setLoading(true);
-    this._selectedCompany = data;
-    if(data.id === '') {
-      this._fetchProductList();
-    } else {
-      this._fetchProductListFilteringCompany(data);
+    if (typeof data !== 'string') {
+      this._valueShareService.setLoading(true);
+      if(data.id === '') {
+        this._fetchProductList();
+      } else {
+        this._fetchProductListFilteringCompany(data);
+      }
     }
   }
 
@@ -111,7 +87,6 @@ export class ListProductComponent implements OnInit {
     this.productService.fetchAllProducts().subscribe((res: Product[]) => {
       this.listProduct = res;
       this._downloadImages();
-      this.csvListProduct = this.titleListProduct.concat(this.listProduct);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);
@@ -123,7 +98,6 @@ export class ListProductComponent implements OnInit {
     this.productService.fetchProductListFilteringCompany(company.id).subscribe((res: Product[]) => {
       this.listProduct = res;
       this._downloadImages();
-      this.csvListProduct = this.titleListProduct.concat(this.listProduct);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);

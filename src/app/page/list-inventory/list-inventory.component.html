@@ -3,9 +3,9 @@
     <app-sub-header
       title="在庫一覧"
       [showPrint]=true
-      [showCsv]=true
-      [csvData]="csvListInventory"
-      [csvFileName]="showTarget.name"
+      [showExcel]=true
+      [excelData]="listInventory"
+      [locationNameMap]="locationNameMap" 
     ></app-sub-header>
     <div class="row">
       <label for="target-kind" class="col-sm-2 col-form-label">対象種類</label>
@@ -155,12 +155,12 @@
       <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">{{titleListInventory[0].date}}</th>
-          <th scope="col">{{titleListInventory[0].userName}}</th>
-          <th scope="col">{{titleListInventory[0].addCount}}</th>
-          <th scope="col">{{titleListInventory[0].actionType}}</th>
-          <th scope="col">{{titleListInventory[0].actionDetail}}</th>
-          <th scope="col">{{titleListInventory[0].memo}}</th>
+          <th scope="col">日付</th>
+          <th scope="col">担当者</th>
+          <th scope="col">数量</th>
+          <th scope="col">作業項目</th>
+          <th scope="col">作業詳細</th>
+          <th scope="col">備考</th>
           <ng-container *ngFor="let lo of listSelectedLocation">
             <th scope="col">{{lo.name}}</th>
           </ng-container>

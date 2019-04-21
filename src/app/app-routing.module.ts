@@ -29,6 +29,7 @@ import { AdjustInventoryComponent } from './page/adjust-inventory/adjust-invento
 import { RegisterMaterialFromFileComponent } from './page/register-material-from-file/register-material-from-file.component';
 import { NotFoundComponent } from './page/not-found/not-found.component';
 import { RegisterProductFromFileComponent } from './page/register-product-from-file/register-product-from-file.component';
+import { BackupComponent } from './page/backup/backup.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -40,6 +41,7 @@ const routes: Routes = [
   { path: 'location/list', component: ListLocationComponent, canActivate: [AuthGuard] },
   { path: 'user/list', component: ListUserComponent, canActivate: [AuthGuard] },
   { path: 'inventory/list', component: ListInventoryComponent, canActivate: [AuthGuard] },
+  { path: 'inventory/backup', component: BackupComponent, canActivate: [AuthGuard] },
   { path: 'inventory/purchase', component: PurchaseInventoryComponent, canActivate: [AuthGuard] },
   { path: 'inventory/consume', component: ConsumeInventoryComponent, canActivate: [AuthGuard] },
   { path: 'inventory/move', component: MoveInventoryComponent, canActivate: [AuthGuard] },

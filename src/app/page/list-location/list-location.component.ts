@@ -13,7 +13,6 @@ declare const $;
 export class ListLocationComponent implements OnInit {
 
   public listLocation: Location[];
-  public csvListLocation: Location[];
 
   constructor(
     private router: Router,
@@ -24,19 +23,12 @@ export class ListLocationComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.csvListLocation = [{
-      id: '倉庫コード',
-      name: '倉庫名',
-      nameKana: '倉庫名かな',
-      isFactory: false,
-    }];
     this.fetchAllLocations();
   }
 
   private fetchAllLocations(): void {
     this.locationService.fetchLocations().subscribe((res: Location[]) => {
       this.listLocation = res;
-      this.csvListLocation = this.csvListLocation.concat(this.listLocation);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);

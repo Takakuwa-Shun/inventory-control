@@ -8,7 +8,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { faPrint, faFileCsv, faCaretLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
+import { faPrint, faFileExcel, faCaretLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { NgxLoadingModule } from 'ngx-loading';
@@ -54,6 +54,7 @@ import { AdjustInventoryComponent } from './page/adjust-inventory/adjust-invento
 import { NotFoundComponent } from './page/not-found/not-found.component';
 import { LoginComponent } from './page/login/login.component';
 import { ResetPasswordComponent } from './page/reset-password/reset-password.component';
+import { BackupComponent } from './page/backup/backup.component';
 
 import { MaterialService } from './service/material-service/material.service';
 import { ProductService } from './service/product-service/product.service';
@@ -67,6 +68,7 @@ import { AuthService } from './service/auth-service/auth.service';
 import { EmailService } from './service/email-service/email.service';
 import { ValueShareService } from './service/value-share-service/value-share.service';
 import { FirebaseStorageService } from './service/firebase-storage-service/firebase-storage.service';
+import { ExcelServiceService } from './service/excel-service/excel-service.service';
 
 @NgModule({
   declarations: [
@@ -104,6 +106,7 @@ import { FirebaseStorageService } from './service/firebase-storage-service/fireb
     NotFoundComponent,
     ImageCropperWrapperComponent,
     RegisterProductFromFileComponent,
+    BackupComponent,
   ],
   imports: [
     BrowserModule,
@@ -135,7 +138,8 @@ import { FirebaseStorageService } from './service/firebase-storage-service/fireb
     AuthService,
     EmailService,
     FirebaseStorageService,
-    ValueShareService
+    ValueShareService,
+    ExcelServiceService
   ],
   bootstrap: [AppComponent]
 })
@@ -143,7 +147,7 @@ export class AppModule {
 
   constructor() {
     library.add(faPrint);
-    library.add(faFileCsv);
+    library.add(faFileExcel);
     library.add(faCaretLeft);
     library.add(faTimes);
   }

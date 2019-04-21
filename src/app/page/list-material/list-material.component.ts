@@ -18,16 +18,6 @@ export class ListMaterialComponent implements OnInit {
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
   public listMaterial: MaterialWithImage[];
-  public csvListMaterial: Material[];
-  public titleListMaterial: Material[] = [{
-    id: '資材コード',
-    name: '資材名',
-    nameKana: '資材名かな',
-    type: '種別',
-    limitCount: 'フラグ',
-    imageUrl: '画像パス',
-    status: 'ステータス',
-  }];
   public selectedMaterilal: string;
   public selectedMaterilalNameJa: string;
 
@@ -105,7 +95,6 @@ export class ListMaterialComponent implements OnInit {
     this.materialService.fetchMaterialList(type).subscribe((res: Material[]) => {
       this.listMaterial = res;
       this._downloadImages();
-      this.csvListMaterial = this.titleListMaterial.concat(this.listMaterial);
       this._valueShareService.setLoading(false);;
     }, (err) => {
       console.log(err);

@@ -2,9 +2,8 @@
   <app-sub-header
   title="資材一覧"
   [showPrint]=true
-  [showCsv]=true
-  [csvData]="csvListMaterial"
-  [csvFileName]="selectedMaterilalNameJa"
+  [showExcel]=true
+  [excelData]="listMaterial"
   ></app-sub-header>
   <div class="print-hidden">
     <ng-container *ngFor="let m of materials; index as i">
@@ -30,10 +29,10 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">資材画像</th>
-          <th scope="col">{{titleListMaterial[0].name}}</th>
-          <th scope="col">{{titleListMaterial[0].type}}</th>
-          <th scope="col">{{titleListMaterial[0].limitCount}}</th>
-          <th scope="col">{{titleListMaterial[0].status}}</th>
+          <th scope="col">資材名</th>
+          <th scope="col">資材タイプ</th>
+          <th scope="col">フラグ</th>
+          <th scope="col">ステータス</th>
         </tr>
       </thead>
       <tbody>

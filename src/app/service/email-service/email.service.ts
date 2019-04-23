@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UserService } from './../user-service/user.service';
+import { environment } from './../../../environments/environment';
 declare var Email;
 
 @Injectable({
@@ -7,34 +8,47 @@ declare var Email;
 })
 export class EmailService {
 
-  private static readonly TOKEN = '693086b4-5c29-45c0-9a5c-86007b01278e';
-  private static readonly from = 'antimicrobialmeister@gmail.com';
+  private static readonly TOKEN = environment.smtp.token;
+  private static readonly from = environment.smtp.from;
 
   constructor(
     private _userService: UserService,
   ) { }
 
+  private _mailList: string[];
+
   public alertFewMaterialInventory(name: string, inventoryCount: number) {
-    this._userService.getUserEmailList().subscribe((mailList: string[]) => {
-      const subject = '【在庫管理】　資材在庫が少なくなってきました。';
-      const body = 
-      `<p>在庫管理アプリです。</p>
-       <p>次の資材在庫が少なくなりました。<br>
-      資材の調達をお勧めします。</p>
-      <ul>
-        <li>資材名　 : ${name}</li>
-        <li>在庫数量 : ${inventoryCount}</li>
-      </ul>
-      <br>
-      <hr>
-      <p>抗菌マイスター株式会社　在庫管理アプリ</p>
-      <p>※ このメールは自動送信です。返信しないで下さい。</p>`;
-
-      mailList.forEach((mail: string) => {
-        this._sendEmail(mail, subject, body);
+    if(this._mailList && this._mailList.length > 0) {
+      this._setAlertFewMaterialInventoryMessage(name, inventoryCount, this._mailList);
+    } else {
+      this._userService.getUserEmailList().subscribe((mailList: string[]) => {
+        this._mailList = mailList;
+        this._setAlertFewMaterialInventoryMessage(name, inventoryCount, mailList);
       });
-    });
+    }
+  }
 
+  private _setAlertFewMaterialInventoryMessage(name: string, inventoryCount: number, mailList: string[]): void {
+    const subject = '【在庫管理】　資材在庫が少なくなってきました。';
+    const body = 
+    `<p>在庫管理アプリです。</p>
+     <p>次の資材在庫が少なくなりました。<br>
+    資材の調達をお勧めします。</p>
+    <ul>
+      <li>資材名　 : ${name}</li>
+      <li>在庫数量 : ${inventoryCount}</li>
+    </ul>
+    <br>
+    <hr>
+    <p>抗菌マイスター株式会社　在庫管理アプリ</p>
+    <p>※ このメールは自動送信です。返信しないで下さい。</p>`;
+
+    mailList.forEach((mail: string) => {
+      console.log(mail);
+      if(mail === 'takakuwa.sori@gmail.com') {
+        this._sendEmail(mail, subject, body);
+      }
+    });
   }
 
   private _sendEmail(mailAddress: string, subject: string, body: string) {
@@ -46,7 +60,7 @@ export class EmailService {
       Subject : subject,
       Body : body
     }).then((msg: string) => {
-      console.log('email sent');
+      console.log(`email send to ${mailAddress}`);
       if (msg !== 'OK') {
         console.error(msg);
       }

@@ -100,7 +100,6 @@ export class BackupComponent implements OnInit {
               dataset.push(e);
             }
           }
-          console.log(dataset);
           if(dataset.length > 0) {
             this._excelServiceService.exportAsExcelFile(dataset, `${convertEnToJa(key)}のバックアップ`);
           } else {

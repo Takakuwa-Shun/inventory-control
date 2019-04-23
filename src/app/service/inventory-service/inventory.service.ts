@@ -119,107 +119,38 @@ export class InventoryService {
       });
     }
 
+    private _setBatch(arrBatch: Batch[], typeEn: string, inventory: Inventory, limit: number): void {
+      if (inventory !== null) {
+        const path = this._getCollectionPath(typeEn);
+        if(path !== null) {
+          const refNewInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(path[0]).doc(inventory.id);
+          const refLatestInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(path[1]).doc(inventory.latestPath);
+
+          const batch: Batch = {
+            type: typeEn,
+            limit: limit,
+            inventory: Object.assign({}, inventory),
+            newRef: refNewInventory,
+            latestRef: refLatestInventory
+          }
+          arrBatch.push(batch);
+        }  
+      }
+    }
+
     public productManufacture(
       bottleInventory: Inventory, inCartonInventory: Inventory, outCartonInventory: Inventory, labelInventory: Inventory, triggerInventory: Inventory, bagInventory: Inventory,
       bottleLimitCount: number, inCartonLimitCount: number, outCartonLimitCount: number, labelLimitCount: number, triggerLimitCount: number, bagLimitCount: number, 
       ): Observable<void> {
 
-      let arrBatch: Batch[] = [];
+      const arrBatch: Batch[] = [];
 
-      if (bottleInventory !== null) {
-        const arrBottlePath = this._getCollectionPath(MaterialTypeEn.bo);
-        const refNewBottleInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrBottlePath[0]).doc(bottleInventory.id);
-        const refLatestBottleInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrBottlePath[1]).doc(bottleInventory.latestPath);
-
-        const batch: Batch = {
-          type: MaterialTypeEn.bo,
-          limit: bottleLimitCount,
-          inventory: Object.assign({}, bottleInventory),
-          newRef: refNewBottleInventory,
-          latestRef: refLatestBottleInventory
-        }
-        arrBatch.push(batch);
-      }
-
-      if (inCartonInventory !== null) {
-        const arrInCartonPath = this._getCollectionPath(MaterialTypeEn.ca);
-        const refNewInCartonInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrInCartonPath[0]).doc(inCartonInventory.id);
-        const refLatestInCartonInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrInCartonPath[1]).doc(inCartonInventory.latestPath);
-
-        const batch: Batch = {
-          type: MaterialTypeEn.inCa,
-          limit: inCartonLimitCount,
-          inventory: Object.assign({}, inCartonInventory),
-          newRef: refNewInCartonInventory,
-          latestRef: refLatestInCartonInventory
-        }
-        arrBatch.push(batch);
-      }
-
-      if (outCartonInventory !== null) {
-        const arrOutCartonPath = this._getCollectionPath(MaterialTypeEn.ca);
-        const refNewOutCartonInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrOutCartonPath[0]).doc(outCartonInventory.id);
-        const refLatestOutCartonInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrOutCartonPath[1]).doc(outCartonInventory.latestPath);
-
-        const batch: Batch = {
-          type: MaterialTypeEn.outCa,
-          limit: outCartonLimitCount,
-          inventory: Object.assign({}, outCartonInventory),
-          newRef: refNewOutCartonInventory,
-          latestRef: refLatestOutCartonInventory
-        }
-        arrBatch.push(batch);
-      }
-
-      if (labelInventory !== null) {
-        const arrLabelPath = this._getCollectionPath(MaterialTypeEn.la);
-        const refNewLabelInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrLabelPath[0]).doc(labelInventory.id);
-        const refLatestLabelInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrLabelPath[1]).doc(labelInventory.latestPath);
-
-        const batch: Batch = {
-          type: MaterialTypeEn.la,
-          limit: labelLimitCount,
-          inventory: Object.assign({}, labelInventory),
-          newRef: refNewLabelInventory,
-          latestRef: refLatestLabelInventory
-        }
-        arrBatch.push(batch);
-      }
-
-      if (triggerInventory !== null) {
-        const arrTriggerPath = this._getCollectionPath(MaterialTypeEn.tr);
-        const refNewTriggerInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrTriggerPath[0]).doc(triggerInventory.id);
-        const refLatestTriggerInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrTriggerPath[1]).doc(triggerInventory.latestPath);
-
-        const batch: Batch = {
-          type: MaterialTypeEn.tr,
-          limit: triggerLimitCount,
-          inventory: Object.assign({}, triggerInventory),
-          newRef: refNewTriggerInventory,
-          latestRef: refLatestTriggerInventory
-        }
-        arrBatch.push(batch);
-
-        // トリガーの在庫量チェック 
-        if (triggerInventory.sumCount < triggerLimitCount) {
-          this._emailService.alertFewMaterialInventory(triggerInventory.targetName, triggerInventory.sumCount);
-        }
-      }
-
-      if (bagInventory !== null) {
-        const arrBagPath = this._getCollectionPath(MaterialTypeEn.ba);
-        const refNewBagInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrBagPath[0]).doc(bagInventory.id);
-        const refLatestBagInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrBagPath[1]).doc(bagInventory.latestPath);
-
-        const batch: Batch = {
-          type: MaterialTypeEn.ba,
-          limit: bagLimitCount,
-          inventory: Object.assign({}, bagInventory),
-          newRef: refNewBagInventory,
-          latestRef: refLatestBagInventory
-        }
-        arrBatch.push(batch);
-      }
+      this._setBatch(arrBatch, MaterialTypeEn.bo, bottleInventory, bottleLimitCount);
+      this._setBatch(arrBatch, MaterialTypeEn.inCa, inCartonInventory, inCartonLimitCount);
+      this._setBatch(arrBatch, MaterialTypeEn.outCa, outCartonInventory, outCartonLimitCount);
+      this._setBatch(arrBatch, MaterialTypeEn.la, labelInventory, labelLimitCount);
+      this._setBatch(arrBatch, MaterialTypeEn.tr, triggerInventory, triggerLimitCount);
+      this._setBatch(arrBatch, MaterialTypeEn.ba, bagInventory, bagLimitCount);
 
       return from(this._afStore.firestore.runTransaction<any>(
         (transaction: firebase.firestore.Transaction) => {
@@ -230,28 +161,14 @@ export class InventoryService {
               if(doc.exists) {
                 const latestInventory = doc.data() as LatestInventory;
 
-                // locationCountに初期値がない場合
-                if(latestInventory.locationCount === null) {
-                  latestInventory.locationCount = {};
-                  for(const key of Object.keys(batch.inventory.locationCount)) {
-                    latestInventory.locationCount[key] = 0;
-                  }
-                }
+                // locationCountを確認
+                this._confirmLocationCount(latestInventory, batch.inventory);
 
-                // 新たに倉庫が追加されていた場合
-                if (Object.keys(batch.inventory.locationCount).length > Object.keys(latestInventory.locationCount).length) {
-                  for(const key of Object.keys(batch.inventory.locationCount)){
-                    if (!Object.keys(latestInventory.locationCount).includes(key)) {
-                      latestInventory.locationCount[key] = 0;
-                    }
-                  }
-                }
-
-                if (latestInventory.sumCount < batch.inventory.addCount * -1){
+                if (latestInventory.sumCount < Math.abs(batch.inventory.addCount)){
                   return Promise.reject(`※ ${batch.inventory.targetName}に関して、入力中にデータの更新が行われたため、総計よりも引かれる在庫量の方が多くなっています。`);
                 }
 
-                if (latestInventory.locationCount[batch.inventory.arrLocationId[0]] < batch.inventory.addCount * -1){
+                if (latestInventory.locationCount[batch.inventory.arrLocationId[0]] < Math.abs(batch.inventory.addCount)){
                   return Promise.reject(`※ ${batch.inventory.targetName}に関して、入力中にデータの更新が行われたため、工場の在庫量よりも引かれる在庫量の方が多くなっています。`);
                 }
 
@@ -260,10 +177,11 @@ export class InventoryService {
 
                 batch.inventory.sumCount = latestInventory.sumCount;
                 batch.inventory.locationCount = latestInventory.locationCount;
+                batch.inventory.date = new Date();
 
                 transaction.set(batch.newRef, batch.inventory);
                 transaction.set(batch.latestRef, latestInventory);
-              }else {
+              } else {
                 return Promise.reject(`※ ${batch.inventory.targetName}に関して、在庫データの初期化が完了していないため、保存に失敗しました。`);
               }
             });
@@ -283,6 +201,25 @@ export class InventoryService {
       )
     }
 
+    private _confirmLocationCount(latestInventory: LatestInventory, inventory: Inventory): void {
+      // locationCountに初期値がない場合
+      if(latestInventory.locationCount === null) {
+        latestInventory.locationCount = {};
+        for(const key of Object.keys(inventory.locationCount)) {
+          latestInventory.locationCount[key] = 0;
+        }
+      }
+
+      // 新たに倉庫が追加されていた場合
+      if (Object.keys(inventory.locationCount).length > Object.keys(latestInventory.locationCount).length) {
+        for(const key of Object.keys(inventory.locationCount)){
+          if (!Object.keys(latestInventory.locationCount).includes(key)) {
+            latestInventory.locationCount[key] = 0;
+          }
+        }
+      }
+    }
+
 
     public saveInventory(inventory: Inventory, type: string, check: boolean = false, limitCount?: number): Observable<void> {
 
@@ -298,26 +235,11 @@ export class InventoryService {
           const refNewInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrCollectionPath[0]).doc(newInventory.id);
           let refLatestInventory: firebase.firestore.DocumentReference = this._afStore.firestore.collection(arrCollectionPath[1]).doc(newInventory.latestPath);
           return transaction.get(refLatestInventory).then((doc: firebase.firestore.DocumentSnapshot) => {
-            let latestInventory: LatestInventory;
             if (doc.exists) {
-              latestInventory = doc.data() as LatestInventory;
+              const latestInventory: LatestInventory = doc.data() as LatestInventory;
 
-              // locationCountに初期値がない場合
-              if(latestInventory.locationCount === null) {
-                latestInventory.locationCount = {};
-                for(const key of Object.keys(newInventory.locationCount)) {
-                  latestInventory.locationCount[key] = 0;
-                }
-              }
-
-              // 新たに倉庫が追加されていた場合
-              if (Object.keys(newInventory.locationCount).length > Object.keys(latestInventory.locationCount).length) {
-                for(const key of Object.keys(newInventory.locationCount)){
-                  if (!Object.keys(latestInventory.locationCount).includes(key)) {
-                    latestInventory.locationCount[key] = 0;
-                  }
-                }
-              }
+              // locationCountを確認
+              this._confirmLocationCount(latestInventory, newInventory);
 
               if (newInventory.addCount < 0) {
                 if (latestInventory.sumCount < newInventory.addCount * -1){
@@ -342,11 +264,13 @@ export class InventoryService {
 
               newInventory.sumCount = latestInventory.sumCount;
               newInventory.locationCount = latestInventory.locationCount;
+              newInventory.date = new Date();
+
+              transaction.set(refNewInventory, newInventory);
+              transaction.set(refLatestInventory, latestInventory);
             } else {
               return Promise.reject("※ 在庫データの初期化が完了していないため、保存に失敗しました。");
             }
-            transaction.set(refNewInventory, newInventory);
-            transaction.set(refLatestInventory, latestInventory);
           });
         })
       ).pipe(

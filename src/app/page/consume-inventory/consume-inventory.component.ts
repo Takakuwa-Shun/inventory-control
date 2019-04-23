@@ -165,7 +165,7 @@ export class ConsumeInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal('登録が完了しました。', 5000, 'btn-outline-success');
     }, (err: string) => {
       console.error(err);
-      if(err.startsWith('※')) {
+      if(typeof err === 'string' && err.startsWith('※')) {
         this._valueShareService.setCompleteModal(err, 20000);
       } else {
         this._valueShareService.setCompleteModal('※ 登録に失敗しました。');

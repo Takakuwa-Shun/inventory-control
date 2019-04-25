@@ -4,6 +4,12 @@
     [showPrint]=false
     [showExcel]=false
   ></app-sub-header>
+  <p>バックアップをエクセル形式で作成します。</p>
+  <ol>
+    <li>資材の種類ごとに1個のエクセルファイルをダウンロードします (最大5ファイル)</li>
+    <li>各資材のバックアップはエクセルファイル内の一枚のシートにまとめられます</li>
+  </ol>
+  <hr>
   <div class="row">
     <label for="target-kind" class="col-sm-2 col-form-label">対象種類</label>
     <ng-container *ngFor="let t of listTarget; index as i">
@@ -41,7 +47,7 @@
       <button
       type="button"
       class="btn btn-primary"
-      (click)="create()">作成</button>
+      (click)="create()">バックアップ作成・ダウンロード</button>
     </div>
   </div>
 </div>

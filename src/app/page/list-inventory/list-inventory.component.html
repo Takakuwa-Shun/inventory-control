@@ -87,13 +87,13 @@
       <ng-container *ngFor="let l of listLocationForFilter; index as i">
         <div class="form-check form-check-inline">
           <input
-            type="radio"
+            type="checkbox"
             name="location"
             id="locations{{i}}"
             class="form-check-input"
-            [(ngModel)]="selectedLocation"
-            [value]="l"
-            [checked]="l.id === selectedLocation.id">
+            [(ngModel)]="l.checked"
+            [value]="true"
+            [checked]="l.checked">
           <label class="form-check-label pointer" for="locations{{i}}">{{l.name}}</label>
         </div>
       </ng-container>
@@ -172,14 +172,14 @@
           <th scope="row">{{i+1}}</th>
           <td>{{ l.date.seconds * 1000 | date:'yy年MM月dd日' }}</td>
           <td>{{l.userName}}</td>
-          <td>{{l.addCount}}</td>
+          <td>{{l.addCount | number}}</td>
           <td>{{l.actionType}}</td>
           <td>{{l.actionDetail}}</td>
           <td>{{l.memo}}</td>
           <ng-container *ngFor="let lo of listSelectedLocation">
-            <td>{{l.locationCount[lo.id]}}</td>
+            <td>{{l.locationCount[lo.id] | number}}</td>
           </ng-container>
-          <td>{{l.sumCount}}</td>
+          <td>{{l.sumCount | number}}</td>
         </tr>
       </tbody>
     </table>

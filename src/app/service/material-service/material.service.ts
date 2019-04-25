@@ -32,6 +32,10 @@ export class MaterialService {
         return MaterialService.CollectionPath.bo;
       case MaterialTypeEn.ca:
       case MaterialTypeJa.ca:
+      case MaterialTypeEn.inCa:
+      case MaterialTypeJa.inCa:
+      case MaterialTypeEn.outCa:
+      case MaterialTypeJa.outCa:
         return MaterialService.CollectionPath.ca;
       case MaterialTypeEn.la:
       case MaterialTypeJa.la:

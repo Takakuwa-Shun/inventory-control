@@ -21,6 +21,10 @@ export class ExcelServiceService {
     const worksheets = {};
     const sheetNames = [];
     for(const e of excelSheet) {
+      if(e.sheetName.length > 32) {
+        e.sheetName = e.sheetName.slice(0,31);
+      }
+
       worksheets[e.sheetName] = XLSX.utils.json_to_sheet(e.json);
       sheetNames.push(e.sheetName);
     }

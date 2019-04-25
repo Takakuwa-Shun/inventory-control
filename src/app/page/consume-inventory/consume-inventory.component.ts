@@ -58,7 +58,7 @@ export class ConsumeInventoryComponent implements OnInit {
 
   public imageSrc: string;
 
-  public readonly countPattern: string = '^[1-9][0-9]*$';
+  public readonly countPattern: string = '^[1-9][0-9]{0,8}$';
   public readonly typePattern: string = '^(?!.*' + this._typeDefault + ').*$';
 
   public readonly confirmTitle = '入力確認';
@@ -117,7 +117,7 @@ export class ConsumeInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal('使用個数が該当倉庫の在庫量よりも多いです', 20000);
     } else {
       const date = new Date();
-      const showDate = formatDate(date, "yyyy/MM/dd (EEE) HH:mm", this._locale);
+      const showDate = formatDate(date, "yyyy/MM/dd (EEE)", this._locale);
       this.registerInventory.date = date;
       this.confirmBody = `
       <div class="container-fluid">

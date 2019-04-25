@@ -60,11 +60,11 @@ export class DetailCompanyComponent implements OnInit {
         this.registerCompany = Object.assign({}, this.company);
         this._valueShareService.setLoading(false);;
       }  else {
-        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。削除された可能性があります。', 10000);
       }
     }, (err) => {
       console.log(err);
-      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。削除された可能性があります。', 10000);
     });
   }
 

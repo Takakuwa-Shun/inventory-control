@@ -58,7 +58,7 @@ export class RegisterProductComponent implements OnInit {
   public isRefill: boolean;
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
-  public readonly countPattern: string = '^[1-9][0-9]*$';
+  public readonly countPattern: string = '^[1-9][0-9]{0,8}$';
 
   public readonly confirmTitle = '登録確認';
   public confirmBody: string;

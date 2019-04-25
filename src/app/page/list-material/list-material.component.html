@@ -41,7 +41,7 @@
           <td class="pointer"><img [src]="m.imageSrc" class="list-icon img-thumbnail rounded img-fluid"></td>
           <td class="pointer">{{m.name}}</td>
           <td class="pointer">{{m.type}}</td>
-          <td class="pointer">{{m.limitCount}}</td>
+          <td class="pointer">{{m.limitCount | number}}</td>
           <td class="pointer">{{m.status}}</td>
         </tr>
       </tbody>

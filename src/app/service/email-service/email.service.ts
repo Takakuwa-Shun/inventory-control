@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UserService } from './../user-service/user.service';
 import { environment } from './../../../environments/environment';
+import { ValueShareService } from './../value-share-service/value-share.service';
 declare var Email;
 
 @Injectable({
@@ -12,6 +13,7 @@ export class EmailService {
   private static readonly from = environment.smtp.from;
 
   constructor(
+    private _valueShareService: ValueShareService, 
     private _userService: UserService,
   ) { }
 
@@ -44,7 +46,6 @@ export class EmailService {
     <p>※ このメールは自動送信です。返信しないで下さい。</p>`;
 
     mailList.forEach((mail: string) => {
-      console.log(mail);
       if(mail === 'takakuwa.sori@gmail.com') {
         this._sendEmail(mail, subject, body);
       }
@@ -62,7 +63,7 @@ export class EmailService {
     }).then((msg: string) => {
       console.log(`email send to ${mailAddress}`);
       if (msg !== 'OK') {
-        console.error(msg);
+        this._valueShareService.setCompleteModal("メールの送信に失敗しました", 10000);
       }
     });
   }

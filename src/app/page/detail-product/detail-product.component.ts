@@ -43,6 +43,14 @@ export class DetailProductComponent implements OnInit {
   public showBagAlert: boolean = false;
   public showCompanyAlert: boolean = false;
 
+  public showBottleDeletedAlert: boolean = false;
+  public showInCartonDeletedAlert: boolean = false;
+  public showOutCartonDeletedAlert: boolean = false;
+  public showLabelDeletedAlert: boolean = false;
+  public showTriggerDeletedAlert: boolean = false;
+  public showBagDeletedAlert: boolean = false;
+  public showCompanyDeletedAlert: boolean = false;
+
   public isBagSelected: boolean = false;
   public isBottleSelected: boolean = false;
   public isInCartonSelected: boolean = false;
@@ -55,7 +63,7 @@ export class DetailProductComponent implements OnInit {
   public registerProduct: DetailProduct;
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
-  public readonly countPattern: string = '^[1-9][0-9]*$';
+  public readonly countPattern: string = '^[1-9][0-9]{0,8}$';
 
   public readonly confirmTitle = '登録確認';
   public confirmBody: string;
@@ -85,8 +93,8 @@ export class DetailProductComponent implements OnInit {
 
   ngOnInit() {
     this._formInit();
-    this.registerProduct = initDetailProduct();
     this._fetchProductDetail();
+    this.registerProduct = initDetailProduct();
     this.product = convertDetailProductToProduct(this.registerProduct);
     this.isInitInputImage = true;
   }
@@ -102,13 +110,14 @@ export class DetailProductComponent implements OnInit {
   }
 
   public getData(type: string) {
-    console.log('クリックされた');
     switch(type){
       case MaterialTypeEn.bo:
       case MaterialTypeJa.bo:
         if (this.bottleLists.length === 0) {
           this._valueShareService.setLoading(true);
           this._fetchBottleList();
+        } else {
+          this.showEditBottle = true;
         }
         break;
       case MaterialTypeEn.inCa:
@@ -134,6 +143,8 @@ export class DetailProductComponent implements OnInit {
         if (this.labelLists.length === 0) {
           this._valueShareService.setLoading(true);
           this._fetchLabelList();
+        } else {
+          this.showEditLabel = true;
         }
         break;
       case MaterialTypeEn.tr:
@@ -141,6 +152,8 @@ export class DetailProductComponent implements OnInit {
         if (this.triggerLists.length === 0) {
           this._valueShareService.setLoading(true);
           this._fetchTriggerList();
+        } else {
+          this.showEditTrigger = true;
         }
         break;
       case MaterialTypeEn.ba:
@@ -148,6 +161,8 @@ export class DetailProductComponent implements OnInit {
         if (this.bagLists.length === 0) {
           this._valueShareService.setLoading(true);
           this._fetchBagList();
+        } else {
+          this.showEditBag = true;
         }
         break;
       case 'company':
@@ -155,6 +170,8 @@ export class DetailProductComponent implements OnInit {
         if (this.companyLists.length === 0) {
           this._valueShareService.setLoading(true);
           this._fetchCompanyList();
+        } else {
+          this.showEditCompany = true;
         }
         break;
       default:
@@ -243,10 +260,114 @@ export class DetailProductComponent implements OnInit {
           this.imageSrc = url;
         });
       }
-      this._valueShareService.setLoading(false);;
+      this._valueShareService.setLoading(false);
+
+      if(res.bottleId) {
+        this._checkExisting(this.registerProduct.bottleData, MaterialTypeEn.bo);
+      }
+
+      if(res.inCartonId) {
+        this._checkExisting(this.registerProduct.inCartonData, MaterialTypeEn.inCa);
+      }
+
+      if(res.outCartonId) {
+        this._checkExisting(this.registerProduct.outCartonData, MaterialTypeEn.outCa);
+      }
+
+      if(res.triggerId) {
+        this._checkExisting(this.registerProduct.triggerData, MaterialTypeEn.tr);
+      }
+
+      if(res.labelId) {
+        this._checkExisting(this.registerProduct.labelData, MaterialTypeEn.la);
+      }
+
+      if(res.bagId) {
+        this._checkExisting(this.registerProduct.bagData, MaterialTypeEn.ba);
+      }
+
     }, (err) => {
       console.error(err);
       this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+    });
+  }
+
+  private _checkExisting(material: Material, type: string) {
+    this._materialService.fetchMaterialById(material.id, type).subscribe((res: Material) => {
+      switch(type){
+        case MaterialTypeEn.bo:
+        case MaterialTypeJa.bo:
+        if(res) {
+          this.showBottleDeletedAlert = false;
+          this.product.bottleName = this.registerProduct.bottleData.name;
+        } else {
+          this._valueShareService.setCompleteModal('設定しているボトルは削除されています！', 10000);
+          this.product.bottleName = this.product.bottleName + '(※ 削除されています!)';
+          this.showBottleDeletedAlert = true;
+        }
+          break;
+        case MaterialTypeEn.inCa:
+        case MaterialTypeJa.inCa:
+        if(res) {
+          this.showInCartonDeletedAlert = false;
+          this.product.inCartonName = this.registerProduct.inCartonData.name;
+        } else {
+          this._valueShareService.setCompleteModal('設定している内側カートンは削除されています！', 10000);
+          this.product.inCartonName = this.product.inCartonName + '(※ 削除されています!)';
+          this.showInCartonDeletedAlert = true;
+        }
+          break;
+        case MaterialTypeEn.outCa:
+        case MaterialTypeJa.outCa:
+        if(res) {
+          this.showOutCartonDeletedAlert = false;
+          this.product.outCartonName = this.registerProduct.outCartonData.name;
+        } else {
+          this._valueShareService.setCompleteModal('設定している外側カートンは削除されています！', 10000);
+          this.product.outCartonName = this.product.outCartonName + '(※ 削除されています!)';
+          this.showOutCartonDeletedAlert = true;
+        }
+          break;
+        case MaterialTypeEn.la:
+        case MaterialTypeJa.la:
+        if(res) {
+          this.showLabelDeletedAlert = false;
+          this.product.labelName = this.registerProduct.labelData.name;
+        } else {
+          this._valueShareService.setCompleteModal('設定しているラベルは削除されています！', 10000);
+          this.product.labelName = this.product.labelName + '(※ 削除されています!)';
+          this.showLabelDeletedAlert = true;
+        }
+          break;
+        case MaterialTypeEn.tr:
+        case MaterialTypeJa.tr:
+        if(res) {
+          this.showTriggerDeletedAlert = false;
+          this.product.triggerName = this.registerProduct.triggerData.name;
+        } else {
+          this._valueShareService.setCompleteModal('設定しているトリガーは削除されています！', 10000);
+          this.product.triggerName = this.product.triggerName + '(※ 削除されています!)';
+          this.showTriggerDeletedAlert = true;
+        }
+          break;
+        case MaterialTypeEn.ba:
+        case MaterialTypeJa.ba:
+        if(res) {
+          this.showBagDeletedAlert = false;
+          this.product.bagName = this.registerProduct.bagData.name;
+        } else {
+          this._valueShareService.setCompleteModal('設定している詰め替え袋は削除されています！', 10000);
+          this.product.bagName = this.product.bagName + '(※ 削除されています!)';
+          this.showBagDeletedAlert = true;
+        }
+          break;
+        default:
+          console.error('typeおかしいよ？ : ' + type);
+      }
+      
+    }, (err) => {
+      console.error(err);
+      this._valueShareService.setCompleteModal(`※ ${material.name}データの取得に失敗しました。`, 10000);
     });
   }
 
@@ -377,6 +498,31 @@ export class DetailProductComponent implements OnInit {
       } else {
         this._valueShareService.setCompleteModal('修正が完了しました。', 5000, 'btn-outline-success');
       }
+
+      if(this.showBottleDeletedAlert) {
+        this._checkExisting(this.registerProduct.bottleData, MaterialTypeEn.bo);
+      }
+
+      if(this.showInCartonDeletedAlert) {
+        this._checkExisting(this.registerProduct.inCartonData, MaterialTypeEn.inCa);
+      }
+
+      if(this.showOutCartonDeletedAlert) {
+        this._checkExisting(this.registerProduct.outCartonData, MaterialTypeEn.outCa);
+      }
+
+      if(this.showTriggerDeletedAlert) {
+        this._checkExisting(this.registerProduct.triggerData, MaterialTypeEn.tr);
+      }
+
+      if(this.showLabelDeletedAlert) {
+        this._checkExisting(this.registerProduct.labelData, MaterialTypeEn.la);
+      }
+
+      if(this.showBagDeletedAlert) {
+        this._checkExisting(this.registerProduct.bagData, MaterialTypeEn.ba);
+      }
+
       this._formInit();
     }, (err) => {
       console.error(err);

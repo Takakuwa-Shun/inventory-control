@@ -52,6 +52,10 @@ export class InventoryService {
           return [InventoryService.CollectionPath.bo, InventoryService.CollectionPath.boLatest];
         case MaterialTypeEn.ca:
         case MaterialTypeJa.ca:
+        case MaterialTypeEn.inCa:
+        case MaterialTypeJa.inCa:
+        case MaterialTypeEn.outCa:
+        case MaterialTypeJa.outCa:
           return [InventoryService.CollectionPath.ca, InventoryService.CollectionPath.caLatest];
         case MaterialTypeEn.la:
         case MaterialTypeJa.la:
@@ -336,7 +340,7 @@ export class InventoryService {
       })
     }
 
-    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationId?: string): Observable<Inventory[]> {
+    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationIds?: string[]): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
         if (isNext) {
           return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).startAfter(this._endOfDocSnapshot).limit(limit);
@@ -345,18 +349,18 @@ export class InventoryService {
         }
       }
 
-      return this._fetchInventories(type, queryFn, filteredLocationId);
+      return this._fetchInventories(type, queryFn, filteredLocationIds);
     }
 
-    public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationId?: string): Observable<Inventory[]> {
+    public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationIds?: string[]): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
         return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).limit(limit);
       }
 
-      return this._fetchInventories(type, queryFn, filteredLocationId);
+      return this._fetchInventories(type, queryFn, filteredLocationIds);
     }
 
-    private _fetchInventories(type: string, queryFn?: QueryFn, filteredLocationId?: string): Observable<Inventory[]> {
+    private _fetchInventories(type: string, queryFn?: QueryFn, filteredLocationIds?: string[]): Observable<Inventory[]> {
 
       const arrCollectionPath = this._getCollectionPath(type);
       if (arrCollectionPath === null) {
@@ -375,8 +379,11 @@ export class InventoryService {
           querySnapshot.forEach((doc: firebase.firestore.QueryDocumentSnapshot) => {
             if (doc.exists) {
               const data = doc.data() as Inventory;
-              if (filteredLocationId === null || data.arrLocationId.includes(filteredLocationId)) {
-                list.push(data);
+              for (const lid of data.arrLocationId) {
+                if (filteredLocationIds === null || filteredLocationIds.includes(lid)) {
+                  list.push(data);
+                  break;
+                }
               }
             }
             const arrDoc = querySnapshot.docs;

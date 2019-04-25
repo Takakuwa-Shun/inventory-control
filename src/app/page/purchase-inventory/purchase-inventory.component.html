@@ -55,7 +55,7 @@
           <span class="auto-selected ml-2">{{registerInventory.targetName}}</span>
           <span>&nbsp;&nbsp;&nbsp;</span>
           <span class="badge badge-success">現在総在庫量</span>
-          <span class="auto-selected ml-2">{{registerInventory.sumCount}}個</span>
+          <span class="auto-selected ml-2">{{registerInventory.sumCount | number}}個</span>
         </div>
       </div>
     </div>
@@ -108,7 +108,7 @@
           <span class="auto-selected ml-2">{{selectedLocationName}}</span>
           <span>&nbsp;&nbsp;&nbsp;</span>
           <span class="badge badge-success">該当倉庫の現在在庫量</span>
-          <span class="auto-selected ml-2">{{registerInventory.locationCount[registerInventory.arrLocationId[0]]}}個</span>
+          <span class="auto-selected ml-2">{{registerInventory.locationCount[registerInventory.arrLocationId[0]] | number}}個</span>
         </div>
       </div>
     </div>

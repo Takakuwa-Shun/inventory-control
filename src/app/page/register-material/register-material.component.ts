@@ -19,7 +19,7 @@ export class RegisterMaterialComponent implements OnInit {
   public readonly materialType =  [this._typeDefault, MaterialTypeJa.bo, MaterialTypeJa.tr, MaterialTypeJa.la, MaterialTypeJa.ba, MaterialTypeJa.ca];
 
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
-  public readonly limitCountPattern: string = '^[1-9][0-9]*$';
+  public readonly limitCountPattern: string = '^[1-9][0-9]{0,8}$';
   public readonly typePattern: string = '^(?!.*' + this._typeDefault + ').*$';
 
   public readonly confirmTitle = '登録確認';

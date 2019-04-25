@@ -23,7 +23,7 @@ export class DetailMaterialComponent implements OnInit {
   public registerMaterial: Material;
 
   public readonly materialType =  [MaterialTypeJa.bo, MaterialTypeJa.ca, MaterialTypeJa.la, MaterialTypeJa.tr, MaterialTypeJa.ba];
-  public readonly limitCountPattern: string = '^[1-9][0-9]*$';
+  public readonly limitCountPattern: string = '^[1-9][0-9]{0,8}$';
   public readonly nameKanaPattern: string = '^[ -~-ぁ-ん-ー]*$';
 
   public readonly confirmTitle = '登録確認';
@@ -74,10 +74,10 @@ export class DetailMaterialComponent implements OnInit {
         }
         this._valueShareService.setLoading(false);;
       } else {
-        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。削除された可能性があります。', 10000);
       }
     }, (err: HttpResponse<string>) => {
-      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+      this._valueShareService.setCompleteModal('※ ロードに失敗しました。削除された可能性があります。', 10000);
     });
   }
 

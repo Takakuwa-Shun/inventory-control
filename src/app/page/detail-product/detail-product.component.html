@@ -104,7 +104,9 @@
           </tr>
           <tr>
             <th scope="col">ボトル名</th>
-            <td><a routerLink="/material/detail/bottle/{{product.bottleId}}">{{product.bottleName}}</a></td>
+            <td [style.background-color]="showBottleDeletedAlert? 'red' : 'white'">
+              <a routerLink="/material/detail/bottle/{{product.bottleId}}">{{product.bottleName}}</a>
+            </td>
             <td>
               <ng-container *ngIf="!showEditBottle; else editBottle">
                 <button          
@@ -147,7 +149,9 @@
           </tr>
           <tr>
             <th scope="col">トリガー名</th>
-            <td><a routerLink="/material/detail/trigger/{{product.triggerId}}">{{product.triggerName}}</a></td>
+            <td [style.background-color]="showTriggerDeletedAlert ? 'red' : 'white'">
+              <a routerLink="/material/detail/trigger/{{product.triggerId}}">{{product.triggerName}}</a>
+            </td>
             <td>
               <ng-container *ngIf="!showEditTrigger; else editTrigger">
                 <button          
@@ -190,7 +194,9 @@
           </tr>
           <tr>
             <th scope="col">ラベル名</th>
-            <td><a routerLink="/material/detail/label/{{product.labelId}}">{{product.labelName}}</a></td>
+            <td [style.background-color]="showLabelDeletedAlert ? 'red' : 'white'">
+              <a routerLink="/material/detail/label/{{product.labelId}}">{{product.labelName}}</a>
+            </td>
             <td>
               <ng-container *ngIf="!showEditLabel; else editLabel">
                 <button          
@@ -232,7 +238,9 @@
           </tr>
           <tr>
             <th scope="col">詰め替え袋名</th>
-            <td><a routerLink="/material/detail/bag/{{product.bagId}}">{{product.bagName}}</a></td>
+            <td [style.background-color]="showBagDeletedAlert ? 'red' : 'white'">
+              <a routerLink="/material/detail/bag/{{product.bagId}}">{{product.bagName}}</a>
+            </td>
             <td>
               <ng-container *ngIf="!showEditBag; else editBag">
                 <button          
@@ -275,7 +283,9 @@
           </tr>
           <tr>
             <th scope="col">内側カートン名</th>
-            <td><a routerLink="/material/detail/carton/{{product.inCartonId}}">{{product.inCartonName}}</a></td>
+            <td [style.background-color]="showInCartonDeletedAlert ? 'red' : 'white'">
+              <a routerLink="/material/detail/carton/{{product.inCartonId}}">{{product.inCartonName}}</a>
+            </td>
             <td>
               <ng-container *ngIf="!showEditInCarton; else editInCarton">
                 <button          
@@ -318,7 +328,9 @@
           </tr>
           <tr>
             <th scope="col">外側カートン名</th>
-            <td><a routerLink="/material/detail/carton/{{product.outCartonId}}">{{product.outCartonName}}</a></td>
+            <td [style.background-color]="showOutCartonDeletedAlert ? 'red' : 'white'">
+              <a routerLink="/material/detail/carton/{{product.outCartonId}}">{{product.outCartonName}}</a>
+            </td>
             <td>
               <ng-container *ngIf="!showEditOutCarton; else editOutCarton">
                 <button          

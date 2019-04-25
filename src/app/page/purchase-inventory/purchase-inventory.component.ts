@@ -57,7 +57,7 @@ export class PurchaseInventoryComponent implements OnInit {
 
   public imageSrc: string;
 
-  public readonly countPattern: string = '^[1-9][0-9]*$';
+  public readonly countPattern: string = '^[1-9][0-9]{0,8}$';
   public readonly typePattern: string = '^(?!.*' + this._typeDefault + ').*$';
 
   public readonly confirmTitle = '入力確認';

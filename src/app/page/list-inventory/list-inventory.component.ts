@@ -6,12 +6,15 @@ import { Material, initMaterial } from './../../model/material';
 import { MaterialTypeEn, MaterialTypeJa } from '../../model/material-type';
 import { InventoryService } from './../../service/inventory-service/inventory.service';
 import { LocationService } from './../../service/location-service/location.service';
-import { UserService } from './../../service/user-service/user.service';
 import { LocalStorageService } from './../../service/local-storage-service/local-storage.service';
 import { MaterialService } from './../../service/material-service/material.service';
 import { FirebaseStorageService } from './../../service/firebase-storage-service/firebase-storage.service';
 import { ValueShareService } from './../../service/value-share-service/value-share.service';
 declare const $;
+
+interface CheckLocation extends Location {
+  checked: boolean;
+}
 
 @Component({
   selector: 'app-list-inventory',
@@ -26,7 +29,6 @@ export class ListInventoryComponent implements OnInit {
   public locationNameMap: object = {};
 
   public listSelectedLocation: Location[];
-  private _listLocation: Location[];
   private _bottleLists: Material[];
   private _cartonLists: Material[];
   private _labelLists: Material[];
@@ -36,13 +38,8 @@ export class ListInventoryComponent implements OnInit {
   public selectedTargetType: string;
   public selectedTarget: Material = initMaterial();
   public isTargetSelected: boolean;
-  public listLocationForFilter: Location[] = [{
-    id: null,
-    name: '全て',
-    nameKana: 'すべて',
-    isFactory: false,
-  }];
-  public selectedLocation: Location;
+  public listLocationForFilter: CheckLocation[] = [];
+  public selectedLocationIds: string[];
 
   public imageSrc: string;
   public showLimit: number;
@@ -52,8 +49,6 @@ export class ListInventoryComponent implements OnInit {
   public startDateStr: string;
   public endDateStr: string;
   public showDateAlert: boolean;
-  private _locId: string;
-  public showLocationSumCount: boolean;
 
   public targetSearchPlaceholder: string = '先に資材タイプを選択してください。';
   public targetNoMatchFoundText: string = '検索できません。先に資材タイプを選択してください。';
@@ -76,7 +71,6 @@ export class ListInventoryComponent implements OnInit {
 
   constructor(
     private inventoryService: InventoryService,
-    private _userService: UserService,
     private _locationService: LocationService,
     private _localStorage: LocalStorageService,
     private _materialService: MaterialService,
@@ -97,18 +91,30 @@ export class ListInventoryComponent implements OnInit {
     this.imageSrc = ListInventoryComponent.NO_IMAGE_URL;
 
     this._filterInit();
-    this.changeTargetType();
     this._fetchAllLocations();
   }
 
   public search(): void {
-    this._valueShareService.setLoading(true);;
+    this._valueShareService.setLoading(true);
     this.showTarget = this.selectedTarget;
+
+    this.selectedLocationIds = [];
+    for(const l of this.listLocationForFilter) {
+      if(l.checked) {
+        this.selectedLocationIds.push(l.id);
+      }
+    }
     this._localStorage.setItem('selectedTargetType', this.selectedTargetType);
     this._localStorage.setItem('startDateStr', this.startDateStr);
-    this._localStorage.setObject('selectedLocation', this.selectedLocation);
+    this._localStorage.setObject('selectedLocationIds', this.selectedLocationIds);
     this._localStorage.setObject('showTarget', this.showTarget);
-    if (this.showTarget.imageUrl) {
+    this._downloadImage();
+    this._setListSelectedLocation();
+    this._fetchInventoryList();
+  }
+
+  private _downloadImage() {
+    if (this.showTarget && this.showTarget.imageUrl) {
       this._firebaseStorageService.fecthDownloadUrl(this.showTarget.imageUrl).subscribe((res: string) => {
         this.imageSrc = res;
       }, (err) => {
@@ -119,8 +125,6 @@ export class ListInventoryComponent implements OnInit {
     } else {
       this.imageSrc = ListInventoryComponent.NO_IMAGE_URL;
     }
-    this._setListSelectedLocation();
-    this._fetchInventoryList();
   }
 
   private _filterInit(): void {
@@ -138,25 +142,26 @@ export class ListInventoryComponent implements OnInit {
     } else {
       this.selectedTargetType = this.listTarget[0].value;
     }
+    this.changeTargetType();
 
-    if (this._localStorage.getItem('selectedLocation')) {
-      this.selectedLocation = this._localStorage.getObject('selectedLocation');
-    } else {
-      this.selectedLocation = this.listLocationForFilter[0];
+    if (this._localStorage.getObject('selectedLocationIds')) {
+      this.selectedLocationIds = this._localStorage.getObject('selectedLocationIds');
+    } else { 
+      this.selectedLocationIds = [];
     }
 
     if (this._localStorage.getObject('showTarget')) {
-      const data = this._localStorage.getObject('showTarget');
-      this.changeTarget(data);
-      this.search();
+      this.showTarget = this._localStorage.getObject('showTarget');
+      this.changeTarget(this.showTarget);
     } else {
       this.showTarget = initMaterial();
     }
+    this._downloadImage();
   }
 
   public getFollowingList(isNext: boolean) {
     this._valueShareService.setLoading(true);;
-    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this._locId)
+    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this.selectedLocationIds)
     .subscribe((res: Inventory[]) => {
       if (res.length > 0) {
         this.noNext = false;
@@ -239,13 +244,10 @@ export class ListInventoryComponent implements OnInit {
   }
 
   private _fetchInventoryList(): void {
-    if (this.selectedLocation.id === null) {
-      this._locId = null;
-    } else {
-      this._locId = this.selectedLocation.id;
-    }
-    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this._locId)
+    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this.selectedLocationIds)
     .subscribe((res: Inventory[]) => {
+      this.noNext = false;
+      this.noPrevious = false;
       this.listInventory = res;
       this._valueShareService.setLoading(false);;
     }, (err) => {
@@ -336,12 +338,21 @@ export class ListInventoryComponent implements OnInit {
 
   private _fetchAllLocations():void {
     this._locationService.fetchLocations().subscribe((res: Location[]) => {
-      this._listLocation = res;
-      this.listLocationForFilter = this.listLocationForFilter.concat(res);
+      for (const l of res) {
+        const cl : CheckLocation = {
+          id: l.id,
+          name: l.name,
+          nameKana: l.nameKana,
+          isFactory: l.isFactory,
+          checked: this.selectedLocationIds.includes(l.id)
+        };
+        this.listLocationForFilter.push(cl);
+      }
       this._setListSelectedLocation();
+      this._fetchInventoryList();
 
       // csvのため
-      for (const l of this._listLocation) {
+      for (const l of res) {
         this.locationNameMap[l.id] = l.name;
       }
 
@@ -353,15 +364,12 @@ export class ListInventoryComponent implements OnInit {
   }
 
   private _setListSelectedLocation() {
-    if (this._listLocation) {
-      if(this.selectedLocation.name === this.listLocationForFilter[0].name) {
-        this.showLocationSumCount = false;
-        this.listSelectedLocation = this._listLocation;
-      } else {
-        this.showLocationSumCount = true;
-        this.listSelectedLocation = this._listLocation.filter((val: Location) => {
-          return val.id === this.selectedLocation.id;
-        });
+    if (this.listLocationForFilter && this.listLocationForFilter.length > 0) {
+      this.listSelectedLocation = [];
+      for(const l of this.listLocationForFilter) {
+        if(l.checked) {
+          this.listSelectedLocation.push(l);
+        }
       }
     }
   }

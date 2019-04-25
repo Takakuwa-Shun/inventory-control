@@ -136,11 +136,12 @@ export class ManufactureInventoryComponent implements OnInit {
   public memoList: string[] = []
   public companyList: Company[];
   private _locationList: Location[];
+  private _objProductList: object = {};
 
   public detailProduct: DetailProduct;
   public inputCount: number;
   public inputMemo: string;
-  public inputLocation: Location;
+  public inputLocation: Location = initLocation();
   public inCartonLot: number;
   public outCartonLot: number;
   public isInCeil: boolean;
@@ -157,7 +158,7 @@ export class ManufactureInventoryComponent implements OnInit {
 
   public imageSrc: string;
 
-  public readonly countPattern: string = '^[1-9][0-9]*$';
+  public readonly countPattern: string = '^[1-9][0-9]{0,8}$';
 
   public readonly confirmTitle = '入力確認';
   public confirmBody: string;
@@ -194,7 +195,6 @@ export class ManufactureInventoryComponent implements OnInit {
     this.outCartonInput = new MaterialInput('#outCarton', MaterialTypeEn.outCa);
 
     this.detailProduct = initDetailProduct();
-    this.inputLocation = initLocation();
     this.inputCount = null;
     this.inCartonLot = null;
     this.outCartonLot = null;
@@ -234,7 +234,13 @@ export class ManufactureInventoryComponent implements OnInit {
       this.showCompanyAlert = false;
       this.detailProduct.companyData = data;
       this.isCompanySelected = true;
-      this._fetchProductList();
+
+      if(this._objProductList[this.detailProduct.companyData.id]) {
+        this.productList = this._objProductList[this.detailProduct.companyData.id];
+        this._valueShareService.setLoading(false);
+      } else {
+        this._fetchProductList();
+      }
     }
   }
 
@@ -262,8 +268,10 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchProductList() {
+    console.log("_fetchProductLis");
     this._productService.fetchProductListFilteringCompany(this.detailProduct.companyData.id)
     .subscribe((res: Product[]) => {
+      this._objProductList[this.detailProduct.companyData.id] = res;
       this.productList = res;
       this._valueShareService.setLoading(false);
     }, (err) => {
@@ -369,7 +377,7 @@ export class ManufactureInventoryComponent implements OnInit {
       this._valueShareService.setCompleteModal(`${MaterialTypeJa.inCa}と${MaterialTypeJa.outCa}に同じものを使用しています`, 20000);
     } else {
       this._inputDate = new Date();
-      const showDate = formatDate(this._inputDate, "yyyy/MM/dd (EEE) HH:mm", this._locale);
+      const showDate = formatDate(this._inputDate, "yyyy/MM/dd (EEE)", this._locale);
 
       let bottleBody: string = '';
       let inCartonBody: string = '';
@@ -808,6 +816,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchLatestBottleInventory(isFirst: boolean): void {
+    console.log("_fetchLatestBottleInventory");
     this._inventoryService.fetchLatestInventoryByTargetId(MaterialTypeEn.bo, this.detailProduct.bottleData.id)
     .subscribe((res: Inventory) => {
       this.bottleInput.fetchLatestInventory(res, this._locationList);
@@ -828,7 +837,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchLatestCartonInventory(isFirst: boolean, isInCarton: boolean): void {
-
+    console.log("_fetchLatestCartonInventory");
     const id = isInCarton ? this.detailProduct.inCartonData.id : this.detailProduct.outCartonData.id;
 
     this._inventoryService.fetchLatestInventoryByTargetId(MaterialTypeEn.ca, id).subscribe((res: Inventory) => {
@@ -861,6 +870,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchLatestLabelInventory(isFirst: boolean): void {
+    console.log("_fetchLatestLabelInventory");
     this._inventoryService.fetchLatestInventoryByTargetId(MaterialTypeEn.la, this.detailProduct.labelData.id)
     .subscribe((res: Inventory) => {
       this.labelInput.fetchLatestInventory(res, this._locationList);
@@ -881,6 +891,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchLatestTriggerInventory(isFirst: boolean): void {
+    console.log("_fetchLatestTriggerInventory");
     this._inventoryService.fetchLatestInventoryByTargetId(MaterialTypeEn.tr, this.detailProduct.triggerData.id)
     .subscribe((res: Inventory) => {
       this.triggerInput.fetchLatestInventory(res, this._locationList);
@@ -901,6 +912,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchLatestBagInventory(isFirst: boolean): void {
+    console.log("_fetchLatestBagInventory");
     this._inventoryService.fetchLatestInventoryByTargetId(MaterialTypeEn.ba, this.detailProduct.bagData.id)
     .subscribe((res: Inventory) => {
       this.bagInput.fetchLatestInventory(res, this._locationList);

@@ -146,7 +146,7 @@
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.bottleData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{bottleInput.latestInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{bottleInput.latestInventory.locationCount[inputLocation.id] | number}}個</span>
           </div>
         </div>
       </div>
@@ -188,7 +188,7 @@
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.triggerData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{triggerInput.latestInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{triggerInput.latestInventory.locationCount[inputLocation.id] | number}}個</span>
           </div>
         </div>
       </div>
@@ -230,7 +230,7 @@
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.labelData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{labelInput.latestInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{labelInput.latestInventory.locationCount[inputLocation.id] | number}}個</span>
           </div>
         </div>
       </div>
@@ -272,7 +272,7 @@
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.bagData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{bagInput.latestInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{bagInput.latestInventory.locationCount[inputLocation.id] | number}}個</span>
           </div>
         </div>
       </div>
@@ -314,7 +314,7 @@
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.inCartonData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{inCartonInput.latestInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{inCartonInput.latestInventory.locationCount[inputLocation.id] | number}}個</span>
           </div>
         </div>
       </div>
@@ -402,7 +402,7 @@
             <span class="badge badge-success">選択中</span>
             <span class="auto-selected ml-2">{{detailProduct.outCartonData.name }}</span>
             <span class="badge badge-success ml-4">{{inputLocation.name}}の現在在庫量</span>
-            <span class="auto-selected ml-2">{{outCartonInput.latestInventory.locationCount[inputLocation.id]}}個</span>
+            <span class="auto-selected ml-2">{{outCartonInput.latestInventory.locationCount[inputLocation.id] | number}}個</span>
           </div>
         </div>
       </div>

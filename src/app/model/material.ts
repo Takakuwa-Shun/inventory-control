@@ -13,7 +13,7 @@ export interface MaterialWithImage extends Material {
 }
 
 export const MaterialStatus = {
-    use: '',
+    use: '取扱有',
     noUse: '廃止',
 }
 

@@ -45,14 +45,19 @@ export class EmailService {
     <p>抗菌マイスター株式会社　在庫管理アプリ</p>
     <p>※ このメールは自動送信です。返信しないで下さい。</p>`;
 
-    mailList.forEach((mail: string) => {
-      if(mail === 'takakuwa.sori@gmail.com') {
+    const msg = '資材在庫が少なくなったため、メールを送信しました。';
+    let mailSent = false;
+    for (const mail of mailList) {
+      if(mailSent) {
         this._sendEmail(mail, subject, body);
+      } else {
+        mailSent = true;
+        this._sendEmail(mail, subject, body, msg);
       }
-    });
+    };
   }
 
-  private _sendEmail(mailAddress: string, subject: string, body: string) {
+  private _sendEmail(mailAddress: string, subject: string, body: string, successMsg?: string) {
 
     Email.send({
       SecureToken : EmailService.TOKEN,
@@ -61,8 +66,12 @@ export class EmailService {
       Subject : subject,
       Body : body
     }).then((msg: string) => {
-      console.log(`email send to ${mailAddress}`);
-      if (msg !== 'OK') {
+      if (msg === 'OK') {
+        console.log(`email send to ${mailAddress}`);
+        if(successMsg) {
+          this._valueShareService.setCompleteModal(successMsg, 10000, 'btn-outline-success');
+        }
+      } else {
         this._valueShareService.setCompleteModal("メールの送信に失敗しました", 10000);
       }
     });

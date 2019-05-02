@@ -87,13 +87,13 @@
       <ng-container *ngFor="let l of listLocationForFilter; index as i">
         <div class="form-check form-check-inline">
           <input
-            type="checkbox"
+            type="radio"
             name="location"
             id="locations{{i}}"
             class="form-check-input"
-            [(ngModel)]="l.checked"
-            [value]="true"
-            [checked]="l.checked">
+            [(ngModel)]="selectedLocationId"
+            [value]="l.id"
+            [checked]="l.id === selectedLocationId">
           <label class="form-check-label pointer" for="locations{{i}}">{{l.name}}</label>
         </div>
       </ng-container>

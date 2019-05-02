@@ -8,6 +8,7 @@ import { MaterialTypeEn, MaterialTypeJa } from '../../model/material-type';
 import { Observable, from } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryFn, CollectionReference } from '@angular/fire/firestore';
+import { firestore } from 'firebase';
 
 interface Batch {
   type: string,
@@ -340,27 +341,39 @@ export class InventoryService {
       })
     }
 
-    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationIds?: string[]): Observable<Inventory[]> {
+    public fetchFollowingInventoryLists(isNext: boolean, type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationId: string): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
+        let q: firestore.Query = ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate);
+
+        if(filteredLocationId !== ''){
+          q = q.where("arrLocationId", "array-contains", filteredLocationId);
+        }
+
         if (isNext) {
-          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).startAfter(this._endOfDocSnapshot).limit(limit);
+          return q.startAfter(this._endOfDocSnapshot).limit(limit);
         } else {
-          return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).endBefore(this._startOfDocSnapshot).limit(limit);
+          return q.endBefore(this._startOfDocSnapshot).limit(limit);
         }
       }
 
-      return this._fetchInventories(type, queryFn, filteredLocationIds);
+      return this._fetchInventories(type, queryFn);
     }
 
-    public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationIds?: string[]): Observable<Inventory[]> {
+    public fetchInventoryListsByTargetIdAndDate(type: string, targetId: string, startDate: Date, endDate: Date, limit: number, filteredLocationId: string): Observable<Inventory[]> {
       const queryFn: QueryFn = (ref: CollectionReference) => {
-        return ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate).limit(limit);
+        let q: firestore.Query = ref.orderBy('date', 'desc').where('targetId', '==', targetId).where('date', '>=', startDate).where('date', '<=', endDate);
+
+        if(filteredLocationId !== ''){
+          q = q.where("arrLocationId", "array-contains", filteredLocationId);
+        }
+
+        return q.limit(limit);
       }
 
-      return this._fetchInventories(type, queryFn, filteredLocationIds);
+      return this._fetchInventories(type, queryFn);
     }
 
-    private _fetchInventories(type: string, queryFn?: QueryFn, filteredLocationIds?: string[]): Observable<Inventory[]> {
+    private _fetchInventories(type: string, queryFn?: QueryFn): Observable<Inventory[]> {
 
       const arrCollectionPath = this._getCollectionPath(type);
       if (arrCollectionPath === null) {
@@ -379,12 +392,7 @@ export class InventoryService {
           querySnapshot.forEach((doc: firebase.firestore.QueryDocumentSnapshot) => {
             if (doc.exists) {
               const data = doc.data() as Inventory;
-              for (const lid of data.arrLocationId) {
-                if (filteredLocationIds === null || filteredLocationIds.includes(lid)) {
-                  list.push(data);
-                  break;
-                }
-              }
+              list.push(data);
             }
             const arrDoc = querySnapshot.docs;
             if (arrDoc.length > 0) {

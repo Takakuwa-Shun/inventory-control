@@ -13,14 +13,14 @@
           <tr>
             <th scope="col">項目</th>
             <th scope="col">値</th>
-            <th scope="col">編集欄</th>
+            <th scope="col" class="print-hidden">編集欄</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th scope="col">得意先名</th>
             <td><a routerLink="/company/detail/{{product.companyId}}">{{product.companyName}}</a></td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditCompany; else editCompany">
                 <button          
                   type="button"
@@ -63,7 +63,7 @@
           <tr>
             <th scope="col">商品名</th>
             <td>{{product.name}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="text"
@@ -83,7 +83,7 @@
           <tr>
             <th scope="col">商品名かな</th>
             <td>{{product.nameKana}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="text"
@@ -107,7 +107,7 @@
             <td [style.background-color]="showBottleDeletedAlert? 'red' : 'white'">
               <a routerLink="/material/detail/bottle/{{product.bottleId}}">{{product.bottleName}}</a>
             </td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditBottle; else editBottle">
                 <button          
                   type="button"
@@ -152,7 +152,7 @@
             <td [style.background-color]="showTriggerDeletedAlert ? 'red' : 'white'">
               <a routerLink="/material/detail/trigger/{{product.triggerId}}">{{product.triggerName}}</a>
             </td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditTrigger; else editTrigger">
                 <button          
                   type="button"
@@ -197,7 +197,7 @@
             <td [style.background-color]="showLabelDeletedAlert ? 'red' : 'white'">
               <a routerLink="/material/detail/label/{{product.labelId}}">{{product.labelName}}</a>
             </td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditLabel; else editLabel">
                 <button          
                   type="button"
@@ -241,7 +241,7 @@
             <td [style.background-color]="showBagDeletedAlert ? 'red' : 'white'">
               <a routerLink="/material/detail/bag/{{product.bagId}}">{{product.bagName}}</a>
             </td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditBag; else editBag">
                 <button          
                   type="button"
@@ -286,7 +286,7 @@
             <td [style.background-color]="showInCartonDeletedAlert ? 'red' : 'white'">
               <a routerLink="/material/detail/carton/{{product.inCartonId}}">{{product.inCartonName}}</a>
             </td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditInCarton; else editInCarton">
                 <button          
                   type="button"
@@ -331,7 +331,7 @@
             <td [style.background-color]="showOutCartonDeletedAlert ? 'red' : 'white'">
               <a routerLink="/material/detail/carton/{{product.outCartonId}}">{{product.outCartonName}}</a>
             </td>
-            <td>
+            <td class="print-hidden">
               <ng-container *ngIf="!showEditOutCarton; else editOutCarton">
                 <button          
                   type="button"
@@ -371,7 +371,7 @@
               </ng-template>
             </td>
           </tr>
-          <tr>
+          <tr class="print-hidden">
             <th scope="col">商品写真</th>
             <td>      
               <img class="show-icon img-thumbnail rounded img-fluid" [src]="imageSrc" alt="読み込みエラー">
@@ -393,26 +393,28 @@
         (loadFailed)="imageLoadFailed()"
         (cropped)="selectImage($event)"
       ></app-image-cropper-wrapper>
-      <div class="row">
-        <div class="mx-auto">
-          <button class="btn btn-outline-dark" (click)="goBack()">商品一覧へ</button>
-        </div>
-        <div class="mx-auto">
-          <button
-          type="button"
-          class="btn btn-primary"
-          data-toggle="modal"
-          data-target="#Modal"
-          (click)="createBody()"
-          [disabled]="!productForm.form.valid">修正</button>
-        </div>
-        <div class="mx-auto">
-          <button
-          type="button"
-          class="btn btn-danger"
-          data-toggle="modal"
-          data-target="#DeleteModal">削除</button>
-        </div>
+      <div class="print-hidden">
+        <div class="row">
+            <div class="mx-auto">
+              <button class="btn btn-outline-dark" (click)="goBack()">商品一覧へ</button>
+            </div>
+            <div class="mx-auto">
+              <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#Modal"
+              (click)="createBody()"
+              [disabled]="!productForm.form.valid">修正</button>
+            </div>
+            <div class="mx-auto">
+              <button
+              type="button"
+              class="btn btn-danger"
+              data-toggle="modal"
+              data-target="#DeleteModal">削除</button>
+            </div>
+          </div>
       </div>
     </form>
   </div>

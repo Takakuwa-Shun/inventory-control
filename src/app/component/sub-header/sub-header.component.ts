@@ -311,7 +311,11 @@ export class SubHeaderComponent implements OnInit {
         "備考": i.memo,
       };
       Object.keys(this.locationNameMap).map((locationId: string) => {
-        data[this.locationNameMap[locationId]] = `${i.locationCount[locationId]}`;
+        if(i.locationCount[locationId] === undefined) {
+          data[this.locationNameMap[locationId]] = '';
+        } else {
+          data[this.locationNameMap[locationId]] = `${i.locationCount[locationId]}`;
+        }
       });
       data["全倉庫合計"] = i.sumCount;
       json.push(data);

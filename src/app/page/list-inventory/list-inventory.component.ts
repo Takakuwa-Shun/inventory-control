@@ -12,10 +12,6 @@ import { FirebaseStorageService } from './../../service/firebase-storage-service
 import { ValueShareService } from './../../service/value-share-service/value-share.service';
 declare const $;
 
-interface CheckLocation extends Location {
-  checked: boolean;
-}
-
 @Component({
   selector: 'app-list-inventory',
   templateUrl: './list-inventory.component.html',
@@ -38,8 +34,8 @@ export class ListInventoryComponent implements OnInit {
   public selectedTargetType: string;
   public selectedTarget: Material = initMaterial();
   public isTargetSelected: boolean;
-  public listLocationForFilter: CheckLocation[] = [];
-  public selectedLocationIds: string[];
+  public listLocationForFilter: Location[] = [];
+  public selectedLocationId: string;
 
   public imageSrc: string;
   public showLimit: number;
@@ -92,24 +88,19 @@ export class ListInventoryComponent implements OnInit {
 
     this._filterInit();
     this._fetchAllLocations();
+    this._fetchInventoryList();
   }
 
   public search(): void {
     this._valueShareService.setLoading(true);
     this.showTarget = this.selectedTarget;
 
-    this.selectedLocationIds = [];
-    for(const l of this.listLocationForFilter) {
-      if(l.checked) {
-        this.selectedLocationIds.push(l.id);
-      }
-    }
     this._localStorage.setItem('selectedTargetType', this.selectedTargetType);
     this._localStorage.setItem('startDateStr', this.startDateStr);
-    this._localStorage.setObject('selectedLocationIds', this.selectedLocationIds);
+    this._localStorage.setItem('selectedLocationId', this.selectedLocationId);
     this._localStorage.setObject('showTarget', this.showTarget);
     this._downloadImage();
-    this._setListSelectedLocation();
+    this._changeSelectedLocation();
     this._fetchInventoryList();
   }
 
@@ -144,10 +135,10 @@ export class ListInventoryComponent implements OnInit {
     }
     this.changeTargetType();
 
-    if (this._localStorage.getObject('selectedLocationIds')) {
-      this.selectedLocationIds = this._localStorage.getObject('selectedLocationIds');
+    if (this._localStorage.getItem('selectedLocationId')) {
+      this.selectedLocationId = this._localStorage.getItem('selectedLocationId');
     } else { 
-      this.selectedLocationIds = [];
+      this.selectedLocationId = '';
     }
 
     if (this._localStorage.getObject('showTarget')) {
@@ -156,12 +147,13 @@ export class ListInventoryComponent implements OnInit {
     } else {
       this.showTarget = initMaterial();
     }
+
     this._downloadImage();
   }
 
   public getFollowingList(isNext: boolean) {
-    this._valueShareService.setLoading(true);;
-    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this.selectedLocationIds)
+    this._valueShareService.setLoading(true);
+    this.inventoryService.fetchFollowingInventoryLists(isNext, this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this.selectedLocationId)
     .subscribe((res: Inventory[]) => {
       if (res.length > 0) {
         this.noNext = false;
@@ -179,6 +171,16 @@ export class ListInventoryComponent implements OnInit {
       console.error(err);
       this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
     });
+  }
+
+  private _changeSelectedLocation() {
+    if(this.selectedLocationId === '') {
+      this.listSelectedLocation = this.listLocationForFilter
+                .filter(l => l.id !== '');
+    } else {
+      this.listSelectedLocation = this.listLocationForFilter
+                .filter(l => l.id === this.selectedLocationId);
+    }
   }
 
   public changeDate() {
@@ -244,7 +246,7 @@ export class ListInventoryComponent implements OnInit {
   }
 
   private _fetchInventoryList(): void {
-    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this.selectedLocationIds)
+    this.inventoryService.fetchInventoryListsByTargetIdAndDate(this.selectedTargetType, this.showTarget.id, this.startDate, this.endDate, this.showLimit, this.selectedLocationId)
     .subscribe((res: Inventory[]) => {
       this.noNext = false;
       this.noPrevious = false;
@@ -338,18 +340,14 @@ export class ListInventoryComponent implements OnInit {
 
   private _fetchAllLocations():void {
     this._locationService.fetchLocations().subscribe((res: Location[]) => {
-      for (const l of res) {
-        const cl : CheckLocation = {
-          id: l.id,
-          name: l.name,
-          nameKana: l.nameKana,
-          isFactory: l.isFactory,
-          checked: this.selectedLocationIds.includes(l.id)
-        };
-        this.listLocationForFilter.push(cl);
+      const l: Location = {
+        id: '',
+        name: '全て',
+        nameKana: 'すべて',
+        isFactory: false
       }
-      this._setListSelectedLocation();
-      this._fetchInventoryList();
+      this.listLocationForFilter = [l].concat(res);
+      this._changeSelectedLocation();
 
       // csvのため
       for (const l of res) {
@@ -361,16 +359,5 @@ export class ListInventoryComponent implements OnInit {
       console.error(err);
       this._valueShareService.setCompleteModal('※ 倉庫のデータの取得に失敗しました。', 10000);
     });
-  }
-
-  private _setListSelectedLocation() {
-    if (this.listLocationForFilter && this.listLocationForFilter.length > 0) {
-      this.listSelectedLocation = [];
-      for(const l of this.listLocationForFilter) {
-        if(l.checked) {
-          this.listSelectedLocation.push(l);
-        }
-      }
-    }
   }
 }

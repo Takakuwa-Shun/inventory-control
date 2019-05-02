@@ -13,19 +13,19 @@
           <tr>
             <th scope="col">項目</th>
             <th scope="col">値</th>
-            <th scope="col">編集欄</th>
+            <th scope="col" class="print-hidden">編集欄</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th scope="col">資材コード</th>
             <td>{{material.id}}</td>
-            <td>コードの編集は出来ません</td>
+            <td class="print-hidden">コードの編集は出来ません</td>
           </tr>
           <tr>
             <th scope="col">資材名</th>
             <td>{{material.name}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="text"
@@ -45,7 +45,7 @@
           <tr>
             <th scope="col">資材名かな</th>
             <td>{{material.nameKana}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="text"
@@ -67,7 +67,7 @@
           <tr>
             <th scope="col">フラグ</th>
             <td>{{material.limitCount | number}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="number"
@@ -92,7 +92,7 @@
           <tr>
             <th scope="col">資材タイプ</th>
             <td>{{material.type}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <select class="form-control" id="type" [(ngModel)]="registerMaterial.type" name="type" #type="ngModel" [disabled]="material.status === MaterialStatus.noUse">
                   <option *ngFor="let type of materialType" [value]="type">{{type}}</option>
@@ -103,7 +103,7 @@
           <tr>
             <th scope="col">ステータス</th>
             <td>{{material.status}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <button
                 type="button"
@@ -114,7 +114,7 @@
               </div>
             </td>
           </tr>
-          <tr>
+          <tr class="print-hidden">
             <th scope="col">資材写真</th>
             <td>      
               <img class="show-icon img-thumbnail rounded img-fluid" [src]="imageSrc" alt="読み込みエラー">
@@ -138,26 +138,28 @@
           (cropped)="selectImage($event)"
         ></app-image-cropper-wrapper>
       </div>
-      <div class="row">
-        <div class="mx-auto">
-          <button class="btn btn-outline-dark" (click)="goBack()">資材一覧へ</button>
-        </div>
-        <div class="mx-auto">
-          <button
-          type="button"
-          class="btn btn-primary"
-          data-toggle="modal"
-          data-target="#Modal"
-          (click)="createBody()"
-          [disabled]="!materialForm.form.valid">修正</button>
-        </div>
-        <div class="mx-auto">
-          <button
-          type="button"
-          class="btn btn-danger"
-          data-toggle="modal"
-          data-target="#DeleteModal"
-          [disabled]="material.status === MaterialStatus.use">削除</button>
+      <div class="print-hidden">
+        <div class="row">
+          <div class="mx-auto">
+            <button class="btn btn-outline-dark" (click)="goBack()">資材一覧へ</button>
+          </div>
+          <div class="mx-auto">
+            <button
+            type="button"
+            class="btn btn-primary"
+            data-toggle="modal"
+            data-target="#Modal"
+            (click)="createBody()"
+            [disabled]="!materialForm.form.valid">修正</button>
+          </div>
+          <div class="mx-auto">
+            <button
+            type="button"
+            class="btn btn-danger"
+            data-toggle="modal"
+            data-target="#DeleteModal"
+            [disabled]="material.status === MaterialStatus.use">削除</button>
+          </div>
         </div>
       </div>
     </form>

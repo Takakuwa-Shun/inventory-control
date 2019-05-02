@@ -142,7 +142,11 @@ export class BackupComponent implements OnInit {
         "備考": i.memo,
       };
       Object.keys(this._locationCountMap).map((locationId: string) => {
-        data[this._locationCountMap[locationId]] = `${i.locationCount[locationId]}`;
+        if(i.locationCount[locationId] === undefined) {
+          data[this._locationCountMap[locationId]] = '';
+        } else {
+          data[this._locationCountMap[locationId]] = `${i.locationCount[locationId]}`;
+        }
       });
       data["全倉庫合計"] = i.sumCount;
       json.push(data);

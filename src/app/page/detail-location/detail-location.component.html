@@ -11,14 +11,14 @@
           <tr>
             <th scope="col">項目</th>
             <th scope="col">現在値</th>
-            <th scope="col">編集欄</th>
+            <th scope="col" class="print-hidden">編集欄</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th scope="col">倉庫名</th>
             <td>{{location.name}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="text"
@@ -38,7 +38,7 @@
           <tr>
             <th scope="col">倉庫名かな</th>
             <td>{{location.nameKana}}</td>
-            <td>
+            <td class="print-hidden">
               <div class="form-group">
                 <input
                 type="text"
@@ -57,28 +57,35 @@
               </div>
             </td>
           </tr>
+          <tr>
+            <th scope="col">倉庫種類</th>
+            <td>{{location.isFactory ? "工場（商品製造の際には、ここから使用）" : "その他"}}</td>
+            <td class="print-hidden">この項目は変更出来ません。</td>
+          </tr>
         </tbody>
       </table>
-      <div class="row">
-        <div class="mx-auto">
-          <button class="btn btn-outline-dark" (click)="goBack()">倉庫一覧へ</button>
-        </div>
-        <div class="mx-auto">
-          <button
-          type="button"
-          class="btn btn-primary"
-          data-toggle="modal"
-          data-target="#Modal"
-          (click)="createBody()"
-          [disabled]="!locationForm.form.valid">修正</button>
-        </div>
-        <div class="mx-auto">
-          <button
-          type="button"
-          class="btn btn-danger"
-          data-toggle="modal"
-          data-target="#DeleteModal"
-          disabled>削除</button>
+      <div class="print-hidden">
+        <div class="row">
+          <div class="mx-auto">
+            <button class="btn btn-outline-dark" (click)="goBack()">倉庫一覧へ</button>
+          </div>
+          <div class="mx-auto">
+            <button
+            type="button"
+            class="btn btn-primary"
+            data-toggle="modal"
+            data-target="#Modal"
+            (click)="createBody()"
+            [disabled]="!locationForm.form.valid">修正</button>
+          </div>
+          <div class="mx-auto">
+            <button
+            type="button"
+            class="btn btn-danger"
+            data-toggle="modal"
+            data-target="#DeleteModal"
+            disabled>削除</button>
+          </div>
         </div>
       </div>
     </form>

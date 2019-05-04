@@ -727,6 +727,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchBottleList():void {
+    console.log("_fetchBottleList");
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.bo).subscribe((res: Material[]) => {
       this.bottleInput.listMaterial = res;
       const material: Material = this.bottleInput.checkMaterialExisting(this.detailProduct.bottleData);
@@ -742,6 +743,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchCartonList(isInCarton: boolean):void {
+    console.log("_fetchCartonList");
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ca).subscribe((res: Material[]) => {
       this.inCartonInput.listMaterial = res;
       this.outCartonInput.listMaterial = res;
@@ -767,6 +769,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchLabelList():void {
+    console.log("_fetchLabelList");
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.la).subscribe((res: Material[]) => {
       this.labelInput.listMaterial = res;
       const material: Material = this.labelInput.checkMaterialExisting(this.detailProduct.labelData);
@@ -782,6 +785,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchTriggerList():void {
+    console.log("_fetchTriggerList");
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.tr).subscribe((res: Material[]) => {
       this.triggerInput.listMaterial = res;
       const material: Material = this.triggerInput.checkMaterialExisting(this.detailProduct.triggerData);
@@ -797,6 +801,7 @@ export class ManufactureInventoryComponent implements OnInit {
   }
 
   private _fetchBagList():void {
+    console.log("_fetchBagList");
     this._materialService.fetchMaterialListWhereStatusIsUse(MaterialTypeEn.ba).subscribe((res: Material[]) => {
       this.bagInput.listMaterial = res;
       const material: Material = this.bagInput.checkMaterialExisting(this.detailProduct.bagData);

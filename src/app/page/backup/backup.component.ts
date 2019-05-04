@@ -9,6 +9,7 @@ import { InventoryService } from './../../service/inventory-service/inventory.se
 import { ValueShareService } from './../../service/value-share-service/value-share.service';
 import { ExcelServiceService } from './../../service/excel-service/excel-service.service';
 import { ExcelSheet } from './../../model/excel-sheet';
+import { EmailService } from './../../service/email-service/email.service';
 
 interface Backup {
   bottle?: Inventory[][];
@@ -31,10 +32,14 @@ export class BackupComponent implements OnInit {
     { value:  1, name: "1日分" },
     { value:  3, name: "3日分" },
     { value:  7, name: "7日分" },
+    { value:  15, name: "15日分" },
+    { value:  30, name: "30日分" },
   ];
 
   public selectedTargetType: string;
   public selectedRange: number;
+
+  public confirmBody: string;
 
   private readonly _locationCountMap: object = {};
   private _backupInventory: Inventory[][];
@@ -49,6 +54,7 @@ export class BackupComponent implements OnInit {
     private _inventoryService: InventoryService,
     private _locationService: LocationService,
     private _excelServiceService: ExcelServiceService,
+    private _emailService: EmailService 
   ) { }
 
   ngOnInit() {
@@ -88,6 +94,7 @@ export class BackupComponent implements OnInit {
   private _exportFile() {
     if(this._inventoryLoaded && this._locationLoaded) {
       this._inventoryLoaded = false;
+      let dataCount: number = 0;
 
       if (this.selectedTargetType === MaterialTypeJa.all) {
         let showError = false;
@@ -98,6 +105,7 @@ export class BackupComponent implements OnInit {
             if(list.length > 0) {
               const e = this._setExcelSheet(list);
               dataset.push(e);
+              dataCount += list.length;
             }
           }
           if(dataset.length > 0) {
@@ -116,6 +124,7 @@ export class BackupComponent implements OnInit {
           if(list.length > 0) {
             const e = this._setExcelSheet(list);
             dataset.push(e);
+            dataCount += list.length;
           }
         }
         if(dataset.length > 0) {
@@ -125,6 +134,7 @@ export class BackupComponent implements OnInit {
           this._valueShareService.setCompleteModal('※ バックアップすべきデータが存在しません。設定を変更して再度お試し下さい。', 10000);
         }
       }
+      this._emailService.notifyBackupCreated(this.selectedTargetType, this.selectedRange, dataCount);
     }
   }
 
@@ -224,4 +234,25 @@ export class BackupComponent implements OnInit {
     });
   }
 
+  public createBody(){
+    this.confirmBody = `
+    <div class="container-fluid">
+      <p>以下の内容でバックアップを作成してもよろしいでしょうか？</p>
+      <div class="row">
+        <div class="col-4">対象</div>
+        <div class="col-8 pull-left">${this.selectedTargetType}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">選択期間</div>
+        <div class="col-8 pull-left">${this.selectedRange}日分</div>
+      </div>
+      <br>
+      <div class="row col">
+        <small>
+          <p>※ <strong>1日に5万件</strong>以上のデータ読み込みを行うと、アプリ全体でデータ取得が出来なくなる可能性があります。<br>
+          例）5種類の資材 × 100個 × 1日10件の在庫入力 × 10日間 = 50,000件</p>
+        </small>
+      </div>
+    </div>`;
+  }
 }

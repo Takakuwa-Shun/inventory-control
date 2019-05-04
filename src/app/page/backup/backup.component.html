@@ -4,14 +4,17 @@
     [showPrint]=false
     [showExcel]=false
   ></app-sub-header>
-  <p>バックアップをエクセル形式で作成します。</p>
+  <p>バックアップを作成し、エクセル形式でファイルを出力します</p>
   <ol>
-    <li>資材の種類ごとに1個のエクセルファイルをダウンロードします (最大5ファイル)</li>
-    <li>各資材のバックアップはエクセルファイル内の一枚のシートにまとめられます</li>
+    <li>[ボトル・トリガー・ラベル・カートン・詰め替え袋]ごとに1個のエクセルファイルを出力します (最大5ファイル)</li>
+    <li>一つの資材につき、一枚のエクセルシートがそれぞれ割り当てられます。</li>
+    <p><small>例）「120ml角ボトル」はボトルのエクセルシートに一枚のシートとして保存されます。</small></p>
+    <li><strong>1日に5万件</strong>以上のデータ取得を行うと、アプリ全体で、その1日間データ取得が出来なくなる可能性があります。</li>
+    <p><small>例）5種類の資材 × 100個 × 1日10件の在庫入力 × 10日間 = 50,000件</small></p>
   </ol>
   <hr>
   <div class="row">
-    <label for="target-kind" class="col-sm-2 col-form-label">対象種類</label>
+    <label for="target-kind" class="col-sm-2 col-form-label">対象</label>
     <ng-container *ngFor="let t of listTarget; index as i">
       <div class="form-check form-check-inline">
         <input
@@ -27,7 +30,7 @@
     </ng-container>
   </div>
   <div class="row">
-    <label for="range" class="col-sm-2 col-form-label">対象範囲</label>
+    <label for="range" class="col-sm-2 col-form-label">選択期間</label>
     <ng-container *ngFor="let r of listRange; index as i">
       <div class="form-check form-check-inline">
         <input
@@ -47,7 +50,16 @@
       <button
       type="button"
       class="btn btn-primary"
-      (click)="create()">バックアップ作成・ダウンロード</button>
+      data-toggle="modal"
+      data-target="#Modal"
+      (click)="createBody()">バックアップ作成・ダウンロード</button>
     </div>
   </div>
 </div>
+<app-confirm-modal
+title="バックアップ作成確認"
+[bodyHtml]="confirmBody"
+btnCancel="中止する"
+btnAction="作成する"
+(action)="create();"
+></app-confirm-modal>

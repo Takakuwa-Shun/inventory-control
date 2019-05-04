@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UserService } from './../user-service/user.service';
+import { AuthService } from './../auth-service/auth.service';
+import { User } from './../../model/user';
 import { environment } from './../../../environments/environment';
 import { ValueShareService } from './../value-share-service/value-share.service';
 declare var Email;
@@ -15,9 +17,67 @@ export class EmailService {
   constructor(
     private _valueShareService: ValueShareService, 
     private _userService: UserService,
+    private _authService: AuthService,
   ) { }
 
   private _mailList: string[];
+  private _loginUser: User;
+
+  public notifyBackupCreated(type: string, days: number, dataCount: number): void {
+    if(this._mailList && this._mailList.length > 0) {
+      this._checkAuthLoaded(type, days, dataCount, this._mailList);
+    } else {
+      this._userService.getUserEmailList().subscribe((mailList: string[]) => {
+        this._mailList = mailList;
+        this._checkAuthLoaded(type, days, dataCount, this._mailList);
+      },(err) => {
+        console.error(err);
+        this._valueShareService.setCompleteModal("メールの送信に失敗しました", 10000);
+      });
+    }
+  }
+
+  private _checkAuthLoaded(type: string, days: number, dataCount: number, mailList: string[]):void {
+    if (this._loginUser) {
+      this._setnotifyBackupCreatedMessage(type, days, dataCount, mailList, this._loginUser.displayName);
+    } else {
+      this._authService.user.subscribe((u: User) => {
+        this._loginUser = u;
+        this._setnotifyBackupCreatedMessage(type, days, dataCount, mailList, this._loginUser.displayName);
+      },(err) => {
+        console.error(err);
+        this._valueShareService.setCompleteModal("メールの送信に失敗しました", 10000);
+      });
+    }
+  }
+
+  private _setnotifyBackupCreatedMessage(type: string, days: number, dataCount: number, mailList: string[], userName: string): void {
+    const subject = `【在庫管理】 ${userName}がバックアップを作成しました。`;
+    const body = 
+    `<p>在庫管理アプリです。</p>
+     <p>バックアップの作成が行われました。</p>
+    <ul>
+      <li>作成者 : ${userName}</li>
+      <li>種類 : ${type}/li>
+      <li>選択期間 : ${days}日分</li>
+      <li>バックアップデータ総数 : ${dataCount}件</li>
+    </ul>
+    <br>
+    <hr>
+    <p>抗菌マイスター株式会社　在庫管理アプリ</p>
+    <p>※ このメールは自動送信です。返信しないで下さい。</p>`;
+
+    const msg = `バックアップを作成したため、メールを送信しました。`;
+    let mailSent = false;
+    for (const mail of mailList) {
+      if(mailSent) {
+        this._sendEmail(mail, subject, body);
+      } else {
+        mailSent = true;
+        this._sendEmail(mail, subject, body, msg);
+      }
+    };
+  }
 
   public alertFewMaterialInventory(name: string, inventoryCount: number) {
     if(this._mailList && this._mailList.length > 0) {

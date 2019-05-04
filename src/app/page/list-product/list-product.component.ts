@@ -18,6 +18,8 @@ export class ListProductComponent implements OnInit {
   private static readonly NO_IMAGE_URL = './../../../assets/no-image.png';
 
   public listProduct: ProductWithImage[];
+  private _listProductObj: object = {};
+  private _allListProduct: ProductWithImage[];
   public listCompany: Company[];
   constructor(
     private router: Router,
@@ -76,33 +78,45 @@ export class ListProductComponent implements OnInit {
     if (typeof data !== 'string') {
       this._valueShareService.setLoading(true);
       if(data.id === '') {
-        this._fetchProductList();
+        this._fetchAllProductList();
       } else {
         this._fetchProductListFilteringCompany(data);
       }
     }
   }
 
-  private _fetchProductList(): void {
-    this.productService.fetchAllProducts().subscribe((res: Product[]) => {
-      this.listProduct = res;
-      this._downloadImages();
-      this._valueShareService.setLoading(false);;
-    }, (err) => {
-      console.log(err);
-      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
-    });
+  private _setListProduct(product: Product[]): void {
+    this.listProduct = product;
+    this._downloadImages();
+    this._valueShareService.setLoading(false);
+  }
+
+  private _fetchAllProductList(): void {
+    if(this._allListProduct && this._allListProduct.length > 0) {
+      this._setListProduct(this._allListProduct);
+    } else {
+      this.productService.fetchAllProducts().subscribe((res: Product[]) => {
+        this._allListProduct = res;
+        this._setListProduct(res);
+      }, (err) => {
+        console.log(err);
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+      });
+    }
   }
 
   private _fetchProductListFilteringCompany(company: Company): void {
-    this.productService.fetchProductListFilteringCompany(company.id).subscribe((res: Product[]) => {
-      this.listProduct = res;
-      this._downloadImages();
-      this._valueShareService.setLoading(false);;
-    }, (err) => {
-      console.log(err);
-      this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
-    });
+    if(this._listProductObj[company.id]) {
+      this._setListProduct(this._listProductObj[company.id]);
+    } else {
+      this.productService.fetchProductListFilteringCompany(company.id).subscribe((res: Product[]) => {
+        this._listProductObj[company.id] = res;
+        this._setListProduct(res);
+      }, (err) => {
+        console.log(err);
+        this._valueShareService.setCompleteModal('※ ロードに失敗しました。');
+      });
+    }
   }
 
   goDetail(id: string) {
